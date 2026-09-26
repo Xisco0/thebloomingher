@@ -9,18 +9,19 @@ export const metadata: Metadata = {
   description:
     'Discover the story behind TheBloomingHer. Feminine wellness, cycle care boxes, and thoughtful lifestyle essentials created for women in Nigeria.',
   alternates: {
-    canonical: 'https://thebloomingher.com/about',
+    canonical: '/about',
   },
   openGraph: {
     title: 'About Our Brand & Mission | TheBloomingHer Care & Wellness',
     description:
       'Discover the story behind TheBloomingHer. Feminine wellness, cycle care boxes, and thoughtful lifestyle essentials created for women in Nigeria.',
-    url: 'https://thebloomingher.com/about',
+    url: '/about',
     images: [
       {
         url: '/images/og-default.jpg',
         width: 1200,
         height: 630,
+        type: 'image/jpeg',
         alt: 'About TheBloomingHer Care & Wellness',
       },
     ],

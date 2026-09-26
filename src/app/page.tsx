@@ -20,18 +20,18 @@ export const metadata: Metadata = {
   description:
     'Thoughtfully curated feminine care, menstrual comfort kits, wellness supplements, and everyday essentials in Lagos, Nigeria. Fast delivery & local pickup.',
   alternates: {
-    canonical: 'https://thebloomingher.com',
+    canonical: '/',
   },
   openGraph: {
     title: 'TheBloomingHer Care & Wellness | Feminine Care & Wellness Products Nigeria',
     description:
       'Thoughtfully curated feminine care, menstrual comfort kits, wellness supplements, and everyday essentials in Lagos, Nigeria.',
-    url: 'https://thebloomingher.com',
     images: [
       {
         url: '/images/og-default.jpg',
         width: 1200,
         height: 630,
+        type: 'image/jpeg',
         alt: 'TheBloomingHer Care & Wellness',
       },
     ],

@@ -1,6 +1,8 @@
 import { MetadataRoute } from 'next';
+import { getSiteUrl } from '@/lib/site-url';
 
 export default function robots(): MetadataRoute.Robots {
+  const baseUrl = getSiteUrl();
   return {
     rules: {
       userAgent: '*',
@@ -16,6 +18,6 @@ export default function robots(): MetadataRoute.Robots {
         '/api/',
       ],
     },
-    sitemap: 'https://thebloomingher.com/sitemap.xml',
+    sitemap: `${baseUrl}/sitemap.xml`,
   };
 }

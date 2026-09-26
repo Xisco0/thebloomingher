@@ -24,12 +24,12 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
       category.description ||
       `Shop authentic ${category.name} products in Lagos and across Nigeria. Fast delivery and free shipping over ₦40,000.`,
     alternates: {
-      canonical: `https://thebloomingher.com/categories/${category.slug}`,
+      canonical: `/categories/${category.slug}`,
     },
     openGraph: {
       title: `${category.name} | TheBloomingHer Care & Wellness`,
       description: category.description || `Discover authentic ${category.name} items.`,
-      url: `https://thebloomingher.com/categories/${category.slug}`,
+      url: `/categories/${category.slug}`,
       images: category.image_url
         ? [{ url: category.image_url, width: 1200, height: 630, alt: category.name }]
         : [],

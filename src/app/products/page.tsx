@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description:
     'Browse our complete catalogue of feminine care, period relief heating belts, herbal teas, and wellness products in Lagos, Nigeria.',
   alternates: {
-    canonical: 'https://thebloomingher.com/products',
+    canonical: '/products',
   },
 };
 

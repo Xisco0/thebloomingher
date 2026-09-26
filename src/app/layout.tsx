@@ -5,6 +5,10 @@ import { AOSProvider } from '@/components/providers/AOSProvider';
 import { StorefrontShell } from '@/components/layout/StorefrontShell';
 import { generateLocalBusinessSchema, generateOrganizationSchema } from '@/lib/seo/schema';
 
+import { getSiteUrl } from '@/lib/site-url';
+
+const siteUrl = getSiteUrl();
+
 export const metadata: Metadata = {
   title: {
     default: 'TheBloomingHer Care & Wellness | Thoughtful Care for Women in Nigeria',
@@ -12,7 +16,7 @@ export const metadata: Metadata = {
   },
   description:
     'Thoughtfully curated feminine care, menstrual comfort kits, wellness supplements, and everyday essentials in Lagos, Nigeria. Fast delivery & local pickup.',
-  metadataBase: new URL('https://thebloomingher.com'),
+  metadataBase: new URL(siteUrl),
   keywords: [
     'feminine care Nigeria',
     'period care box Lagos',
@@ -25,7 +29,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_NG',
-    url: 'https://thebloomingher.com',
+    url: siteUrl,
     siteName: 'TheBloomingHer Care & Wellness',
     title: 'TheBloomingHer Care & Wellness | Thoughtful Care for Women',
     description: 'Thoughtfully curated feminine care, menstrual comfort kits, and everyday wellness essentials.',
@@ -34,6 +38,7 @@ export const metadata: Metadata = {
         url: '/images/og-default.jpg',
         width: 1200,
         height: 630,
+        type: 'image/jpeg',
         alt: 'TheBloomingHer Care & Wellness — Thoughtfully selected essentials for your care, comfort & lifestyle',
       },
     ],

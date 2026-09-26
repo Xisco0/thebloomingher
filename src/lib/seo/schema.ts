@@ -1,6 +1,7 @@
 import { Product } from '@/types';
+import { getSiteUrl } from '@/lib/site-url';
 
-export function generateProductSchema(product: Product, siteUrl = 'https://thebloomingher.com') {
+export function generateProductSchema(product: Product, siteUrl = getSiteUrl()) {
   const primaryImage = product.images?.[0]?.url || 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789332798/uxz1r1aohkuxqqxxcw9x.jpg';
   
   return {
@@ -41,7 +42,7 @@ export function generateProductSchema(product: Product, siteUrl = 'https://thebl
   };
 }
 
-export function generateLocalBusinessSchema(siteUrl = 'https://thebloomingher.com') {
+export function generateLocalBusinessSchema(siteUrl = getSiteUrl()) {
   return {
     '@context': 'https://schema.org',
     '@type': 'HealthAndBeautyBusiness',
@@ -86,7 +87,7 @@ export function generateBreadcrumbSchema(items: Array<{ name: string; url: strin
   };
 }
 
-export function generateOrganizationSchema(siteUrl = 'https://thebloomingher.com') {
+export function generateOrganizationSchema(siteUrl = getSiteUrl()) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',

@@ -1,8 +1,9 @@
 import { MetadataRoute } from 'next';
 import { catalogService } from '@/services';
+import { getSiteUrl } from '@/lib/site-url';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://thebloomingher.com';
+  const baseUrl = getSiteUrl();
 
   const [productsRes, categories] = await Promise.all([
     catalogService.getProducts({ pageSize: 100 }),

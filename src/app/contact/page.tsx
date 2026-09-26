@@ -7,13 +7,22 @@ export const metadata: Metadata = {
   description:
     'Visit our Lagos pickup location at 30 Clem Rd, Ifako-Ijaiye, Lagos. Contact us via WhatsApp at +2348103641002 or email.',
   alternates: {
-    canonical: 'https://thebloomingher.com/contact',
+    canonical: '/contact',
   },
   openGraph: {
     title: 'Contact & Store Location | TheBloomingHer Care & Wellness Lagos',
     description:
       'Visit our Lagos pickup location at 30 Clem Rd, Ifako-Ijaiye, Lagos. Contact us via WhatsApp at +2348103641002 or email.',
-    url: 'https://thebloomingher.com/contact',
+    url: '/contact',
+    images: [
+      {
+        url: '/images/og-default.jpg',
+        width: 1200,
+        height: 630,
+        type: 'image/jpeg',
+        alt: 'Contact TheBloomingHer Care & Wellness',
+      },
+    ],
   },
 };
 

@@ -18,12 +18,12 @@ export async function generateMetadata({ params }: CollectionPageProps): Promise
       title: 'Bloomie Care Period Packages | TheBloomingHer Nigeria',
       description: 'Curated menstrual care boxes, heating belts, organic pads, and cycle comfort essentials.',
       alternates: {
-        canonical: 'https://thebloomingher.com/collections/bloomie-care',
+        canonical: '/collections/bloomie-care',
       },
       openGraph: {
         title: 'Bloomie Care Period Packages | TheBloomingHer Nigeria',
         description: 'Curated menstrual care boxes, heating belts, organic pads, and cycle comfort essentials.',
-        url: 'https://thebloomingher.com/collections/bloomie-care',
+        url: '/collections/bloomie-care',
       },
     };
   }
@@ -32,19 +32,19 @@ export async function generateMetadata({ params }: CollectionPageProps): Promise
       title: 'Under ₦10,000 Essentials | TheBloomingHer Nigeria',
       description: 'Discover high-quality feminine wellness, body care, and everyday essentials under ₦10k.',
       alternates: {
-        canonical: 'https://thebloomingher.com/collections/under-10k-finds',
+        canonical: '/collections/under-10k-finds',
       },
       openGraph: {
         title: 'Under ₦10,000 Essentials | TheBloomingHer Nigeria',
         description: 'Discover high-quality feminine wellness, body care, and everyday essentials under ₦10k.',
-        url: 'https://thebloomingher.com/collections/under-10k-finds',
+        url: '/collections/under-10k-finds',
       },
     };
   }
   return {
     title: 'Curated Collection | TheBloomingHer Care & Wellness',
     alternates: {
-      canonical: `https://thebloomingher.com/collections/${params.slug}`,
+      canonical: `/collections/${params.slug}`,
     },
   };
 }

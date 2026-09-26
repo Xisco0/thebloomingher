@@ -32,12 +32,12 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     title: product.seo_title || `${product.name} | TheBloomingHer Care & Wellness`,
     description: product.seo_description || product.short_description || product.description,
     alternates: {
-      canonical: `https://thebloomingher.com/products/${product.slug}`,
+      canonical: `/products/${product.slug}`,
     },
     openGraph: {
       title: product.name,
       description: `Buy ${product.name} in Lagos, Nigeria. ${formatNaira(product.price)}. Fast delivery.`,
-      url: `https://thebloomingher.com/products/${product.slug}`,
+      url: `/products/${product.slug}`,
       images: [{ url: primaryImage, width: 800, height: 800, alt: product.name }],
     },
     twitter: {

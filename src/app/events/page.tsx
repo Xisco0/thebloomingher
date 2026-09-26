@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description:
     'Join our doctor-led pelvic health workshops, menstrual cycle masterclasses, and community self-care days across Lagos, Nigeria.',
   alternates: {
-    canonical: 'https://thebloomingher.com/events',
+    canonical: '/events',
   },
 };
 

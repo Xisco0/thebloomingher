@@ -19,7 +19,7 @@ export async function generateMetadata({ searchParams }: SearchPageProps): Promi
     title: q ? `Search results for "${q}" | TheBloomingHer Nigeria` : 'Search Products | TheBloomingHer Nigeria',
     description: `Browse product search results for ${q} on TheBloomingHer Care & Wellness Nigeria.`,
     alternates: {
-      canonical: 'https://thebloomingher.com/search',
+      canonical: '/search',
     },
     robots: {
       index: false,

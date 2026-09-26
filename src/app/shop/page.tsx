@@ -8,17 +8,19 @@ export const metadata: Metadata = {
   description:
     'Discover our full collection of menstrual pain relief belts, feminine hygiene washes, organic pads, wellness supplements, and self-care essentials in Lagos, Nigeria.',
   alternates: {
-    canonical: 'https://thebloomingher.com/shop',
+    canonical: '/shop',
   },
   openGraph: {
     title: 'Shop All Products | TheBloomingHer Care & Wellness',
     description:
       'Premium feminine care and wellness products. Free Lagos delivery over ₦40,000. Order online or via WhatsApp.',
+    url: '/shop',
     images: [
       {
         url: '/images/og-default.jpg',
         width: 1200,
         height: 630,
+        type: 'image/jpeg',
         alt: 'TheBloomingHer Care & Wellness Shop',
       },
     ],
