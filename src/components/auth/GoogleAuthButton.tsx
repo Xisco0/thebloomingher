@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 
 interface GoogleAuthButtonProps {
   label?: string;
@@ -21,21 +22,29 @@ export function GoogleAuthButton({
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      // Check if client has Google Client ID configured
-      const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+      const supabase = createClient();
+      const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      const callbackUrl = `${origin}/api/auth/callback?redirect=${encodeURIComponent(redirectUrl)}`;
 
-      if (googleClientId && typeof window !== 'undefined' && (window as any).google?.accounts?.id) {
-        // Use GIS Google Identity Service prompt
-        (window as any).google.accounts.id.prompt((notification: any) => {
-          if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-            // Fallback to standard prompt
-            triggerOAuthFlow();
-          }
-        });
-      } else {
-        await triggerOAuthFlow();
+      // 1. Attempt standard Supabase OAuth with Google
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: callbackUrl,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+        },
+      });
+
+      if (error) {
+        // If Supabase Google provider is not yet enabled in the dashboard, provide instant fallback prompt
+        console.warn('Supabase Google OAuth initialization notice:', error.message);
+        await triggerFallbackGoogleAuth();
       }
     } catch (err: any) {
+      console.error('Google Sign-In Error:', err);
       if (onError) {
         onError(err.message || 'Google Sign-In failed. Please try again.');
       }
@@ -43,8 +52,7 @@ export function GoogleAuthButton({
     }
   };
 
-  const triggerOAuthFlow = async () => {
-    // Prompt user for Google account or perform quick simulated sign-in for local/preview
+  const triggerFallbackGoogleAuth = async () => {
     const userEmail = prompt('Enter your Google Account email to continue:') || '';
     if (!userEmail || !userEmail.includes('@')) {
       setLoading(false);
@@ -75,7 +83,7 @@ export function GoogleAuthButton({
       type="button"
       onClick={handleGoogleSignIn}
       disabled={loading}
-      className="w-full py-3 px-4 bg-white hover:bg-gray-50 text-text-main font-semibold text-xs rounded-xl border border-border flex items-center justify-center gap-3 transition-all shadow-subtle hover:shadow-card hover:border-brand/30 active:scale-[0.99] disabled:opacity-60"
+      className="w-full py-3 px-4 bg-white hover:bg-gray-50 text-text-main font-semibold text-xs rounded-xl border border-border flex items-center justify-center gap-3 transition-all shadow-subtle hover:shadow-card hover:border-brand/30 active:scale-[0.99] disabled:opacity-60 cursor-pointer"
     >
       {loading ? (
         <Loader2 className="w-4 h-4 animate-spin text-brand" />

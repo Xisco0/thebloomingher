@@ -1,15 +1,42 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, ShoppingBag, Heart, Menu, X, ChevronDown, User } from 'lucide-react';
+import { Search, ShoppingBag, Heart, Menu, X, ChevronDown, User, ArrowRight } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { formatNaira } from '@/lib/utils/currency';
 
 export function Header() {
   const { totalItemsCount, openCart, subtotal, wishlist } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Close mobile menu on ESC key and prevent body scroll when open
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+      window.addEventListener('keydown', handleKeyDown);
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [mobileMenuOpen]);
 
   const categories = [
     { name: 'Feminine Care', href: '/categories/feminine-care' },
@@ -25,11 +52,11 @@ export function Header() {
         <div className="flex items-center justify-between h-16 sm:h-20 gap-2 sm:gap-4">
           {/* Mobile Menu Button */}
           <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            onClick={() => setMobileMenuOpen(true)}
             className="lg:hidden p-1.5 sm:p-2 text-text-main hover:text-brand focus:outline-none flex-shrink-0"
-            aria-label="Toggle Navigation Menu"
+            aria-label="Open Navigation Menu"
           >
-            {mobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
+            <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
 
           {/* Brand Logo & Name */}
@@ -151,67 +178,163 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile Drawer Navigation */}
-      {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-border bg-surface px-4 pt-3 pb-6 space-y-3 shadow-elevated">
-          <Link
-            href="/"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 font-medium text-text-main hover:text-brand"
+      {/* Mobile Modal Drawer with Backdrop Click-to-Close (Portaled directly to body) */}
+      {mounted && mobileMenuOpen && createPortal(
+        <div
+          className="fixed inset-0 z-[99999] bg-brand-dark/60 backdrop-blur-sm flex animate-in fade-in duration-200 lg:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Mobile Navigation Menu"
+        >
+          <div
+            className="w-[85%] max-w-sm h-full bg-surface shadow-2xl flex flex-col justify-between overflow-y-auto animate-in slide-in-from-left duration-300 border-r border-border"
+            onClick={e => e.stopPropagation()}
           >
-            Home
-          </Link>
-          <Link
-            href="/shop"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 font-medium text-text-main hover:text-brand"
-          >
-            Shop All
-          </Link>
-          <div className="py-2">
-            <span className="text-xs uppercase tracking-wider text-text-muted font-bold">Categories</span>
-            <div className="mt-2 space-y-2 pl-3">
-              {categories.map(cat => (
+            <div>
+              {/* Drawer Header */}
+              <div className="flex items-center justify-between p-4 sm:p-5 border-b border-border bg-surface-muted/50">
                 <Link
-                  key={cat.href}
-                  href={cat.href}
+                  href="/"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block py-1 text-sm text-text-body hover:text-brand"
+                  className="flex items-center gap-2.5"
                 >
-                  {cat.name}
+                  <div className="relative w-8 h-8 rounded-full overflow-hidden border border-brand/20 shadow-sm">
+                    <Image
+                      src="/images/logo.jpg"
+                      alt="TheBloomingHer Logo"
+                      fill
+                      sizes="32px"
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-display font-semibold text-sm text-text-main tracking-tight">
+                      TheBloomingHer
+                    </span>
+                    <span className="text-[9px] uppercase tracking-wider text-brand font-medium -mt-0.5">
+                      Care & Wellness
+                    </span>
+                  </div>
                 </Link>
-              ))}
+
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2 rounded-full text-text-muted hover:text-text-main hover:bg-surface transition-colors"
+                  aria-label="Close Mobile Navigation"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Navigation Links */}
+              <div className="p-4 space-y-1">
+                <Link
+                  href="/"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm text-text-main hover:bg-brand-light hover:text-brand transition-colors"
+                >
+                  <span>Home</span>
+                  <ArrowRight className="w-4 h-4 text-text-muted" />
+                </Link>
+
+                <Link
+                  href="/shop"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm text-text-main hover:bg-brand-light hover:text-brand transition-colors"
+                >
+                  <span>Shop All Products</span>
+                  <ArrowRight className="w-4 h-4 text-text-muted" />
+                </Link>
+
+                <div className="pt-2 pb-1">
+                  <span className="px-3 text-[11px] font-bold uppercase tracking-wider text-text-muted block">
+                    Product Categories
+                  </span>
+                  <div className="mt-1.5 space-y-0.5 pl-2">
+                    {categories.map(cat => (
+                      <Link
+                        key={cat.href}
+                        href={cat.href}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="block px-3 py-2 text-sm text-text-body hover:text-brand hover:bg-brand-light rounded-lg transition-colors"
+                      >
+                        {cat.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <Link
+                    href="/collections/bloomie-care"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-sm bg-brand-light text-brand hover:bg-brand hover:text-white transition-colors"
+                  >
+                    <span>🌸 Bloomie Care Period Box</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+
+                <div className="pt-2 border-t border-border/60 space-y-1">
+                  <Link
+                    href="/wishlist"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm text-text-main hover:bg-brand-light hover:text-brand transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Heart className="w-4 h-4 text-brand" />
+                      <span>Saved Wishlist</span>
+                    </div>
+                    {wishlist.length > 0 && (
+                      <span className="px-2 py-0.5 bg-brand text-white text-[10px] font-bold rounded-full">
+                        {wishlist.length}
+                      </span>
+                    )}
+                  </Link>
+
+                  <Link
+                    href="/account"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm text-text-main hover:bg-brand-light hover:text-brand transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <User className="w-4 h-4 text-brand" />
+                      <span>My Account & Orders</span>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-text-muted" />
+                  </Link>
+
+                  <Link
+                    href="/about"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm text-text-main hover:bg-brand-light hover:text-brand transition-colors"
+                  >
+                    <span>About Us</span>
+                    <ArrowRight className="w-4 h-4 text-text-muted" />
+                  </Link>
+
+                  <Link
+                    href="/contact"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm text-text-main hover:bg-brand-light hover:text-brand transition-colors"
+                  >
+                    <span>Contact & Lagos Location</span>
+                    <ArrowRight className="w-4 h-4 text-text-muted" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Drawer Footer CTA */}
+            <div className="p-4 border-t border-border bg-surface-muted/40 text-center">
+              <p className="text-xs text-text-muted">
+                Premium Feminine Care & Wellness • Lagos, Nigeria
+              </p>
             </div>
           </div>
-          <Link
-            href="/collections/bloomie-care"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 font-semibold text-brand"
-          >
-            🌸 Bloomie Care Period Kits
-          </Link>
-          <Link
-            href="/account"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 font-medium text-text-main hover:text-brand"
-          >
-            My Account & Orders
-          </Link>
-          <Link
-            href="/about"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 font-medium text-text-main hover:text-brand"
-          >
-            About Us
-          </Link>
-          <Link
-            href="/contact"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 font-medium text-text-main hover:text-brand"
-          >
-            Contact & Lagos Location
-          </Link>
-        </div>
+        </div>,
+        document.body
       )}
     </header>
   );

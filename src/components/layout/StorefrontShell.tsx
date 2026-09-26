@@ -25,7 +25,7 @@ export function StorefrontShell({ children }: StorefrontShellProps) {
     <>
       <AnnouncementBar />
       <Header />
-      <main className="flex-grow pb-16 md:pb-0">{children}</main>
+      <main className="flex-grow pb-16 md:pb-0 overflow-x-hidden w-full max-w-full">{children}</main>
       <Footer />
       <MobileNav />
       <CartDrawer />

@@ -68,7 +68,7 @@ export function HeroBanner({ slide }: HeroBannerProps) {
           </div>
 
           {/* Right Image Composition (5 Cols) */}
-          <div className="lg:col-span-5 relative" data-aos="fade-left" data-aos-delay="150">
+          <div className="lg:col-span-5 relative" data-aos="fade-up" data-aos-delay="150">
             <div className="relative mx-auto max-w-md lg:max-w-none aspect-[4/3] sm:aspect-square rounded-3xl overflow-hidden shadow-2xl border-4 border-white">
               <Image
                 src={currentSlide.imageUrl}

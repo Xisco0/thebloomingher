@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifySessionToken, CUSTOMER_COOKIE_NAME } from '@/lib/auth/jwt';
+import { verifySessionToken, createSessionToken, CUSTOMER_COOKIE_NAME } from '@/lib/auth/jwt';
 import { cmsStore } from '@/lib/cms-store';
 import { orderRepository } from '@/repositories';
+import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { authService } from '@/services/auth.service';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,17 +11,45 @@ export async function GET(req: NextRequest) {
   try {
     const token = req.cookies.get(CUSTOMER_COOKIE_NAME)?.value;
 
-    if (!token) {
+    let customerId: string | null = null;
+    let fallbackToken: string | null = null;
+
+    if (token) {
+      const session = await verifySessionToken(token);
+      if (session && session.role === 'customer') {
+        customerId = session.userId;
+      }
+    }
+
+    // If no JWT cookie or expired, check Supabase server session
+    if (!customerId) {
+      try {
+        const supabase = createServerSupabaseClient();
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (user && user.email) {
+          const authRes = await authService.customerGoogleAuth({
+            email: user.email,
+            name: user.user_metadata?.full_name || user.user_metadata?.name || '',
+            googleId: user.id,
+            avatarUrl: user.user_metadata?.avatar_url,
+          });
+
+          if (authRes.success && authRes.customer) {
+            customerId = authRes.customer.id;
+            fallbackToken = authRes.token || null;
+          }
+        }
+      } catch (err) {
+        // Ignore Supabase check errors
+      }
+    }
+
+    if (!customerId) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
-    const session = await verifySessionToken(token);
-
-    if (!session || session.role !== 'customer') {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const customer = cmsStore.getCustomerById(session.userId);
+    const customer = cmsStore.getCustomerById(customerId);
     if (!customer) {
       return NextResponse.json({ success: false, error: 'Customer not found' }, { status: 404 });
     }
@@ -32,11 +62,25 @@ export async function GET(req: NextRequest) {
       o => o.customer_email.toLowerCase() === customer.email.toLowerCase()
     );
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       customer: safeCustomer,
       orders: customerOrders,
     });
+
+    if (fallbackToken) {
+      response.cookies.set({
+        name: CUSTOMER_COOKIE_NAME,
+        value: fallbackToken,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 7 * 24 * 60 * 60,
+      });
+    }
+
+    return response;
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }

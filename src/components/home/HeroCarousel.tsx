@@ -170,7 +170,7 @@ export function HeroCarousel({ banners = [] }: HeroCarouselProps) {
             </div>
 
             {/* Subtle Floating Trust Pill Badge */}
-            <div className="absolute -bottom-4 -left-4 sm:bottom-6 sm:-left-6 bg-surface/95 backdrop-blur-md p-3 sm:p-4 rounded-2xl shadow-elevated border border-border flex items-center gap-3 max-w-[200px] sm:max-w-[220px]">
+            <div className="absolute -bottom-3 left-2 sm:bottom-6 sm:-left-6 bg-surface/95 backdrop-blur-md p-2.5 sm:p-4 rounded-2xl shadow-elevated border border-border flex items-center gap-2.5 sm:gap-3 max-w-[180px] sm:max-w-[220px]">
               <div className="w-9 h-9 rounded-full bg-brand-light text-brand flex items-center justify-center flex-shrink-0 font-bold text-sm">
                 🌸
               </div>

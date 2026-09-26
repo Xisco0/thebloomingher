@@ -47,7 +47,7 @@ export default function AboutPage() {
 
       {/* Main Story Split */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-        <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-xl border-4 border-white" data-aos="fade-right">
+        <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-xl border-4 border-white" data-aos="fade-up">
           <Image
             src="https://res.cloudinary.com/dld8u8zjg/image/upload/v1789332798/uxz1r1aohkuxqqxxcw9x.jpg"
             alt="TheBloomingHer Founder Story"
@@ -57,7 +57,7 @@ export default function AboutPage() {
           />
         </div>
 
-        <div className="space-y-4 text-sm sm:text-base text-text-body leading-relaxed" data-aos="fade-left">
+        <div className="space-y-4 text-sm sm:text-base text-text-body leading-relaxed" data-aos="fade-up" data-aos-delay="100">
           <h2 className="font-display font-semibold text-2xl sm:text-3xl text-text-main">
             Products Chosen With You In Mind
           </h2>

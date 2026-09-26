@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Search, X, ArrowRight, Tag } from 'lucide-react';
@@ -14,21 +15,52 @@ export function SearchModal() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const handleOpen = () => setIsOpen(true);
     window.addEventListener('open-search-modal', handleOpen);
 
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
     async function loadData() {
-      const res = await catalogService.getProducts({ pageSize: 100 });
-      const cats = await catalogService.getCategories();
-      setProducts(res.data);
-      setCategories(cats);
+      try {
+        const res = await catalogService.getProducts({ pageSize: 100 });
+        const cats = await catalogService.getCategories();
+        setProducts(res.data || []);
+        setCategories(cats || []);
+      } catch (err) {
+        console.error('Failed to load search data:', err);
+      }
     }
     loadData();
 
-    return () => window.removeEventListener('open-search-modal', handleOpen);
+    return () => {
+      window.removeEventListener('open-search-modal', handleOpen);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
+
+  // Lock body scroll when search modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     if (!query.trim()) {
@@ -39,18 +71,27 @@ export function SearchModal() {
     const matches = products.filter(
       p =>
         p.name.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q) ||
-        p.tags.some(t => t.toLowerCase().includes(q)) ||
+        (p.description && p.description.toLowerCase().includes(q)) ||
+        (p.tags && p.tags.some(t => t.toLowerCase().includes(q))) ||
         (p.category_name && p.category_name.toLowerCase().includes(q))
     );
     setFilteredProducts(matches.slice(0, 6));
   }, [query, products]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-brand-dark/60 backdrop-blur-sm flex items-start justify-center pt-12 sm:pt-20 px-4">
-      <div className="bg-surface rounded-2xl w-full max-w-2xl shadow-elevated border border-border overflow-hidden">
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[99999] overflow-y-auto bg-brand-dark/60 backdrop-blur-sm flex items-start justify-center pt-12 sm:pt-20 px-4 animate-in fade-in duration-200"
+      onClick={() => setIsOpen(false)}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Search Products"
+    >
+      <div
+        className="bg-surface rounded-2xl w-full max-w-2xl shadow-elevated border border-border overflow-hidden animate-in zoom-in-95 duration-200 relative my-auto sm:my-0"
+        onClick={e => e.stopPropagation()}
+      >
         {/* Search Bar Input */}
         <div className="p-4 sm:p-5 border-b border-border flex items-center gap-3">
           <Search className="w-5 h-5 text-brand flex-shrink-0" />
@@ -65,16 +106,21 @@ export function SearchModal() {
           {query && (
             <button
               onClick={() => setQuery('')}
-              className="text-text-muted hover:text-text-main p-1"
+              className="text-text-muted hover:text-text-main p-1 rounded-full hover:bg-surface-muted transition-colors"
+              aria-label="Clear Search Input"
             >
               <X className="w-4 h-4" />
             </button>
           )}
           <button
             onClick={() => setIsOpen(false)}
-            className="px-3 py-1 bg-surface-muted text-text-muted hover:text-text-main text-xs font-semibold rounded-lg"
+            className="p-1.5 text-text-muted hover:text-text-main hover:bg-surface-muted rounded-lg transition-colors flex items-center gap-1"
+            aria-label="Close Search Modal"
           >
-            ESC
+            <X className="w-5 h-5 sm:hidden" />
+            <span className="hidden sm:inline px-2 py-0.5 bg-surface-muted text-text-muted text-[11px] font-semibold rounded">
+              ESC
+            </span>
           </button>
         </div>
 
@@ -109,7 +155,7 @@ export function SearchModal() {
                       <button
                         key={term}
                         onClick={() => setQuery(term)}
-                        className="px-3 py-1 rounded-md bg-surface-muted hover:bg-border transition-colors"
+                        className="px-3 py-1 rounded-md bg-surface-muted hover:bg-border transition-colors cursor-pointer"
                       >
                         {term}
                       </button>
@@ -164,6 +210,7 @@ export function SearchModal() {
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

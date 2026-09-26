@@ -81,7 +81,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
       </head>
-      <body className="min-h-screen flex flex-col font-sans bg-background text-text-body antialiased">
+      <body className="min-h-screen flex flex-col font-sans bg-background text-text-body antialiased overflow-x-hidden w-full max-w-[100vw] relative">
         <AOSProvider>
           <CartProvider>
             <StorefrontShell>{children}</StorefrontShell>
