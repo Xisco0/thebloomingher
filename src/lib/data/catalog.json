@@ -1,0 +1,3578 @@
+{
+  "categories": [
+    {
+      "id": "cat-18145",
+      "legacy_id": 18145,
+      "name": "Wellness & Body Care",
+      "slug": "wellness-body-care",
+      "description": "Thoughtfully curated wellness & body care products for your everyday comfort and health.",
+      "image_url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789336361/sbeli1b41qdlryawrrzn.jpg",
+      "display_order": 1,
+      "is_active": true,
+      "seo_title": "Wellness & Body Care Products in Nigeria | TheBloomingHer",
+      "seo_description": "Shop authentic wellness & body care in Lagos & across Nigeria. High quality, comforting essentials delivered to your doorstep."
+    },
+    {
+      "id": "cat-18130",
+      "legacy_id": 18130,
+      "name": "Feminine Care",
+      "slug": "feminine-care",
+      "description": "Thoughtfully curated feminine care products for your everyday comfort and health.",
+      "image_url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789336361/sbeli1b41qdlryawrrzn.jpg",
+      "display_order": 2,
+      "is_active": true,
+      "seo_title": "Feminine Care Products in Nigeria | TheBloomingHer",
+      "seo_description": "Shop authentic feminine care in Lagos & across Nigeria. High quality, comforting essentials delivered to your doorstep."
+    },
+    {
+      "id": "cat-18133",
+      "legacy_id": 18133,
+      "name": "Everyday Essentials",
+      "slug": "everyday-essentials",
+      "description": "Thoughtfully curated everyday essentials products for your everyday comfort and health.",
+      "image_url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789336361/sbeli1b41qdlryawrrzn.jpg",
+      "display_order": 3,
+      "is_active": true,
+      "seo_title": "Everyday Essentials Products in Nigeria | TheBloomingHer",
+      "seo_description": "Shop authentic everyday essentials in Lagos & across Nigeria. High quality, comforting essentials delivered to your doorstep."
+    },
+    {
+      "id": "cat-18131",
+      "legacy_id": 18131,
+      "name": "Comfort & Relaxation",
+      "slug": "comfort-relaxation",
+      "description": "Thoughtfully curated comfort & relaxation products for your everyday comfort and health.",
+      "image_url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789336361/sbeli1b41qdlryawrrzn.jpg",
+      "display_order": 4,
+      "is_active": true,
+      "seo_title": "Comfort & Relaxation Products in Nigeria | TheBloomingHer",
+      "seo_description": "Shop authentic comfort & relaxation in Lagos & across Nigeria. High quality, comforting essentials delivered to your doorstep."
+    },
+    {
+      "id": "cat-18132",
+      "legacy_id": 18132,
+      "name": "Beauty & Self-Care",
+      "slug": "beauty-self-care",
+      "description": "Thoughtfully curated beauty & self-care products for your everyday comfort and health.",
+      "image_url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789336361/sbeli1b41qdlryawrrzn.jpg",
+      "display_order": 5,
+      "is_active": true,
+      "seo_title": "Beauty & Self-Care Products in Nigeria | TheBloomingHer",
+      "seo_description": "Shop authentic beauty & self-care in Lagos & across Nigeria. High quality, comforting essentials delivered to your doorstep."
+    }
+  ],
+  "products": [
+    {
+      "id": "prod-33818",
+      "legacy_id": 33818,
+      "name": "Uzana Pocket Tissue",
+      "slug": "uzana-pocket-tissue-33818",
+      "sku": "UZ266828",
+      "price": 2500,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18133",
+      "category_name": "Everyday Essentials",
+      "subcategory": "Gift Ideas",
+      "short_description": "Quality uzana pocket tissue designed for your comfort and everyday care.",
+      "description": "The Uzana Pocket Tissue is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": true,
+      "is_bestseller": false,
+      "is_new_arrival": true,
+      "status": "active",
+      "seo_title": "Uzana Pocket Tissue | TheBloomingHer Nigeria",
+      "seo_description": "Buy Uzana Pocket Tissue in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "everyday essentials",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 11,
+      "images": [
+        {
+          "id": "img-33818-0",
+          "product_id": "prod-33818",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789430840/ob27rq0ecfcar6epsbqt.jpg",
+          "alt_text": "Uzana Pocket Tissue - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 100,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-24207",
+      "legacy_id": 24207,
+      "name": "Hand Cream",
+      "slug": "hand-cream-24207",
+      "sku": "HA622148",
+      "price": 450,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18132",
+      "category_name": "Beauty & Self-Care",
+      "subcategory": "Hand & Lip Care",
+      "short_description": "Quality hand cream designed for your comfort and everyday care.",
+      "description": "The Hand Cream is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": true,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Hand Cream | TheBloomingHer Nigeria",
+      "seo_description": "Buy Hand Cream in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "beauty & self-care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 19,
+      "images": [
+        {
+          "id": "img-24207-0",
+          "product_id": "prod-24207",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789497628/pd6qgwj1y7r81jkkcsi3.png",
+          "alt_text": "Hand Cream - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 96,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-24168",
+      "legacy_id": 24168,
+      "name": "Under eye Mask",
+      "slug": "under-eye-mask-24168",
+      "sku": "UN072809",
+      "price": 400,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18132",
+      "category_name": "Beauty & Self-Care",
+      "subcategory": "Face Care",
+      "short_description": "Quality under eye mask designed for your comfort and everyday care.",
+      "description": "The Under eye Mask is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": true,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Under eye Mask | TheBloomingHer Nigeria",
+      "seo_description": "Buy Under eye Mask in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "beauty & self-care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 13,
+      "images": [
+        {
+          "id": "img-24168-0",
+          "product_id": "prod-24168",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1777922535/wcdwg9lj9vukg7v618xt.jpg",
+          "alt_text": "Under eye Mask - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 98,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-25025",
+      "legacy_id": 25025,
+      "name": "Mini Storage Basket",
+      "slug": "mini-storage-basket-25025",
+      "sku": "MI515919",
+      "price": 700,
+      "compare_at_price": 840,
+      "currency": "NGN",
+      "category_id": "cat-18133",
+      "category_name": "Everyday Essentials",
+      "subcategory": "Home Essentials",
+      "short_description": "Quality mini storage basket designed for your comfort and everyday care.",
+      "description": "mini storage basket",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": true,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Mini Storage Basket | TheBloomingHer Nigeria",
+      "seo_description": "Buy Mini Storage Basket in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "everyday essentials",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 18,
+      "images": [
+        {
+          "id": "img-25025-0",
+          "product_id": "prod-25025",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1778598055/uanszbraoqcjcfsnqakp.jpg",
+          "alt_text": "Mini Storage Basket - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 20,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33817",
+      "legacy_id": 33817,
+      "name": "Pure Love Pant Liner",
+      "slug": "pure-love-pant-liner-33817",
+      "sku": "PU987261",
+      "price": 1550,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18130",
+      "category_name": "Feminine Care",
+      "subcategory": "Period Essentials",
+      "short_description": "Quality pure love pant liner designed for your comfort and everyday care.",
+      "description": "The Pure Love Pant Liner is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": true,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Pure Love Pant Liner | TheBloomingHer Nigeria",
+      "seo_description": "Buy Pure Love Pant Liner in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "feminine care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 21,
+      "images": [
+        {
+          "id": "img-33817-0",
+          "product_id": "prod-33817",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789430783/jsdi2fa0bmejsr98gq3x.jpg",
+          "alt_text": "Pure Love Pant Liner - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 50,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33812",
+      "legacy_id": 33812,
+      "name": "Rechargeable Kiki Clipper",
+      "slug": "rechargeable-kiki-clipper-33812",
+      "sku": "RE011959",
+      "price": 18000,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18133",
+      "category_name": "Everyday Essentials",
+      "subcategory": "Gifts for Him",
+      "short_description": "Quality rechargeable kiki clipper designed for your comfort and everyday care.",
+      "description": "Rechargeable Kiki Clipper",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": true,
+      "is_bestseller": false,
+      "is_new_arrival": true,
+      "status": "active",
+      "seo_title": "Rechargeable Kiki Clipper | TheBloomingHer Nigeria",
+      "seo_description": "Buy Rechargeable Kiki Clipper in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "everyday essentials",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 14,
+      "images": [
+        {
+          "id": "img-33812-0",
+          "product_id": "prod-33812",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789396491/qst76cbeomcu4liwkcp4.jpg",
+          "alt_text": "Rechargeable Kiki Clipper - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 10,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-24227",
+      "legacy_id": 24227,
+      "name": "Probiotics Gummies",
+      "slug": "probiotics-gummies-24227",
+      "sku": "PR850386",
+      "price": 7500,
+      "compare_at_price": 9000,
+      "currency": "NGN",
+      "category_id": "cat-18145",
+      "category_name": "Wellness & Body Care",
+      "subcategory": "Wellness Essentials",
+      "short_description": "Quality probiotics gummies designed for your comfort and everyday care.",
+      "description": "probiotics for women",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Natural botanicals, essential vitamins & active wellness ingredients.",
+      "is_featured": true,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Probiotics Gummies | TheBloomingHer Nigeria",
+      "seo_description": "Buy Probiotics Gummies in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "wellness & body care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 17,
+      "images": [
+        {
+          "id": "img-24227-0",
+          "product_id": "prod-24227",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1777986252/gbw3rkqyoaq8wunom5hz.jpg",
+          "alt_text": "Probiotics Gummies - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 50,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33776",
+      "legacy_id": 33776,
+      "name": "Shoe Wipes",
+      "slug": "shoe-wipes-33776",
+      "sku": "SH717925",
+      "price": 2500,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18133",
+      "category_name": "Everyday Essentials",
+      "subcategory": "Home Essentials",
+      "short_description": "Quality shoe wipes designed for your comfort and everyday care.",
+      "description": "Wet shoe wipes for shoes and sneakers",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": true,
+      "is_bestseller": true,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Shoe Wipes | TheBloomingHer Nigeria",
+      "seo_description": "Buy Shoe Wipes in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "everyday essentials",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 20,
+      "images": [
+        {
+          "id": "img-33776-0",
+          "product_id": "prod-33776",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789325669/o0rl01b8oanaklazaiha.jpg",
+          "alt_text": "Shoe Wipes - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        },
+        {
+          "id": "img-33776-1",
+          "product_id": "prod-33776",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789325672/xbffbgb5r92m2tmfe1kl.jpg",
+          "alt_text": "Shoe Wipes - TheBloomingHer Care & Wellness",
+          "display_order": 2,
+          "is_primary": false
+        }
+      ],
+      "stock_quantity": 50,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33772",
+      "legacy_id": 33772,
+      "name": "Electric Fan",
+      "slug": "electric-fan-33772",
+      "sku": "EL291613",
+      "price": 35000,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18133",
+      "category_name": "Everyday Essentials",
+      "subcategory": "Home Essentials",
+      "short_description": "Quality electric fan designed for your comfort and everyday care.",
+      "description": "The Electric Fan is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Electric Fan | TheBloomingHer Nigeria",
+      "seo_description": "Buy Electric Fan in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "everyday essentials",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 18,
+      "images": [
+        {
+          "id": "img-33772-0",
+          "product_id": "prod-33772",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789325074/c0oa1vq0thpjvqhm6fsh.jpg",
+          "alt_text": "Electric Fan - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 7,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33777",
+      "legacy_id": 33777,
+      "name": "White Towel",
+      "slug": "white-towel-33777",
+      "sku": "WH112278",
+      "price": 13500,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18133",
+      "category_name": "Everyday Essentials",
+      "subcategory": "Towels & Textiles",
+      "short_description": "Quality white towel designed for your comfort and everyday care.",
+      "description": "XL white body towel",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "White Towel | TheBloomingHer Nigeria",
+      "seo_description": "Buy White Towel in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "everyday essentials",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 7,
+      "images": [
+        {
+          "id": "img-33777-0",
+          "product_id": "prod-33777",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789325900/wolchtgo2ob16misserm.jpg",
+          "alt_text": "White Towel - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        },
+        {
+          "id": "img-33777-1",
+          "product_id": "prod-33777",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789325904/lb1d9zcxxdpsfpq52buq.jpg",
+          "alt_text": "White Towel - TheBloomingHer Care & Wellness",
+          "display_order": 2,
+          "is_primary": false
+        },
+        {
+          "id": "img-33777-2",
+          "product_id": "prod-33777",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789325909/ngi8clslbmvgm1wo6gus.jpg",
+          "alt_text": "White Towel - TheBloomingHer Care & Wellness",
+          "display_order": 3,
+          "is_primary": false
+        }
+      ],
+      "stock_quantity": 15,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33768",
+      "legacy_id": 33768,
+      "name": "Pocket Perfume",
+      "slug": "pocket-perfume-33768",
+      "sku": "PO309942",
+      "price": 1800,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18132",
+      "category_name": "Beauty & Self-Care",
+      "subcategory": "Self-Care Accessories",
+      "short_description": "Quality pocket perfume designed for your comfort and everyday care.",
+      "description": "The Pocket Perfume is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": true,
+      "status": "active",
+      "seo_title": "Pocket Perfume | TheBloomingHer Nigeria",
+      "seo_description": "Buy Pocket Perfume in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "beauty & self-care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 14,
+      "images": [
+        {
+          "id": "img-33768-0",
+          "product_id": "prod-33768",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789324803/uyqbuvqgeqtwhfl1it49.jpg",
+          "alt_text": "Pocket Perfume - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 20,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-22359",
+      "legacy_id": 22359,
+      "name": "Vitamin C",
+      "slug": "vitamin-c-22359",
+      "sku": "VI938106",
+      "price": 3500,
+      "compare_at_price": 4200,
+      "currency": "NGN",
+      "category_id": "cat-18145",
+      "category_name": "Wellness & Body Care",
+      "subcategory": "Wellness Essentials",
+      "short_description": "Quality vitamin c designed for your comfort and everyday care.",
+      "description": "The Vitamin C is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Natural botanicals, essential vitamins & active wellness ingredients.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Vitamin C | TheBloomingHer Nigeria",
+      "seo_description": "Buy Vitamin C in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "wellness & body care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 18,
+      "images": [
+        {
+          "id": "img-22359-0",
+          "product_id": "prod-22359",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1776956999/bdnfrvva2grsoy6zjswz.jpg",
+          "alt_text": "Vitamin C - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 46,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33854",
+      "legacy_id": 33854,
+      "name": "Tongue Scrapper",
+      "slug": "tongue-scrapper-33854",
+      "sku": "TO948430",
+      "price": 900,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18132",
+      "category_name": "Beauty & Self-Care",
+      "subcategory": "Self-Care Accessories",
+      "short_description": "Quality tongue scrapper designed for your comfort and everyday care.",
+      "description": "The Tongue Scrapper is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Tongue Scrapper | TheBloomingHer Nigeria",
+      "seo_description": "Buy Tongue Scrapper in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "beauty & self-care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 18,
+      "images": [
+        {
+          "id": "img-33854-0",
+          "product_id": "prod-33854",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789497304/hdxognccprylxi5dg60o.png",
+          "alt_text": "Tongue Scrapper - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 20,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-22358",
+      "legacy_id": 22358,
+      "name": "Menstrual Heating Belt",
+      "slug": "menstrual-heating-belt-22358",
+      "sku": "ME275019",
+      "price": 11500,
+      "compare_at_price": 13800,
+      "currency": "NGN",
+      "category_id": "cat-18130",
+      "category_name": "Feminine Care",
+      "subcategory": "Period Comfort",
+      "short_description": "Quality menstrual heating belt designed for your comfort and everyday care.",
+      "description": "relief for period cramps",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": true,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Menstrual Heating Belt | TheBloomingHer Nigeria",
+      "seo_description": "Buy Menstrual Heating Belt in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "feminine care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 9,
+      "images": [
+        {
+          "id": "img-22358-0",
+          "product_id": "prod-22358",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789338151/kb1mlsxmyh35qiewtrro.jpg",
+          "alt_text": "Menstrual Heating Belt - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 44,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-26789",
+      "legacy_id": 26789,
+      "name": "Can Wet Wipes",
+      "slug": "can-wet-wipes-26789",
+      "sku": "CA170925",
+      "price": 1500,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18130",
+      "category_name": "Feminine Care",
+      "subcategory": "Feminine Hygiene",
+      "short_description": "Quality can wet wipes designed for your comfort and everyday care.",
+      "description": "The Can Wet Wipes is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Can Wet Wipes | TheBloomingHer Nigeria",
+      "seo_description": "Buy Can Wet Wipes in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "feminine care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 20,
+      "images": [
+        {
+          "id": "img-26789-0",
+          "product_id": "prod-26789",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1780333900/qmknqfohdnxd2sbm7dte.jpg",
+          "alt_text": "Can Wet Wipes - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        },
+        {
+          "id": "img-26789-1",
+          "product_id": "prod-26789",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1780333897/ycgrufjcfmaeyumyev4a.jpg",
+          "alt_text": "Can Wet Wipes - TheBloomingHer Care & Wellness",
+          "display_order": 2,
+          "is_primary": false
+        }
+      ],
+      "stock_quantity": 100,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-24730",
+      "legacy_id": 24730,
+      "name": "Probiotics Cranberry Gummies",
+      "slug": "probiotics-cranberry-gummies-24730",
+      "sku": "PR451052",
+      "price": 7500,
+      "compare_at_price": 9000,
+      "currency": "NGN",
+      "category_id": "cat-18145",
+      "category_name": "Wellness & Body Care",
+      "subcategory": "Wellness Essentials",
+      "short_description": "Quality probiotics cranberry gummies designed for your comfort and everyday care.",
+      "description": "The Probiotics Cranberry Gummies is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Natural botanicals, essential vitamins & active wellness ingredients.",
+      "is_featured": false,
+      "is_bestseller": true,
+      "is_new_arrival": true,
+      "status": "active",
+      "seo_title": "Probiotics Cranberry Gummies | TheBloomingHer Nigeria",
+      "seo_description": "Buy Probiotics Cranberry Gummies in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "wellness & body care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 7,
+      "images": [
+        {
+          "id": "img-24730-0",
+          "product_id": "prod-24730",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1778404649/rcy2hfmeanadciu5ecws.jpg",
+          "alt_text": "Probiotics Cranberry Gummies - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 20,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-24500",
+      "legacy_id": 24500,
+      "name": "Soft Care Sanitary Pad",
+      "slug": "soft-care-sanitary-pad-24500",
+      "sku": "SO908201",
+      "price": 620,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18130",
+      "category_name": "Feminine Care",
+      "subcategory": "Period Essentials",
+      "short_description": "Quality soft care sanitary pad designed for your comfort and everyday care.",
+      "description": "The Soft Care Sanitary Pad is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Soft Care Sanitary Pad | TheBloomingHer Nigeria",
+      "seo_description": "Buy Soft Care Sanitary Pad in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "feminine care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 20,
+      "images": [
+        {
+          "id": "img-24500-0",
+          "product_id": "prod-24500",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1778161593/xkpux3tu1vhvya7592nt.jpg",
+          "alt_text": "Soft Care Sanitary Pad - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        },
+        {
+          "id": "img-24500-1",
+          "product_id": "prod-24500",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1778161595/izqu3r9s4g3msllf7unz.jpg",
+          "alt_text": "Soft Care Sanitary Pad - TheBloomingHer Care & Wellness",
+          "display_order": 2,
+          "is_primary": false
+        }
+      ],
+      "stock_quantity": 100,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33821",
+      "legacy_id": 33821,
+      "name": "Tampons",
+      "slug": "tampons-33821",
+      "sku": "TA061637",
+      "price": 8000,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18130",
+      "category_name": "Feminine Care",
+      "subcategory": "Period Essentials",
+      "short_description": "Quality tampons designed for your comfort and everyday care.",
+      "description": "The Tampons is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Tampons | TheBloomingHer Nigeria",
+      "seo_description": "Buy Tampons in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "feminine care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 9,
+      "images": [
+        {
+          "id": "img-33821-0",
+          "product_id": "prod-33821",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789431214/wqil2xikhrm6x2zt7lr5.jpg",
+          "alt_text": "Tampons - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 50,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-24456",
+      "legacy_id": 24456,
+      "name": "Comfort Package",
+      "slug": "comfort-package-24456",
+      "sku": "CO326533",
+      "price": 25000,
+      "compare_at_price": 30000,
+      "currency": "NGN",
+      "category_id": "cat-18130",
+      "category_name": "Feminine Care",
+      "subcategory": "Period Care Packages",
+      "short_description": "Quality comfort package designed for your comfort and everyday care.",
+      "description": "Package includes: \n3 Sanitary Pads\n1 Roll-On\n1 Panty Liner\n1 Period Panties\n2 Herbal Tea\n1 Neurogesic Methylated Cream\n2 Facial Mask\n2 Pocket Tissue\n1 Hand Cream\n1 Undereye Mask \n1 Teatree wipes \n2 soft care wipes \n1 mini hot water bottle \n1 lip balm \n1 Vaseline\nSweet Treat and a free gift",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Comfort Package | TheBloomingHer Nigeria",
+      "seo_description": "Buy Comfort Package in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "feminine care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 7,
+      "images": [
+        {
+          "id": "img-24456-0",
+          "product_id": "prod-24456",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789330041/csnn5mryxreqieybqs4x.jpg",
+          "alt_text": "Comfort Package - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        },
+        {
+          "id": "img-24456-1",
+          "product_id": "prod-24456",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789330046/lqsiic9bpvksbllt67ke.jpg",
+          "alt_text": "Comfort Package - TheBloomingHer Care & Wellness",
+          "display_order": 2,
+          "is_primary": false
+        }
+      ],
+      "stock_quantity": 20,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-24228",
+      "legacy_id": 24228,
+      "name": "Neurogesic Cream",
+      "slug": "neurogesic-cream-24228",
+      "sku": "NE512835",
+      "price": 1950,
+      "compare_at_price": 2340,
+      "currency": "NGN",
+      "category_id": "cat-18145",
+      "category_name": "Wellness & Body Care",
+      "subcategory": "Period Care Essentials",
+      "short_description": "Quality neurogesic cream designed for your comfort and everyday care.",
+      "description": "relief cream for cramps",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Natural botanicals, essential vitamins & active wellness ingredients.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Neurogesic Cream | TheBloomingHer Nigeria",
+      "seo_description": "Buy Neurogesic Cream in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "wellness & body care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 24,
+      "images": [
+        {
+          "id": "img-24228-0",
+          "product_id": "prod-24228",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1777986407/f0yf3e7tvnfzhwtcywny.jpg",
+          "alt_text": "Neurogesic Cream - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 50,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-25032",
+      "legacy_id": 25032,
+      "name": "Jewelry Box",
+      "slug": "jewelry-box-25032",
+      "sku": "JE472728",
+      "price": 3999.99,
+      "compare_at_price": 4799.987999999999,
+      "currency": "NGN",
+      "category_id": "cat-18132",
+      "category_name": "Beauty & Self-Care",
+      "subcategory": "Self-Care Accessories",
+      "short_description": "Quality jewelry box designed for your comfort and everyday care.",
+      "description": "The Jewelry Box is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": true,
+      "status": "active",
+      "seo_title": "Jewelry Box | TheBloomingHer Nigeria",
+      "seo_description": "Buy Jewelry Box in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "beauty & self-care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 23,
+      "images": [
+        {
+          "id": "img-25032-0",
+          "product_id": "prod-25032",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1778598610/j0mvpbho8ves3drtiqav.jpg",
+          "alt_text": "Jewelry Box - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        },
+        {
+          "id": "img-25032-1",
+          "product_id": "prod-25032",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1782149548/v56fufpxclu8aqnvmdwz.jpg",
+          "alt_text": "Jewelry Box - TheBloomingHer Care & Wellness",
+          "display_order": 2,
+          "is_primary": false
+        }
+      ],
+      "stock_quantity": 10,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-24285",
+      "legacy_id": 24285,
+      "name": "Soft care Mini Wipes",
+      "slug": "soft-care-mini-wipes-24285",
+      "sku": "SO122778",
+      "price": 500,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18132",
+      "category_name": "Beauty & Self-Care",
+      "subcategory": "Self-Care Accessories",
+      "short_description": "Quality soft care mini wipes designed for your comfort and everyday care.",
+      "description": "The Soft care Mini Wipes is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Soft care Mini Wipes | TheBloomingHer Nigeria",
+      "seo_description": "Buy Soft care Mini Wipes in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "beauty & self-care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 16,
+      "images": [
+        {
+          "id": "img-24285-0",
+          "product_id": "prod-24285",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1778022168/finnr552lfgq1zbft4rt.jpg",
+          "alt_text": "Soft care Mini Wipes - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 90,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33820",
+      "legacy_id": 33820,
+      "name": "Reusable Tissue",
+      "slug": "reusable-tissue-33820",
+      "sku": "RE290135",
+      "price": 2700,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18133",
+      "category_name": "Everyday Essentials",
+      "subcategory": "Home Essentials",
+      "short_description": "Quality reusable tissue designed for your comfort and everyday care.",
+      "description": "The Reusable Tissue is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Reusable Tissue | TheBloomingHer Nigeria",
+      "seo_description": "Buy Reusable Tissue in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "everyday essentials",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 13,
+      "images": [
+        {
+          "id": "img-33820-0",
+          "product_id": "prod-33820",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789431153/grrgds6zefoibivpgmqf.jpg",
+          "alt_text": "Reusable Tissue - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 20,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33796",
+      "legacy_id": 33796,
+      "name": "Blueidea Clipper",
+      "slug": "blueidea-clipper-33796",
+      "sku": "BL056223",
+      "price": 9000,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18133",
+      "category_name": "Everyday Essentials",
+      "subcategory": "Gifts for Him",
+      "short_description": "Quality blueidea clipper designed for your comfort and everyday care.",
+      "description": "Clipper for shaving",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Blueidea Clipper | TheBloomingHer Nigeria",
+      "seo_description": "Buy Blueidea Clipper in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "everyday essentials",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 9,
+      "images": [
+        {
+          "id": "img-33796-0",
+          "product_id": "prod-33796",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789383046/zeaouarsbxvbibwrjioj.jpg",
+          "alt_text": "Blueidea Clipper - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 10,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33769",
+      "legacy_id": 33769,
+      "name": "Coffee Cup",
+      "slug": "coffee-cup-33769",
+      "sku": "CO859172",
+      "price": 7500,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18131",
+      "category_name": "Comfort & Relaxation",
+      "subcategory": "Heat & Comfort",
+      "short_description": "Quality coffee cup designed for your comfort and everyday care.",
+      "description": "coffee cup with heating pad",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": true,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Coffee Cup | TheBloomingHer Nigeria",
+      "seo_description": "Buy Coffee Cup in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "comfort & relaxation",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 17,
+      "images": [
+        {
+          "id": "img-33769-0",
+          "product_id": "prod-33769",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789324879/btjsehm33lk41pouplvf.jpg",
+          "alt_text": "Coffee Cup - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 10,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-25018",
+      "legacy_id": 25018,
+      "name": "Glass Tea Cup",
+      "slug": "glass-tea-cup-25018",
+      "sku": "GL850370",
+      "price": 2000,
+      "compare_at_price": 2400,
+      "currency": "NGN",
+      "category_id": "cat-18133",
+      "category_name": "Everyday Essentials",
+      "subcategory": "Gift Ideas",
+      "short_description": "Quality glass tea cup designed for your comfort and everyday care.",
+      "description": "glass tea cup with handle",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": true,
+      "status": "active",
+      "seo_title": "Glass Tea Cup | TheBloomingHer Nigeria",
+      "seo_description": "Buy Glass Tea Cup in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "everyday essentials",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 20,
+      "images": [
+        {
+          "id": "img-25018-0",
+          "product_id": "prod-25018",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1778597430/yimfsxgdi2cu7uetpyaf.jpg",
+          "alt_text": "Glass Tea Cup - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 20,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33842",
+      "legacy_id": 33842,
+      "name": "Collagen Foot Mask",
+      "slug": "collagen-foot-mask-33842",
+      "sku": "CO835544",
+      "price": 2000,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18132",
+      "category_name": "Beauty & Self-Care",
+      "subcategory": "Nail & Grooming",
+      "short_description": "Quality collagen foot mask designed for your comfort and everyday care.",
+      "description": "The Collagen Foot Mask is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Collagen Foot Mask | TheBloomingHer Nigeria",
+      "seo_description": "Buy Collagen Foot Mask in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "beauty & self-care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 16,
+      "images": [
+        {
+          "id": "img-33842-0",
+          "product_id": "prod-33842",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789497525/byeztq51lhjax8kuuuuc.jpg",
+          "alt_text": "Collagen Foot Mask - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        },
+        {
+          "id": "img-33842-1",
+          "product_id": "prod-33842",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789496055/a4dg09lvfctn9iaawnrx.png",
+          "alt_text": "Collagen Foot Mask - TheBloomingHer Care & Wellness",
+          "display_order": 2,
+          "is_primary": false
+        }
+      ],
+      "stock_quantity": 20,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33852",
+      "legacy_id": 33852,
+      "name": "Boob Tape",
+      "slug": "boob-tape-33852",
+      "sku": "BO954068",
+      "price": 4000,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18145",
+      "category_name": "Wellness & Body Care",
+      "subcategory": "Body Care",
+      "short_description": "Quality boob tape designed for your comfort and everyday care.",
+      "description": "boob tape for backless dress",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Natural botanicals, essential vitamins & active wellness ingredients.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Boob Tape | TheBloomingHer Nigeria",
+      "seo_description": "Buy Boob Tape in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "wellness & body care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 16,
+      "images": [
+        {
+          "id": "img-33852-0",
+          "product_id": "prod-33852",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789497117/g5fj963tsmfvi1yf6bdq.png",
+          "alt_text": "Boob Tape - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 10,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-24941",
+      "legacy_id": 24941,
+      "name": "Paloma Tissue",
+      "slug": "paloma-tissue-24941",
+      "sku": "PA980594",
+      "price": 3050,
+      "compare_at_price": 3660,
+      "currency": "NGN",
+      "category_id": "cat-18133",
+      "category_name": "Everyday Essentials",
+      "subcategory": "Travel & On - The - Go",
+      "short_description": "Quality paloma tissue designed for your comfort and everyday care.",
+      "description": "<p>A pack of 10 mini packs of pocket tissue. 100 in total</p>",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Paloma Tissue | TheBloomingHer Nigeria",
+      "seo_description": "Buy Paloma Tissue in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "everyday essentials",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 23,
+      "images": [
+        {
+          "id": "img-24941-0",
+          "product_id": "prod-24941",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1778500586/jrga8gygyqjvypg2x7kx.webp",
+          "alt_text": "Paloma Tissue - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        },
+        {
+          "id": "img-24941-1",
+          "product_id": "prod-24941",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1778500586/s6xwpv72pqoevuiucbai.webp",
+          "alt_text": "Paloma Tissue - TheBloomingHer Care & Wellness",
+          "display_order": 2,
+          "is_primary": false
+        }
+      ],
+      "stock_quantity": 100,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33857",
+      "legacy_id": 33857,
+      "name": "Lip Scrubber",
+      "slug": "lip-scrubber-33857",
+      "sku": "LI689967",
+      "price": 700,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18132",
+      "category_name": "Beauty & Self-Care",
+      "subcategory": "Hand & Lip Care",
+      "short_description": "Quality lip scrubber designed for your comfort and everyday care.",
+      "description": "The Lip Scrubber is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Lip Scrubber | TheBloomingHer Nigeria",
+      "seo_description": "Buy Lip Scrubber in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "beauty & self-care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 18,
+      "images": [
+        {
+          "id": "img-33857-0",
+          "product_id": "prod-33857",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789497543/cjfewdj5qpy5jbsh460b.jpg",
+          "alt_text": "Lip Scrubber - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 10,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33806",
+      "legacy_id": 33806,
+      "name": "Hot Water Bottle",
+      "slug": "hot-water-bottle-33806",
+      "sku": "HO883177",
+      "price": 9000,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18131",
+      "category_name": "Comfort & Relaxation",
+      "subcategory": "Heat & Comfort",
+      "short_description": "Quality hot water bottle designed for your comfort and everyday care.",
+      "description": "hot water bottle for cramps relief",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": true,
+      "status": "active",
+      "seo_title": "Hot Water Bottle | TheBloomingHer Nigeria",
+      "seo_description": "Buy Hot Water Bottle in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "comfort & relaxation",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 13,
+      "images": [
+        {
+          "id": "img-33806-0",
+          "product_id": "prod-33806",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789392317/mo2xpti2h9b6qvsuv0u8.jpg",
+          "alt_text": "Hot Water Bottle - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        },
+        {
+          "id": "img-33806-1",
+          "product_id": "prod-33806",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789392321/felkhprbpdyp9sbos8bc.jpg",
+          "alt_text": "Hot Water Bottle - TheBloomingHer Care & Wellness",
+          "display_order": 2,
+          "is_primary": false
+        },
+        {
+          "id": "img-33806-2",
+          "product_id": "prod-33806",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789392325/yvgehlr2l8fkhmw78fwu.jpg",
+          "alt_text": "Hot Water Bottle - TheBloomingHer Care & Wellness",
+          "display_order": 3,
+          "is_primary": false
+        }
+      ],
+      "stock_quantity": 10,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33845",
+      "legacy_id": 33845,
+      "name": "Teeth Whitening Strip",
+      "slug": "teeth-whitening-strip-33845",
+      "sku": "TE570256",
+      "price": 5000,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18132",
+      "category_name": "Beauty & Self-Care",
+      "subcategory": "Self-Care Accessories",
+      "short_description": "Quality teeth whitening strip designed for your comfort and everyday care.",
+      "description": "teeth whitening strip",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Teeth Whitening Strip | TheBloomingHer Nigeria",
+      "seo_description": "Buy Teeth Whitening Strip in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "beauty & self-care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 7,
+      "images": [
+        {
+          "id": "img-33845-0",
+          "product_id": "prod-33845",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789496301/fro1hmlcouwvxcdtic21.png",
+          "alt_text": "Teeth Whitening Strip - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 10,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33855",
+      "legacy_id": 33855,
+      "name": "Perfume",
+      "slug": "perfume-33855",
+      "sku": "PE605099",
+      "price": 2500,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18145",
+      "category_name": "Wellness & Body Care",
+      "subcategory": "Body Care",
+      "short_description": "Quality perfume designed for your comfort and everyday care.",
+      "description": "The Perfume is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Natural botanicals, essential vitamins & active wellness ingredients.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Perfume | TheBloomingHer Nigeria",
+      "seo_description": "Buy Perfume in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "wellness & body care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 13,
+      "images": [
+        {
+          "id": "img-33855-0",
+          "product_id": "prod-33855",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789497361/bm0iucgsmcqq9v4h7nti.png",
+          "alt_text": "Perfume - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 20,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33858",
+      "legacy_id": 33858,
+      "name": "Foot Scrubber",
+      "slug": "foot-scrubber-33858",
+      "sku": "FO477511",
+      "price": 2000,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18145",
+      "category_name": "Wellness & Body Care",
+      "subcategory": "Body Care",
+      "short_description": "Quality foot scrubber designed for your comfort and everyday care.",
+      "description": "The Foot Scrubber is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Natural botanicals, essential vitamins & active wellness ingredients.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Foot Scrubber | TheBloomingHer Nigeria",
+      "seo_description": "Buy Foot Scrubber in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "wellness & body care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 13,
+      "images": [
+        {
+          "id": "img-33858-0",
+          "product_id": "prod-33858",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789497785/bfveqecuhdemgcgtlsim.jpg",
+          "alt_text": "Foot Scrubber - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 10,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33770",
+      "legacy_id": 33770,
+      "name": "Toothbrush Case",
+      "slug": "toothbrush-case-33770",
+      "sku": "TO928617",
+      "price": 1500,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18133",
+      "category_name": "Everyday Essentials",
+      "subcategory": "Home Essentials",
+      "short_description": "Quality toothbrush case designed for your comfort and everyday care.",
+      "description": "Mini Toothbrush And Toothpaste case",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Toothbrush Case | TheBloomingHer Nigeria",
+      "seo_description": "Buy Toothbrush Case in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "everyday essentials",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 15,
+      "images": [
+        {
+          "id": "img-33770-0",
+          "product_id": "prod-33770",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789324968/vitp1a2dlblybxjixsgs.jpg",
+          "alt_text": "Toothbrush Case - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 20,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33813",
+      "legacy_id": 33813,
+      "name": "Colored Body Towel",
+      "slug": "colored-body-towel-33813",
+      "sku": "CO139615",
+      "price": 10000,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18133",
+      "category_name": "Everyday Essentials",
+      "subcategory": "Towels & Textiles",
+      "short_description": "Quality colored body towel designed for your comfort and everyday care.",
+      "description": "Colored body towel",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": true,
+      "status": "active",
+      "seo_title": "Colored Body Towel | TheBloomingHer Nigeria",
+      "seo_description": "Buy Colored Body Towel in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "everyday essentials",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 24,
+      "images": [
+        {
+          "id": "img-33813-0",
+          "product_id": "prod-33813",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789396654/pjqy5looy2cc9feea7ok.jpg",
+          "alt_text": "Colored Body Towel - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 20,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33773",
+      "legacy_id": 33773,
+      "name": "Gym/Sport Bottle",
+      "slug": "gymsport-bottle-33773",
+      "sku": "GY102130",
+      "price": 7000,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18133",
+      "category_name": "Everyday Essentials",
+      "subcategory": "Fitness & Hydration",
+      "short_description": "Quality gym/sport bottle designed for your comfort and everyday care.",
+      "description": "Water Bottle for gym/sports purposes",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": true,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Gym/Sport Bottle | TheBloomingHer Nigeria",
+      "seo_description": "Buy Gym/Sport Bottle in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "everyday essentials",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 20,
+      "images": [
+        {
+          "id": "img-33773-0",
+          "product_id": "prod-33773",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789325124/mdgu8whuszlqevynmd6f.jpg",
+          "alt_text": "Gym/Sport Bottle - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 10,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33846",
+      "legacy_id": 33846,
+      "name": "Pimple Patches",
+      "slug": "pimple-patches-33846",
+      "sku": "PI610751",
+      "price": 600,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18132",
+      "category_name": "Beauty & Self-Care",
+      "subcategory": "Face Care",
+      "short_description": "Quality pimple patches designed for your comfort and everyday care.",
+      "description": "The Pimple Patches is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Pimple Patches | TheBloomingHer Nigeria",
+      "seo_description": "Buy Pimple Patches in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "beauty & self-care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 6,
+      "images": [
+        {
+          "id": "img-33846-0",
+          "product_id": "prod-33846",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789496402/o9qayph9km9ndq9u6nc9.png",
+          "alt_text": "Pimple Patches - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 15,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33844",
+      "legacy_id": 33844,
+      "name": "Toner Pads",
+      "slug": "toner-pads-33844",
+      "sku": "TO223649",
+      "price": 2500,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18132",
+      "category_name": "Beauty & Self-Care",
+      "subcategory": "Self-Care Accessories",
+      "short_description": "Quality toner pads designed for your comfort and everyday care.",
+      "description": "The Toner Pads is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Toner Pads | TheBloomingHer Nigeria",
+      "seo_description": "Buy Toner Pads in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "beauty & self-care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 21,
+      "images": [
+        {
+          "id": "img-33844-0",
+          "product_id": "prod-33844",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789496207/dkkohlraypfyyxkgwa8f.png",
+          "alt_text": "Toner Pads - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 10,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-25024",
+      "legacy_id": 25024,
+      "name": "Lip Mask",
+      "slug": "lip-mask-25024",
+      "sku": "LI975540",
+      "price": 400,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18132",
+      "category_name": "Beauty & Self-Care",
+      "subcategory": "Hand & Lip Care",
+      "short_description": "Quality lip mask designed for your comfort and everyday care.",
+      "description": "<p>lip mask for lip care</p>",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Lip Mask | TheBloomingHer Nigeria",
+      "seo_description": "Buy Lip Mask in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "beauty & self-care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 18,
+      "images": [
+        {
+          "id": "img-25024-0",
+          "product_id": "prod-25024",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1778597967/mjcis39bhx4o1jvp7jsk.jpg",
+          "alt_text": "Lip Mask - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        },
+        {
+          "id": "img-25024-1",
+          "product_id": "prod-25024",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1778597966/wrzt1phpqhjfcojz1tm0.png",
+          "alt_text": "Lip Mask - TheBloomingHer Care & Wellness",
+          "display_order": 2,
+          "is_primary": false
+        }
+      ],
+      "stock_quantity": 100,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33999",
+      "legacy_id": 33999,
+      "name": "Botare Pocket Tissue",
+      "slug": "botare-pocket-tissue-33999",
+      "sku": "BO048023",
+      "price": 2500,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18133",
+      "category_name": "Everyday Essentials",
+      "subcategory": "Gift Ideas",
+      "short_description": "Quality botare pocket tissue designed for your comfort and everyday care.",
+      "description": "pocket tissue \n12 mini packs in a bag",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": true,
+      "status": "active",
+      "seo_title": "Botare Pocket Tissue | TheBloomingHer Nigeria",
+      "seo_description": "Buy Botare Pocket Tissue in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "everyday essentials",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 9,
+      "images": [
+        {
+          "id": "img-33999-0",
+          "product_id": "prod-33999",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789796290/cqmhzl69hevqhlploon6.jpg",
+          "alt_text": "Botare Pocket Tissue - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 100,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-24457",
+      "legacy_id": 24457,
+      "name": "Premium Period Care Package",
+      "slug": "premium-period-care-package-24457",
+      "sku": "PR116580",
+      "price": 32000,
+      "compare_at_price": 38400,
+      "currency": "NGN",
+      "category_id": "cat-18130",
+      "category_name": "Feminine Care",
+      "subcategory": "Period Care Packages",
+      "short_description": "Quality premium period care package designed for your comfort and everyday care.",
+      "description": "Package includes:\n1 Big Sanitary pad\n1 Panty liner\n2 Teatree Wipes\n1 Big Hot water bottle\n3 Pocket Tissues\n2 Herbal Tea\n3 Facial masks\n2 under eye masks\n1 Roll on \n1 Body spray\n1 Hand cream  \n1 Folic acid\n1 lip balm \n1 Vaseline\nSweet Treats and a free gift",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Premium Period Care Package | TheBloomingHer Nigeria",
+      "seo_description": "Buy Premium Period Care Package in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "feminine care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 18,
+      "images": [
+        {
+          "id": "img-24457-0",
+          "product_id": "prod-24457",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789330003/mawebpvw0q1wuyo0hixl.jpg",
+          "alt_text": "Premium Period Care Package - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        },
+        {
+          "id": "img-24457-1",
+          "product_id": "prod-24457",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789329981/m3c8lytz26yben0dbr0z.jpg",
+          "alt_text": "Premium Period Care Package - TheBloomingHer Care & Wellness",
+          "display_order": 2,
+          "is_primary": false
+        }
+      ],
+      "stock_quantity": 20,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33819",
+      "legacy_id": 33819,
+      "name": "Disposable Pants",
+      "slug": "disposable-pants-33819",
+      "sku": "DI149078",
+      "price": 3500,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18130",
+      "category_name": "Feminine Care",
+      "subcategory": "Period Comfort",
+      "short_description": "Quality disposable pants designed for your comfort and everyday care.",
+      "description": "The Disposable Pants is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Disposable Pants | TheBloomingHer Nigeria",
+      "seo_description": "Buy Disposable Pants in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "feminine care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 10,
+      "images": [
+        {
+          "id": "img-33819-0",
+          "product_id": "prod-33819",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789430919/sq1gl48xjz7unklbeqmv.jpg",
+          "alt_text": "Disposable Pants - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 50,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-26798",
+      "legacy_id": 26798,
+      "name": "3-month Bloomie Package",
+      "slug": "3-month-bloomie-package-26798",
+      "sku": "MO251074",
+      "price": 18200,
+      "compare_at_price": 21840,
+      "currency": "NGN",
+      "category_id": "cat-18130",
+      "category_name": "Feminine Care",
+      "subcategory": "Period Care Packages",
+      "short_description": "Quality 3-month bloomie package designed for your comfort and everyday care.",
+      "description": "this package will last you for 3 months as it contains enough sanitary essentials such as sanitary pads, pant liners, wipes, tissues etc",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": true,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "3-month Bloomie Package | TheBloomingHer Nigeria",
+      "seo_description": "Buy 3-month Bloomie Package in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "feminine care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 23,
+      "images": [
+        {
+          "id": "img-26798-0",
+          "product_id": "prod-26798",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1780338538/jizbgpbxciilirdi4xf8.jpg",
+          "alt_text": "3-month Bloomie Package - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        },
+        {
+          "id": "img-26798-1",
+          "product_id": "prod-26798",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1782149812/zq8lvhpxzzeqeiut3jru.jpg",
+          "alt_text": "3-month Bloomie Package - TheBloomingHer Care & Wellness",
+          "display_order": 2,
+          "is_primary": false
+        },
+        {
+          "id": "img-26798-2",
+          "product_id": "prod-26798",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1782149817/a6gbwkwsezvhbtj2whjj.jpg",
+          "alt_text": "3-month Bloomie Package - TheBloomingHer Care & Wellness",
+          "display_order": 3,
+          "is_primary": false
+        }
+      ],
+      "stock_quantity": 9,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33860",
+      "legacy_id": 33860,
+      "name": "Herbal Tea",
+      "slug": "herbal-tea-33860",
+      "sku": "HE834327",
+      "price": 5000,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18145",
+      "category_name": "Wellness & Body Care",
+      "subcategory": "Wellness Teas",
+      "short_description": "Quality herbal tea designed for your comfort and everyday care.",
+      "description": "herbal tea for cramps",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Natural botanicals, essential vitamins & active wellness ingredients.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Herbal Tea | TheBloomingHer Nigeria",
+      "seo_description": "Buy Herbal Tea in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "wellness & body care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 15,
+      "images": [
+        {
+          "id": "img-33860-0",
+          "product_id": "prod-33860",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789498019/xy6roqeqj4nimrirq3yi.jpg",
+          "alt_text": "Herbal Tea - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 20,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33850",
+      "legacy_id": 33850,
+      "name": "Glow In The Dark",
+      "slug": "glow-in-the-dark-33850",
+      "sku": "GL688919",
+      "price": 1200,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18133",
+      "category_name": "Everyday Essentials",
+      "subcategory": "Home Essentials",
+      "short_description": "Quality glow in the dark designed for your comfort and everyday care.",
+      "description": "The Glow In The Dark is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": true,
+      "status": "active",
+      "seo_title": "Glow In The Dark | TheBloomingHer Nigeria",
+      "seo_description": "Buy Glow In The Dark in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "everyday essentials",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 14,
+      "images": [
+        {
+          "id": "img-33850-0",
+          "product_id": "prod-33850",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789496833/jla2k76uzdqhplpafhgi.png",
+          "alt_text": "Glow In The Dark - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 5,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33778",
+      "legacy_id": 33778,
+      "name": "Gym Towel",
+      "slug": "gym-towel-33778",
+      "sku": "GY138628",
+      "price": 5000,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18133",
+      "category_name": "Everyday Essentials",
+      "subcategory": "Fitness & Hydration",
+      "short_description": "Quality gym towel designed for your comfort and everyday care.",
+      "description": "The Gym Towel is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": true,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Gym Towel | TheBloomingHer Nigeria",
+      "seo_description": "Buy Gym Towel in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "everyday essentials",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 17,
+      "images": [
+        {
+          "id": "img-33778-0",
+          "product_id": "prod-33778",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789325969/phisnp2t3nxtmqlzhnhc.png",
+          "alt_text": "Gym Towel - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 10,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-24224",
+      "legacy_id": 24224,
+      "name": "Period Care Package",
+      "slug": "period-care-package-24224",
+      "sku": "PE406671",
+      "price": 15000,
+      "compare_at_price": 18000,
+      "currency": "NGN",
+      "category_id": "cat-18130",
+      "category_name": "Feminine Care",
+      "subcategory": "Period Care Packages",
+      "short_description": "Quality period care package designed for your comfort and everyday care.",
+      "description": "period care package",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": true,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Period Care Package | TheBloomingHer Nigeria",
+      "seo_description": "Buy Period Care Package in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "feminine care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 7,
+      "images": [
+        {
+          "id": "img-24224-0",
+          "product_id": "prod-24224",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1777981987/h63bciol2cozwyw3zuss.jpg",
+          "alt_text": "Period Care Package - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 20,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33856",
+      "legacy_id": 33856,
+      "name": "Hair Claws",
+      "slug": "hair-claws-33856",
+      "sku": "HA133832",
+      "price": 1000,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18133",
+      "category_name": "Everyday Essentials",
+      "subcategory": "Gift Ideas",
+      "short_description": "Quality hair claws designed for your comfort and everyday care.",
+      "description": "The Hair Claws is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Hair Claws | TheBloomingHer Nigeria",
+      "seo_description": "Buy Hair Claws in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "everyday essentials",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 16,
+      "images": [
+        {
+          "id": "img-33856-0",
+          "product_id": "prod-33856",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789497462/hxvie8bnp6abptjy2f0l.png",
+          "alt_text": "Hair Claws - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 20,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-24229",
+      "legacy_id": 24229,
+      "name": "Pocket Tissue",
+      "slug": "pocket-tissue-24229",
+      "sku": "PO749170",
+      "price": 1700,
+      "compare_at_price": 2040,
+      "currency": "NGN",
+      "category_id": "cat-18133",
+      "category_name": "Everyday Essentials",
+      "subcategory": "Travel & On - The - Go",
+      "short_description": "Quality pocket tissue designed for your comfort and everyday care.",
+      "description": "The Pocket Tissue is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Pocket Tissue | TheBloomingHer Nigeria",
+      "seo_description": "Buy Pocket Tissue in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "everyday essentials",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 12,
+      "images": [
+        {
+          "id": "img-24229-0",
+          "product_id": "prod-24229",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1777986728/q6kyprwaxuhfklf2vgjk.jpg",
+          "alt_text": "Pocket Tissue - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 50,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-25032",
+      "legacy_id": 25032,
+      "name": "Jewelry Box",
+      "slug": "jewelry-box-25032",
+      "sku": "JE472728",
+      "price": 3999.99,
+      "compare_at_price": 4799.987999999999,
+      "currency": "NGN",
+      "category_id": "cat-18132",
+      "category_name": "Beauty & Self-Care",
+      "subcategory": "Self-Care Accessories",
+      "short_description": "Quality jewelry box designed for your comfort and everyday care.",
+      "description": "The Jewelry Box is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": true,
+      "status": "active",
+      "seo_title": "Jewelry Box | TheBloomingHer Nigeria",
+      "seo_description": "Buy Jewelry Box in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "beauty & self-care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 18,
+      "images": [
+        {
+          "id": "img-25032-0",
+          "product_id": "prod-25032",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1778598610/j0mvpbho8ves3drtiqav.jpg",
+          "alt_text": "Jewelry Box - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        },
+        {
+          "id": "img-25032-1",
+          "product_id": "prod-25032",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1782149548/v56fufpxclu8aqnvmdwz.jpg",
+          "alt_text": "Jewelry Box - TheBloomingHer Care & Wellness",
+          "display_order": 2,
+          "is_primary": false
+        }
+      ],
+      "stock_quantity": 10,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-22358",
+      "legacy_id": 22358,
+      "name": "Menstrual Heating Belt",
+      "slug": "menstrual-heating-belt-22358",
+      "sku": "ME275019",
+      "price": 11500,
+      "compare_at_price": 13800,
+      "currency": "NGN",
+      "category_id": "cat-18130",
+      "category_name": "Feminine Care",
+      "subcategory": "Period Comfort",
+      "short_description": "Quality menstrual heating belt designed for your comfort and everyday care.",
+      "description": "relief for period cramps",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": true,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Menstrual Heating Belt | TheBloomingHer Nigeria",
+      "seo_description": "Buy Menstrual Heating Belt in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "feminine care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 13,
+      "images": [
+        {
+          "id": "img-22358-0",
+          "product_id": "prod-22358",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789338151/kb1mlsxmyh35qiewtrro.jpg",
+          "alt_text": "Menstrual Heating Belt - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 44,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-24502",
+      "legacy_id": 24502,
+      "name": "Soft Care Roll",
+      "slug": "soft-care-roll-24502",
+      "sku": "SO791836",
+      "price": 2750,
+      "compare_at_price": 3300,
+      "currency": "NGN",
+      "category_id": "cat-18130",
+      "category_name": "Feminine Care",
+      "subcategory": "Period Essentials",
+      "short_description": "Quality soft care roll designed for your comfort and everyday care.",
+      "description": "A roll of Softcare sanitary pads",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Soft Care Roll | TheBloomingHer Nigeria",
+      "seo_description": "Buy Soft Care Roll in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "feminine care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 19,
+      "images": [
+        {
+          "id": "img-24502-0",
+          "product_id": "prod-24502",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1778162377/l23nchhtlzc5uipbru2q.jpg",
+          "alt_text": "Soft Care Roll - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 100,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-25024",
+      "legacy_id": 25024,
+      "name": "Lip Mask",
+      "slug": "lip-mask-25024",
+      "sku": "LI975540",
+      "price": 400,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18132",
+      "category_name": "Beauty & Self-Care",
+      "subcategory": "Hand & Lip Care",
+      "short_description": "Quality lip mask designed for your comfort and everyday care.",
+      "description": "<p>lip mask for lip care</p>",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Lip Mask | TheBloomingHer Nigeria",
+      "seo_description": "Buy Lip Mask in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "beauty & self-care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 24,
+      "images": [
+        {
+          "id": "img-25024-0",
+          "product_id": "prod-25024",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1778597967/mjcis39bhx4o1jvp7jsk.jpg",
+          "alt_text": "Lip Mask - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        },
+        {
+          "id": "img-25024-1",
+          "product_id": "prod-25024",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1778597966/wrzt1phpqhjfcojz1tm0.png",
+          "alt_text": "Lip Mask - TheBloomingHer Care & Wellness",
+          "display_order": 2,
+          "is_primary": false
+        }
+      ],
+      "stock_quantity": 100,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33778",
+      "legacy_id": 33778,
+      "name": "Gym Towel",
+      "slug": "gym-towel-33778",
+      "sku": "GY138628",
+      "price": 5000,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18133",
+      "category_name": "Everyday Essentials",
+      "subcategory": "Fitness & Hydration",
+      "short_description": "Quality gym towel designed for your comfort and everyday care.",
+      "description": "The Gym Towel is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": true,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Gym Towel | TheBloomingHer Nigeria",
+      "seo_description": "Buy Gym Towel in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "everyday essentials",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 22,
+      "images": [
+        {
+          "id": "img-33778-0",
+          "product_id": "prod-33778",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789325969/phisnp2t3nxtmqlzhnhc.png",
+          "alt_text": "Gym Towel - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 10,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33769",
+      "legacy_id": 33769,
+      "name": "Coffee Cup",
+      "slug": "coffee-cup-33769",
+      "sku": "CO859172",
+      "price": 7500,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18131",
+      "category_name": "Comfort & Relaxation",
+      "subcategory": "Heat & Comfort",
+      "short_description": "Quality coffee cup designed for your comfort and everyday care.",
+      "description": "coffee cup with heating pad",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": true,
+      "is_new_arrival": true,
+      "status": "active",
+      "seo_title": "Coffee Cup | TheBloomingHer Nigeria",
+      "seo_description": "Buy Coffee Cup in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "comfort & relaxation",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 20,
+      "images": [
+        {
+          "id": "img-33769-0",
+          "product_id": "prod-33769",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789324879/btjsehm33lk41pouplvf.jpg",
+          "alt_text": "Coffee Cup - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 10,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33768",
+      "legacy_id": 33768,
+      "name": "Pocket Perfume",
+      "slug": "pocket-perfume-33768",
+      "sku": "PO309942",
+      "price": 1800,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18132",
+      "category_name": "Beauty & Self-Care",
+      "subcategory": "Self-Care Accessories",
+      "short_description": "Quality pocket perfume designed for your comfort and everyday care.",
+      "description": "The Pocket Perfume is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Pocket Perfume | TheBloomingHer Nigeria",
+      "seo_description": "Buy Pocket Perfume in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "beauty & self-care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 16,
+      "images": [
+        {
+          "id": "img-33768-0",
+          "product_id": "prod-33768",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789324803/uyqbuvqgeqtwhfl1it49.jpg",
+          "alt_text": "Pocket Perfume - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 20,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33819",
+      "legacy_id": 33819,
+      "name": "Disposable Pants",
+      "slug": "disposable-pants-33819",
+      "sku": "DI149078",
+      "price": 3500,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18130",
+      "category_name": "Feminine Care",
+      "subcategory": "Period Comfort",
+      "short_description": "Quality disposable pants designed for your comfort and everyday care.",
+      "description": "The Disposable Pants is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Disposable Pants | TheBloomingHer Nigeria",
+      "seo_description": "Buy Disposable Pants in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "feminine care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 9,
+      "images": [
+        {
+          "id": "img-33819-0",
+          "product_id": "prod-33819",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789430919/sq1gl48xjz7unklbeqmv.jpg",
+          "alt_text": "Disposable Pants - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 50,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-24235",
+      "legacy_id": 24235,
+      "name": "Neck Pillow",
+      "slug": "neck-pillow-24235",
+      "sku": "NE903045",
+      "price": 7000,
+      "compare_at_price": 8400,
+      "currency": "NGN",
+      "category_id": "cat-18133",
+      "category_name": "Everyday Essentials",
+      "subcategory": "Gift Ideas",
+      "short_description": "Quality neck pillow designed for your comfort and everyday care.",
+      "description": "The Neck Pillow is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Neck Pillow | TheBloomingHer Nigeria",
+      "seo_description": "Buy Neck Pillow in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "everyday essentials",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 18,
+      "images": [
+        {
+          "id": "img-24235-0",
+          "product_id": "prod-24235",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1777988366/nptxv8nge2ssijrzwzry.jpg",
+          "alt_text": "Neck Pillow - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 50,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-24730",
+      "legacy_id": 24730,
+      "name": "Probiotics Cranberry Gummies",
+      "slug": "probiotics-cranberry-gummies-24730",
+      "sku": "PR451052",
+      "price": 7500,
+      "compare_at_price": 9000,
+      "currency": "NGN",
+      "category_id": "cat-18145",
+      "category_name": "Wellness & Body Care",
+      "subcategory": "Wellness Essentials",
+      "short_description": "Quality probiotics cranberry gummies designed for your comfort and everyday care.",
+      "description": "The Probiotics Cranberry Gummies is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Natural botanicals, essential vitamins & active wellness ingredients.",
+      "is_featured": false,
+      "is_bestseller": true,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Probiotics Cranberry Gummies | TheBloomingHer Nigeria",
+      "seo_description": "Buy Probiotics Cranberry Gummies in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "wellness & body care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 9,
+      "images": [
+        {
+          "id": "img-24730-0",
+          "product_id": "prod-24730",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1778404649/rcy2hfmeanadciu5ecws.jpg",
+          "alt_text": "Probiotics Cranberry Gummies - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 20,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-22359",
+      "legacy_id": 22359,
+      "name": "Vitamin C",
+      "slug": "vitamin-c-22359",
+      "sku": "VI938106",
+      "price": 3500,
+      "compare_at_price": 4200,
+      "currency": "NGN",
+      "category_id": "cat-18145",
+      "category_name": "Wellness & Body Care",
+      "subcategory": "Wellness Essentials",
+      "short_description": "Quality vitamin c designed for your comfort and everyday care.",
+      "description": "The Vitamin C is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Natural botanicals, essential vitamins & active wellness ingredients.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": true,
+      "status": "active",
+      "seo_title": "Vitamin C | TheBloomingHer Nigeria",
+      "seo_description": "Buy Vitamin C in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "wellness & body care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 16,
+      "images": [
+        {
+          "id": "img-22359-0",
+          "product_id": "prod-22359",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1776956999/bdnfrvva2grsoy6zjswz.jpg",
+          "alt_text": "Vitamin C - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 46,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33849",
+      "legacy_id": 33849,
+      "name": "Rabbit Phone Holder",
+      "slug": "rabbit-phone-holder-33849",
+      "sku": "RA510819",
+      "price": 2500,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18133",
+      "category_name": "Everyday Essentials",
+      "subcategory": "Gift Ideas",
+      "short_description": "Quality rabbit phone holder designed for your comfort and everyday care.",
+      "description": "The Rabbit Phone Holder is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Rabbit Phone Holder | TheBloomingHer Nigeria",
+      "seo_description": "Buy Rabbit Phone Holder in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "everyday essentials",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 23,
+      "images": [
+        {
+          "id": "img-33849-0",
+          "product_id": "prod-33849",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789496698/scmztlbn8fbnb2ukn3ov.png",
+          "alt_text": "Rabbit Phone Holder - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 10,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-26798",
+      "legacy_id": 26798,
+      "name": "3-month Bloomie Package",
+      "slug": "3-month-bloomie-package-26798",
+      "sku": "MO251074",
+      "price": 18200,
+      "compare_at_price": 21840,
+      "currency": "NGN",
+      "category_id": "cat-18130",
+      "category_name": "Feminine Care",
+      "subcategory": "Period Care Packages",
+      "short_description": "Quality 3-month bloomie package designed for your comfort and everyday care.",
+      "description": "this package will last you for 3 months as it contains enough sanitary essentials such as sanitary pads, pant liners, wipes, tissues etc",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": true,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "3-month Bloomie Package | TheBloomingHer Nigeria",
+      "seo_description": "Buy 3-month Bloomie Package in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "feminine care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 6,
+      "images": [
+        {
+          "id": "img-26798-0",
+          "product_id": "prod-26798",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1780338538/jizbgpbxciilirdi4xf8.jpg",
+          "alt_text": "3-month Bloomie Package - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        },
+        {
+          "id": "img-26798-1",
+          "product_id": "prod-26798",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1782149812/zq8lvhpxzzeqeiut3jru.jpg",
+          "alt_text": "3-month Bloomie Package - TheBloomingHer Care & Wellness",
+          "display_order": 2,
+          "is_primary": false
+        },
+        {
+          "id": "img-26798-2",
+          "product_id": "prod-26798",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1782149817/a6gbwkwsezvhbtj2whjj.jpg",
+          "alt_text": "3-month Bloomie Package - TheBloomingHer Care & Wellness",
+          "display_order": 3,
+          "is_primary": false
+        }
+      ],
+      "stock_quantity": 9,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-24285",
+      "legacy_id": 24285,
+      "name": "Soft care Mini Wipes",
+      "slug": "soft-care-mini-wipes-24285",
+      "sku": "SO122778",
+      "price": 500,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18132",
+      "category_name": "Beauty & Self-Care",
+      "subcategory": "Self-Care Accessories",
+      "short_description": "Quality soft care mini wipes designed for your comfort and everyday care.",
+      "description": "The Soft care Mini Wipes is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Soft care Mini Wipes | TheBloomingHer Nigeria",
+      "seo_description": "Buy Soft care Mini Wipes in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "beauty & self-care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 12,
+      "images": [
+        {
+          "id": "img-24285-0",
+          "product_id": "prod-24285",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1778022168/finnr552lfgq1zbft4rt.jpg",
+          "alt_text": "Soft care Mini Wipes - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 90,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33860",
+      "legacy_id": 33860,
+      "name": "Herbal Tea",
+      "slug": "herbal-tea-33860",
+      "sku": "HE834327",
+      "price": 5000,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18145",
+      "category_name": "Wellness & Body Care",
+      "subcategory": "Wellness Teas",
+      "short_description": "Quality herbal tea designed for your comfort and everyday care.",
+      "description": "herbal tea for cramps",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Natural botanicals, essential vitamins & active wellness ingredients.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Herbal Tea | TheBloomingHer Nigeria",
+      "seo_description": "Buy Herbal Tea in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "wellness & body care",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 16,
+      "images": [
+        {
+          "id": "img-33860-0",
+          "product_id": "prod-33860",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789498019/xy6roqeqj4nimrirq3yi.jpg",
+          "alt_text": "Herbal Tea - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 20,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33843",
+      "legacy_id": 33843,
+      "name": "Foot Cream",
+      "slug": "foot-cream-33843",
+      "sku": "FO548219",
+      "price": 1800,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18131",
+      "category_name": "Comfort & Relaxation",
+      "subcategory": "Relaxation Essentials",
+      "short_description": "Quality foot cream designed for your comfort and everyday care.",
+      "description": "The Foot Cream is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": true,
+      "status": "active",
+      "seo_title": "Foot Cream | TheBloomingHer Nigeria",
+      "seo_description": "Buy Foot Cream in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "comfort & relaxation",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 6,
+      "images": [
+        {
+          "id": "img-33843-0",
+          "product_id": "prod-33843",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789496129/a4ynkfu1xjzst89ztbnp.png",
+          "alt_text": "Foot Cream - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 20,
+      "low_stock_threshold": 3
+    },
+    {
+      "id": "prod-33818",
+      "legacy_id": 33818,
+      "name": "Uzana Pocket Tissue",
+      "slug": "uzana-pocket-tissue-33818",
+      "sku": "UZ266828",
+      "price": 2500,
+      "compare_at_price": null,
+      "currency": "NGN",
+      "category_id": "cat-18133",
+      "category_name": "Everyday Essentials",
+      "subcategory": "Gift Ideas",
+      "short_description": "Quality uzana pocket tissue designed for your comfort and everyday care.",
+      "description": "The Uzana Pocket Tissue is thoughtfully designed and selected for quality, comfort, and everyday utility. Ideal for modern women seeking practical wellness and reliable care.",
+      "features": [
+        "100% Quality Inspected",
+        "Comfortable & Easy to Use",
+        "Suitable for Daily Care & Wellness",
+        "Fast Delivery Across Lagos & Nigeria"
+      ],
+      "how_to_use": "Use as directed for daily care and personal routine. Store in a cool, clean, and dry place.",
+      "ingredients": "Premium skin-safe and hygienic materials.",
+      "is_featured": false,
+      "is_bestseller": false,
+      "is_new_arrival": false,
+      "status": "active",
+      "seo_title": "Uzana Pocket Tissue | TheBloomingHer Nigeria",
+      "seo_description": "Buy Uzana Pocket Tissue in Lagos, Nigeria. Fast delivery, verified quality, and easy checkout.",
+      "tags": [
+        "everyday essentials",
+        "wellness",
+        "nigeria",
+        "self-care"
+      ],
+      "rating": 5,
+      "rating_count": 20,
+      "images": [
+        {
+          "id": "img-33818-0",
+          "product_id": "prod-33818",
+          "url": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789430840/ob27rq0ecfcar6epsbqt.jpg",
+          "alt_text": "Uzana Pocket Tissue - TheBloomingHer Care & Wellness",
+          "display_order": 1,
+          "is_primary": true
+        }
+      ],
+      "stock_quantity": 100,
+      "low_stock_threshold": 3
+    }
+  ],
+  "homepage_config": {
+    "announcementText": "Free delivery on orders above ₦40,000 | Thoughtful Care for Every Day",
+    "freeShippingThreshold": 40000,
+    "heroSlides": [
+      {
+        "id": "hero-1",
+        "badge": "FEMININE CARE • WELLNESS • EVERYDAY ESSENTIALS",
+        "title": "Thoughtfully selected essentials for your",
+        "highlightedTitle": "care, comfort & lifestyle.",
+        "subtitle": "Quality products for a healthier, happier you.",
+        "primaryCtaText": "Shop Now",
+        "primaryCtaLink": "/products",
+        "secondaryCtaText": "Explore Bloomie Care",
+        "secondaryCtaLink": "/collections/bloomie-care",
+        "imageUrl": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789332389/yfwwycybz8ozvxvsgepe.jpg"
+      }
+    ],
+    "splitBanners": {
+      "left": {
+        "title": "Period Care Made Easier",
+        "subtitle": "Stay comfortable, confident and prepared — every day of the month.",
+        "ctaText": "Shop Period Care →",
+        "ctaLink": "/categories/feminine-care",
+        "imageUrl": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789380343/l6qlplskuhasrnxqrb4v.jpg",
+        "theme": "plum"
+      },
+      "right": {
+        "title": "Wellness Starts Here",
+        "subtitle": "Feel good. Look good. Live better with our daily wellness essentials.",
+        "ctaText": "Shop Wellness →",
+        "ctaLink": "/categories/wellness-body-care",
+        "imageUrl": "https://res.cloudinary.com/dld8u8zjg/image/upload/v1789332865/zilyn2v87v4euwgjcm9a.jpg",
+        "theme": "wellness"
+      }
+    },
+    "featuredCategorySlugs": [
+      "feminine-care",
+      "everyday-essentials",
+      "wellness-body-care",
+      "comfort-relaxation",
+      "beauty-self-care"
+    ],
+    "bestSellerProductSlugs": [
+      "shoe-wipes-33776",
+      "menstrual-heating-belt-22358",
+      "probiotics-cranberry-gummies-24730",
+      "coffee-cup-33769",
+      "gymsport-bottle-33773",
+      "3-month-bloomie-package-26798"
+    ],
+    "testimonials": [
+      {
+        "id": "test-1",
+        "customerName": "Chioma E.",
+        "rating": 5,
+        "quote": "The heating belt is a lifesaver for cramps! Packaging is beautiful and delivery arrived super fast in Ikeja.",
+        "location": "Ikeja, Lagos",
+        "verifiedPurchase": true
+      },
+      {
+        "id": "test-2",
+        "customerName": "Tolu A.",
+        "rating": 5,
+        "quote": "I love the quality and packaging. Everything arrived in perfect condition. Thank you, TheBloomingHer!",
+        "location": "Lekki, Lagos",
+        "verifiedPurchase": true
+      },
+      {
+        "id": "test-3",
+        "customerName": "Funke B.",
+        "rating": 5,
+        "quote": "Finally, a wellness store in Lagos that genuinely understands women's everyday care needs. Highly recommended!",
+        "location": "Surulere, Lagos",
+        "verifiedPurchase": true
+      }
+    ]
+  }
+}

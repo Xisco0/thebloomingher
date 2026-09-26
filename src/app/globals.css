@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 250 249 246;
+    --foreground: 25 18 22;
+    --font-inter: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-poppins: 'Poppins', system-ui, -apple-system, sans-serif;
+  }
+
+  body {
+    @apply bg-background text-text-body antialiased selection:bg-brand-light selection:text-brand;
+    font-family: 'Inter', var(--font-inter), system-ui, -apple-system, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', var(--font-poppins), system-ui, -apple-system, sans-serif;
+    @apply text-text-main tracking-tight font-semibold;
+  }
+
+  button, input, select, textarea {
+    font-family: 'Inter', var(--font-inter), system-ui, -apple-system, sans-serif;
+  }
+
+  .font-display, .font-heading, .font-poppins {
+    font-family: 'Poppins', var(--font-poppins), system-ui, -apple-system, sans-serif;
+  }
+
+  .font-sans, .font-body, .font-inter {
+    font-family: 'Inter', var(--font-inter), system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FAF9F6;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #EBE6E8;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #B85D88;
+}
