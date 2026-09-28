@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
       authorizationUrl: result.authorizationUrl,
       accessCode: result.accessCode,
       reference: result.reference,
-      publicKey: process.env.NEXT_PUBLIC_FLW_PUBLIC_KEY || '',
+      publicKey: (process.env.NEXT_PUBLIC_FLW_PUBLIC_KEY || '').trim().replace(/^["']|["']$/g, ''),
     });
   } catch (error: any) {
     console.error('Unhandled checkout error:', error);

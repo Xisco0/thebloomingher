@@ -23,11 +23,11 @@ export class FlutterwaveService {
   private baseUrl = 'https://api.flutterwave.com/v3';
 
   private getSecretKey(): string {
-    return process.env.FLW_SECRET_KEY || '';
+    return (process.env.FLW_SECRET_KEY || '').trim().replace(/^["']|["']$/g, '');
   }
 
   private getSecretHash(): string {
-    return process.env.FLW_SECRET_HASH || '';
+    return (process.env.FLW_SECRET_HASH || '').trim().replace(/^["']|["']$/g, '');
   }
 
   /**
@@ -206,8 +206,8 @@ export class FlutterwaveService {
       };
     }
 
-    // 2. IDEMPOTENCY CHECK: If already marked paid, return safely
-    if (order.payment_status === 'paid') {
+    // 2. IDEMPOTENCY CHECK: If already marked successful / paid, return safely
+    if (order.payment_status === 'successful' || order.payment_status === 'paid') {
       return {
         success: true,
         order,
@@ -244,7 +244,7 @@ export class FlutterwaveService {
     // 4. Update Order Status in Database & Store
     const updatedOrder = await orderRepository.updatePaymentStatus(
       order.id,
-      'paid',
+      'successful',
       txRef,
       channel,
       paidAt,
@@ -254,7 +254,6 @@ export class FlutterwaveService {
 
     // 5. Atomic Inventory Deduction
     try {
-      // Execute PostgreSQL stored procedure for safe atomic inventory deduction
       const { error: rpcError } = await supabaseAdmin.rpc('reduce_order_inventory', {
         p_order_id: order.id,
       });
@@ -263,7 +262,6 @@ export class FlutterwaveService {
       }
     } catch (invErr) {
       console.warn('[Flutterwave Service] Database RPC inventory deduction fallback notice:', invErr);
-      // Fallback: iterate over order items and reduce stock via Supabase tables
       for (const item of order.items) {
         try {
           if (item.variant_id) {
@@ -305,14 +303,17 @@ export class FlutterwaveService {
     const paymentRecord: PaymentRecord = {
       id: `pay_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
       order_id: order.id,
+      customer_id: order.customer_id,
       reference: txRef,
       amount: order.total_amount,
       currency: order.currency || 'NGN',
-      status: 'success',
+      status: 'successful',
       gateway: 'flutterwave',
+      gateway_reference: flwTransactionId,
       gateway_response: gatewayResponse,
       channel,
       paid_at: paidAt,
+      metadata: { verification: verificationData || {} },
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
@@ -325,7 +326,7 @@ export class FlutterwaveService {
   }
 
   /**
-   * Processes a failed or cancelled Flutterwave payment attempt.
+   * Processes a failed payment attempt.
    */
   async processFailedPayment(
     txRef: string,
@@ -337,14 +338,14 @@ export class FlutterwaveService {
     }
     if (!order) return { success: false };
 
-    // If order was already paid, do not overwrite with failed status
-    if (order.payment_status === 'paid') {
+    // If order was already successful, do not overwrite with failed status
+    if (order.payment_status === 'successful' || order.payment_status === 'paid') {
       return { success: true, order };
     }
 
     const updated = await orderRepository.updatePaymentStatus(
       order.id,
-      'payment_failed',
+      'failed',
       txRef,
       undefined,
       undefined,
@@ -354,22 +355,81 @@ export class FlutterwaveService {
     const paymentRecord: PaymentRecord = {
       id: `pay_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
       order_id: order.id,
+      customer_id: order.customer_id,
       reference: txRef,
       amount: order.total_amount,
       currency: order.currency || 'NGN',
       status: 'failed',
       gateway: 'flutterwave',
-      gateway_response: reason || 'Transaction failed or abandoned',
-      paid_at: null,
+      gateway_response: reason || 'Payment Failed',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
     await orderRepository.savePayment(paymentRecord);
 
-    return {
-      success: true,
-      order: updated,
+    return { success: true, order: updated };
+  }
+
+  /**
+   * Processes a customer cancellation.
+   */
+  async processCancelledPayment(
+    txRef: string,
+    reason = 'Customer closed checkout'
+  ): Promise<{ success: boolean; order?: Order }> {
+    let order = await orderRepository.getOrderByReference(txRef);
+    if (!order) {
+      order = await orderRepository.getOrderByPaystackReference(txRef);
+    }
+    if (!order) return { success: false };
+
+    if (order.payment_status === 'successful' || order.payment_status === 'paid') {
+      return { success: true, order };
+    }
+
+    const updated = await orderRepository.updatePaymentStatus(
+      order.id,
+      'cancelled',
+      txRef,
+      undefined,
+      undefined,
+      'flutterwave'
+    );
+
+    const paymentRecord: PaymentRecord = {
+      id: `pay_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      order_id: order.id,
+      customer_id: order.customer_id,
+      reference: txRef,
+      amount: order.total_amount,
+      currency: order.currency || 'NGN',
+      status: 'cancelled',
+      gateway: 'flutterwave',
+      gateway_response: reason,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
+    await orderRepository.savePayment(paymentRecord);
+
+    return { success: true, order: updated };
+  }
+
+  /**
+   * Processes a refund for an order.
+   */
+  async processRefund(
+    orderId: string,
+    refundAmount?: number,
+    reason = 'Administrative Refund'
+  ): Promise<{ success: boolean; order?: Order; error?: string }> {
+    const order = await orderRepository.getOrderById(orderId);
+    if (!order) {
+      return { success: false, error: 'Order not found' };
+    }
+
+    const amount = refundAmount || order.total_amount;
+    const updated = await orderRepository.recordRefund(order.id, amount, reason);
+    return { success: true, order: updated };
   }
 }
 

@@ -135,33 +135,54 @@ export default function CustomerAccountDashboard() {
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'completed':
-      case 'delivered':
+  const getStatusBadge = (status: string, isPayment = false) => {
+    const s = (status || '').toLowerCase();
+    switch (s) {
+      case 'successful':
       case 'paid':
+      case 'delivered':
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-            <CheckCircle2 className="w-3 h-3" /> {status.charAt(0).toUpperCase() + status.slice(1)}
+            <CheckCircle2 className="w-3 h-3 text-emerald-600" /> {isPayment ? 'Payment Confirmed' : 'Delivered'}
           </span>
         );
       case 'processing':
       case 'shipped':
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-            <Clock className="w-3 h-3" /> {status.charAt(0).toUpperCase() + status.slice(1)}
+            <Clock className="w-3 h-3 text-blue-600" /> {s === 'shipped' ? 'Dispatched' : 'Processing'}
           </span>
         );
       case 'pending':
+      case 'payment_pending':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-            <Clock className="w-3 h-3" /> Pending
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+            <Clock className="w-3 h-3 text-amber-600" /> {isPayment ? 'Payment Pending' : 'Order Placed'}
+          </span>
+        );
+      case 'abandoned':
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+            <AlertCircle className="w-3 h-3 text-slate-500" /> Incomplete / Abandoned
+          </span>
+        );
+      case 'failed':
+      case 'payment_failed':
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+            <AlertCircle className="w-3 h-3" /> {isPayment ? 'Payment Failed' : 'Failed'}
+          </span>
+        );
+      case 'refunded':
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+            <CheckCircle2 className="w-3 h-3 text-purple-600" /> Refunded
           </span>
         );
       case 'cancelled':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200">
-            <AlertCircle className="w-3 h-3" /> Cancelled
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-700 border border-gray-300">
+            <AlertCircle className="w-3 h-3 text-gray-500" /> Cancelled
           </span>
         );
       default:
@@ -421,8 +442,8 @@ export default function CustomerAccountDashboard() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        {getStatusBadge(order.order_status)}
-                        {order.payment_status && getStatusBadge(order.payment_status)}
+                        {getStatusBadge(order.order_status, false)}
+                        {order.payment_status && getStatusBadge(order.payment_status, true)}
                       </div>
                     </div>
 

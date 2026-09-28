@@ -207,20 +207,22 @@ export class PaystackService {
     // 1. Update Order Status
     const updatedOrder = await orderRepository.updatePaymentStatus(
       order.id,
-      'paid',
+      'successful',
       reference,
       channel,
-      paidAt
+      paidAt,
+      'paystack'
     );
 
     // 2. Save Payment Audit Record
     const paymentRecord: PaymentRecord = {
       id: `pay_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
       order_id: order.id,
+      customer_id: order.customer_id,
       reference,
       amount: order.total_amount,
       currency: 'NGN',
-      status: 'success',
+      status: 'successful',
       gateway: 'paystack',
       gateway_response: gatewayResponse,
       channel,
@@ -246,10 +248,17 @@ export class PaystackService {
     const order = await orderRepository.getOrderByPaystackReference(reference);
     if (!order) return { success: false };
 
+    if (order.payment_status === 'successful' || order.payment_status === 'paid') {
+      return { success: true, order };
+    }
+
     const updated = await orderRepository.updatePaymentStatus(
       order.id,
-      'payment_failed',
-      reference
+      'failed',
+      reference,
+      undefined,
+      undefined,
+      'paystack'
     );
 
     const paymentRecord: PaymentRecord = {

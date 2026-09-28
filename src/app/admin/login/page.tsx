@@ -68,6 +68,28 @@ function AdminLoginForm() {
           </div>
         </div>
 
+        {/* Contextual Reason Notification */}
+        {searchParams.get('reason') === 'idle_timeout' && (
+          <div className="p-3.5 bg-amber-50 text-amber-900 text-xs rounded-xl border border-amber-200 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 flex-shrink-0 text-amber-600" />
+            <span>Your session expired due to 30 minutes of inactivity. Please log in again.</span>
+          </div>
+        )}
+
+        {searchParams.get('reason') === 'session_expired' && (
+          <div className="p-3.5 bg-amber-50 text-amber-900 text-xs rounded-xl border border-amber-200 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 flex-shrink-0 text-amber-600" />
+            <span>Your 8-hour maximum session lifetime has ended. Please log in again.</span>
+          </div>
+        )}
+
+        {searchParams.get('reason') === 'user_logout' && (
+          <div className="p-3.5 bg-blue-50 text-blue-900 text-xs rounded-xl border border-blue-200 flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 flex-shrink-0 text-blue-600" />
+            <span>You have been securely logged out.</span>
+          </div>
+        )}
+
         {error && (
           <div className="p-3.5 bg-rose-50 text-rose-800 text-xs rounded-xl border border-rose-200 flex items-center gap-2">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />

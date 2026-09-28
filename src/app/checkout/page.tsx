@@ -299,7 +299,7 @@ function CheckoutContent() {
         const hasFlutterwave = typeof window !== 'undefined' && typeof (window as any).FlutterwaveCheckout === 'function';
 
         if (hasFlutterwave && scriptReady) {
-          const flwPublicKey = data.publicKey || process.env.NEXT_PUBLIC_FLW_PUBLIC_KEY || '';
+          const flwPublicKey = (data.publicKey || process.env.NEXT_PUBLIC_FLW_PUBLIC_KEY || '').trim().replace(/^["']|["']$/g, '');
 
           let flwModal: any = null;
 

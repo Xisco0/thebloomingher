@@ -6,6 +6,17 @@ export class SupabaseOrderRepository implements IOrderRepository {
   private ordersStore: Map<string, Order> = new Map();
   private paymentsStore: Map<string, PaymentRecord> = new Map();
 
+  private normalizePaymentStatus(status: string | undefined): PaymentStatus {
+    if (!status) return 'pending';
+    const s = status.toLowerCase();
+    if (s === 'paid' || s === 'successful' || s === 'success') return 'successful';
+    if (s === 'failed' || s === 'payment_failed') return 'failed';
+    if (s === 'abandoned') return 'abandoned';
+    if (s === 'cancelled') return 'cancelled';
+    if (s === 'refunded') return 'refunded';
+    return 'pending';
+  }
+
   private mapDbOrderToModel(dbOrder: any, dbItems: any[] = []): Order {
     const paymentRef =
       dbOrder.payment_reference ||
@@ -16,6 +27,9 @@ export class SupabaseOrderRepository implements IOrderRepository {
     const provider =
       dbOrder.payment_provider ||
       (paymentRef?.startsWith('TBH-FLW') ? 'flutterwave' : dbOrder.paystack_reference ? 'paystack' : 'flutterwave');
+
+    const paymentStatus = this.normalizePaymentStatus(dbOrder.payment_status);
+    const orderStatus = dbOrder.order_status || dbOrder.status || (paymentStatus === 'successful' ? 'processing' : 'pending');
 
     return {
       id: dbOrder.id,
@@ -36,8 +50,8 @@ export class SupabaseOrderRepository implements IOrderRepository {
       total_amount: Number(dbOrder.total_amount ?? 0),
       currency: dbOrder.currency || 'NGN',
       payment_provider: provider,
-      payment_status: dbOrder.payment_status === 'unpaid' ? 'payment_pending' : dbOrder.payment_status,
-      order_status: dbOrder.status || dbOrder.order_status || 'pending',
+      payment_status: paymentStatus,
+      order_status: orderStatus as OrderStatus,
       payment_reference: paymentRef,
       flutterwave_reference: dbOrder.flutterwave_reference || paymentRef,
       flutterwave_transaction_id: dbOrder.flutterwave_transaction_id || null,
@@ -47,6 +61,10 @@ export class SupabaseOrderRepository implements IOrderRepository {
       paystack_authorization_url: dbOrder.paystack_authorization_url || null,
       payment_channel: dbOrder.payment_channel || null,
       paid_at: dbOrder.paid_at || null,
+      abandoned_at: dbOrder.abandoned_at || null,
+      refunded_at: dbOrder.refunded_at || null,
+      refund_amount: dbOrder.refund_amount ? Number(dbOrder.refund_amount) : null,
+      refund_reason: dbOrder.refund_reason || null,
       notes: dbOrder.notes || null,
       items: (dbItems || []).map((it: any) => ({
         id: it.id,
@@ -70,6 +88,7 @@ export class SupabaseOrderRepository implements IOrderRepository {
     const total = Math.max(0, subtotal + orderData.deliveryFee - (orderData.discountAmount || 0));
     const provider = orderData.paymentProvider || (orderData.flutterwaveReference ? 'flutterwave' : 'paystack');
     const primaryReference = orderData.paymentReference || orderData.flutterwaveReference || orderData.paystackReference || null;
+    const nowIso = new Date().toISOString();
 
     const newOrder: Order = {
       id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `ord_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
@@ -87,7 +106,7 @@ export class SupabaseOrderRepository implements IOrderRepository {
       total_amount: total,
       currency: 'NGN',
       payment_provider: provider,
-      payment_status: 'payment_pending',
+      payment_status: 'pending',
       order_status: 'pending',
       payment_reference: primaryReference,
       flutterwave_reference: orderData.flutterwaveReference || primaryReference,
@@ -107,8 +126,8 @@ export class SupabaseOrderRepository implements IOrderRepository {
         total_price: it.unitPrice * it.quantity,
         image_url: it.imageUrl,
       })),
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+      created_at: nowIso,
+      updated_at: nowIso,
     };
 
     // 1. Cache in memory
@@ -123,6 +142,7 @@ export class SupabaseOrderRepository implements IOrderRepository {
       const basePayload: any = {
         id: newOrder.id,
         order_number: newOrder.order_number,
+        customer_id: newOrder.customer_id,
         customer_name: newOrder.customer_name,
         customer_email: newOrder.customer_email,
         customer_phone: newOrder.customer_phone,
@@ -132,9 +152,9 @@ export class SupabaseOrderRepository implements IOrderRepository {
         total_amount: newOrder.total_amount,
         currency: newOrder.currency,
         status: 'pending',
-        payment_status: 'unpaid',
+        payment_status: 'pending',
         payment_method: provider,
-        paystack_reference: primaryReference, // Stored to guarantee compatibility with existing tables
+        paystack_reference: primaryReference,
         shipping_address: newOrder.shipping_address,
         notes: newOrder.notes,
         created_at: newOrder.created_at,
@@ -162,6 +182,7 @@ export class SupabaseOrderRepository implements IOrderRepository {
         }
       }
 
+      // Insert order items
       if (!orderError && newOrder.items.length > 0) {
         const orderItemsPayload = newOrder.items.map(it => ({
           id: it.id || (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `item_${Date.now()}`),
@@ -177,6 +198,23 @@ export class SupabaseOrderRepository implements IOrderRepository {
         }));
 
         await supabaseAdmin.from('order_items').insert(orderItemsPayload);
+      }
+
+      // Record initial pending payment attempt
+      if (primaryReference) {
+        const initialPayment: PaymentRecord = {
+          id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `pay_${Date.now()}`,
+          order_id: newOrder.id,
+          customer_id: newOrder.customer_id,
+          reference: primaryReference,
+          amount: newOrder.total_amount,
+          currency: newOrder.currency,
+          status: 'pending',
+          gateway: provider,
+          created_at: nowIso,
+          updated_at: nowIso,
+        };
+        await this.savePayment(initialPayment);
       }
     } catch (dbErr) {
       console.warn('[SupabaseOrderRepository] Error inserting order to Supabase:', dbErr);
@@ -250,7 +288,6 @@ export class SupabaseOrderRepository implements IOrderRepository {
     }
 
     try {
-      // 1. Try querying across all possible reference columns
       let { data, error } = await supabaseAdmin
         .from('orders')
         .select('*, order_items(*)')
@@ -259,7 +296,6 @@ export class SupabaseOrderRepository implements IOrderRepository {
         )
         .maybeSingle();
 
-      // 2. Resilient fallback if newer columns don't exist in Supabase schema yet
       if (error) {
         const fallback = await supabaseAdmin
           .from('orders')
@@ -307,12 +343,23 @@ export class SupabaseOrderRepository implements IOrderRepository {
       throw new Error(`Order with ID ${orderId} not found`);
     }
 
-    order.payment_status = status;
-    if (status === 'paid') {
+    const normalizedStatus = this.normalizePaymentStatus(status);
+    const nowIso = new Date().toISOString();
+
+    order.payment_status = normalizedStatus;
+    if (normalizedStatus === 'successful') {
       order.order_status = 'processing';
-      order.paid_at = paidAt || new Date().toISOString();
-    } else if (status === 'payment_failed') {
+      order.paid_at = paidAt || nowIso;
+    } else if (normalizedStatus === 'failed') {
       order.order_status = 'payment_failed';
+    } else if (normalizedStatus === 'abandoned') {
+      order.order_status = 'abandoned';
+      order.abandoned_at = nowIso;
+    } else if (normalizedStatus === 'cancelled') {
+      order.order_status = 'cancelled';
+    } else if (normalizedStatus === 'refunded') {
+      order.order_status = 'refunded';
+      order.refunded_at = nowIso;
     }
 
     if (reference) {
@@ -332,14 +379,19 @@ export class SupabaseOrderRepository implements IOrderRepository {
       order.flutterwave_transaction_id = transactionId;
     }
 
-    order.updated_at = new Date().toISOString();
-
+    order.updated_at = nowIso;
     this.ordersStore.set(order.id, order);
     this.ordersStore.set(order.order_number, order);
 
     try {
-      const dbPaymentStatus = status === 'payment_pending' ? 'unpaid' : status === 'paid' ? 'paid' : status === 'payment_failed' ? 'failed' : 'unpaid';
-      const dbOrderStatus = status === 'paid' ? 'processing' : 'pending';
+      const dbPaymentStatus =
+        normalizedStatus === 'successful'
+          ? 'paid'
+          : normalizedStatus === 'failed'
+          ? 'failed'
+          : normalizedStatus;
+
+      const dbOrderStatus = order.order_status;
 
       const baseUpdate: Record<string, any> = {
         payment_status: dbPaymentStatus,
@@ -355,6 +407,8 @@ export class SupabaseOrderRepository implements IOrderRepository {
         payment_provider: order.payment_provider || paymentProvider,
         payment_channel: order.payment_channel || channel,
         paid_at: order.paid_at,
+        abandoned_at: order.abandoned_at,
+        refunded_at: order.refunded_at,
         flutterwave_transaction_id: order.flutterwave_transaction_id || transactionId,
       };
 
@@ -392,13 +446,14 @@ export class SupabaseOrderRepository implements IOrderRepository {
     this.ordersStore.set(order.order_number, order);
 
     try {
-      const allowedDbStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+      const allowedDbStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled', 'abandoned', 'refunded'];
       const dbStatus = allowedDbStatuses.includes(status) ? status : 'pending';
 
       await supabaseAdmin
         .from('orders')
         .update({
           status: dbStatus,
+          order_status: dbStatus,
           updated_at: order.updated_at,
         })
         .eq('id', order.id);
@@ -412,7 +467,6 @@ export class SupabaseOrderRepository implements IOrderRepository {
   async getAllOrders(): Promise<Order[]> {
     const ordersMap = new Map<string, Order>();
 
-    // 1. Fetch from Supabase
     try {
       const { data, error } = await supabaseAdmin
         .from('orders')
@@ -431,7 +485,6 @@ export class SupabaseOrderRepository implements IOrderRepository {
       console.warn('[SupabaseOrderRepository] Error fetching all orders from Supabase:', err);
     }
 
-    // 2. Merge memory store
     for (const order of this.ordersStore.values()) {
       if (!ordersMap.has(order.id)) {
         ordersMap.set(order.id, order);
@@ -446,20 +499,30 @@ export class SupabaseOrderRepository implements IOrderRepository {
   async savePayment(payment: PaymentRecord): Promise<PaymentRecord> {
     this.paymentsStore.set(payment.reference, payment);
     try {
-      await supabaseAdmin.from('payments').insert({
-        id: payment.id,
-        order_id: payment.order_id,
-        reference: payment.reference,
-        amount: payment.amount,
-        currency: payment.currency,
-        status: payment.status,
-        gateway: payment.gateway,
-        gateway_response: payment.gateway_response,
-        channel: payment.channel,
-        paid_at: payment.paid_at,
-        created_at: payment.created_at,
-        updated_at: payment.updated_at,
-      });
+      await supabaseAdmin.from('payments').upsert(
+        {
+          id: payment.id,
+          order_id: payment.order_id,
+          customer_id: payment.customer_id,
+          reference: payment.reference,
+          amount: payment.amount,
+          currency: payment.currency,
+          status: payment.status,
+          gateway: payment.gateway,
+          gateway_reference: payment.gateway_reference,
+          gateway_response: payment.gateway_response,
+          channel: payment.channel,
+          paid_at: payment.paid_at,
+          abandoned_at: payment.abandoned_at,
+          refunded_at: payment.refunded_at,
+          refund_amount: payment.refund_amount,
+          refund_reason: payment.refund_reason,
+          metadata: payment.metadata || {},
+          created_at: payment.created_at,
+          updated_at: payment.updated_at,
+        },
+        { onConflict: 'reference' }
+      );
     } catch (e) {
       console.warn('[SupabaseOrderRepository] Error persisting payment record:', e);
     }
@@ -481,14 +544,21 @@ export class SupabaseOrderRepository implements IOrderRepository {
         return {
           id: data.id,
           order_id: data.order_id,
+          customer_id: data.customer_id || null,
           reference: data.reference,
           amount: Number(data.amount),
           currency: data.currency,
           status: data.status,
           gateway: data.gateway,
+          gateway_reference: data.gateway_reference,
           gateway_response: data.gateway_response,
           channel: data.channel,
           paid_at: data.paid_at,
+          abandoned_at: data.abandoned_at,
+          refunded_at: data.refunded_at,
+          refund_amount: data.refund_amount ? Number(data.refund_amount) : null,
+          refund_reason: data.refund_reason,
+          metadata: data.metadata || {},
           created_at: data.created_at,
           updated_at: data.updated_at,
         };
@@ -496,5 +566,173 @@ export class SupabaseOrderRepository implements IOrderRepository {
     } catch (e) {}
 
     return null;
+  }
+
+  async getPayments(): Promise<PaymentRecord[]> {
+    const paymentsMap = new Map<string, PaymentRecord>();
+
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('payments')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (!error && data) {
+        data.forEach((p: any) => {
+          const rec: PaymentRecord = {
+            id: p.id,
+            order_id: p.order_id,
+            customer_id: p.customer_id || null,
+            reference: p.reference,
+            amount: Number(p.amount),
+            currency: p.currency,
+            status: p.status,
+            gateway: p.gateway,
+            gateway_reference: p.gateway_reference,
+            gateway_response: p.gateway_response,
+            channel: p.channel,
+            paid_at: p.paid_at,
+            abandoned_at: p.abandoned_at,
+            refunded_at: p.refunded_at,
+            refund_amount: p.refund_amount ? Number(p.refund_amount) : null,
+            refund_reason: p.refund_reason,
+            metadata: p.metadata || {},
+            created_at: p.created_at,
+            updated_at: p.updated_at,
+          };
+          paymentsMap.set(rec.reference, rec);
+        });
+      }
+    } catch (e) {}
+
+    for (const p of this.paymentsStore.values()) {
+      if (!paymentsMap.has(p.reference)) {
+        paymentsMap.set(p.reference, p);
+      }
+    }
+
+    return Array.from(paymentsMap.values()).sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+  }
+
+  async getPaymentsByOrderId(orderId: string): Promise<PaymentRecord[]> {
+    const all = await this.getPayments();
+    return all.filter(p => p.order_id === orderId);
+  }
+
+  async markAbandonedOrders(minutesOld: number = 30): Promise<{ count: number; orderIds: string[] }> {
+    const cutoffDate = new Date(Date.now() - minutesOld * 60 * 1000).toISOString();
+    const abandonedIds: string[] = [];
+
+    try {
+      // 1. First try calling the safe PostgreSQL stored procedure
+      const { data: rpcData, error: rpcError } = await supabaseAdmin.rpc('process_abandoned_orders', {
+        p_interval_minutes: minutesOld,
+      });
+
+      if (!rpcError && rpcData !== null) {
+        const count = typeof rpcData === 'number' ? rpcData : rpcData?.[0]?.abandoned_count || 0;
+        return { count, orderIds: [] };
+      }
+    } catch (e) {}
+
+    // 2. Fallback direct query sweep
+    try {
+      const { data: eligibleOrders, error } = await supabaseAdmin
+        .from('orders')
+        .select('id, payment_reference')
+        .in('payment_status', ['pending', 'payment_pending', 'unpaid'])
+        .lt('created_at', cutoffDate);
+
+      if (!error && eligibleOrders && eligibleOrders.length > 0) {
+        const nowIso = new Date().toISOString();
+        const ids = eligibleOrders.map(o => o.id);
+
+        await supabaseAdmin
+          .from('orders')
+          .update({
+            payment_status: 'abandoned',
+            status: 'abandoned',
+            order_status: 'abandoned',
+            abandoned_at: nowIso,
+            updated_at: nowIso,
+          })
+          .in('id', ids);
+
+        await supabaseAdmin
+          .from('payments')
+          .update({
+            status: 'abandoned',
+            abandoned_at: nowIso,
+            updated_at: nowIso,
+          })
+          .in('order_id', ids)
+          .in('status', ['pending', 'payment_pending', 'unpaid']);
+
+        // Update in-memory stores
+        for (const o of eligibleOrders) {
+          abandonedIds.push(o.id);
+          const memOrder = this.ordersStore.get(o.id);
+          if (memOrder) {
+            memOrder.payment_status = 'abandoned';
+            memOrder.order_status = 'abandoned';
+            memOrder.abandoned_at = nowIso;
+          }
+        }
+      }
+    } catch (err) {
+      console.error('[SupabaseOrderRepository] Error sweeping abandoned orders:', err);
+    }
+
+    return { count: abandonedIds.length, orderIds: abandonedIds };
+  }
+
+  async recordRefund(orderId: string, refundAmount: number, reason?: string): Promise<Order> {
+    const order = await this.getOrderById(orderId);
+    if (!order) {
+      throw new Error(`Order #${orderId} not found`);
+    }
+
+    const nowIso = new Date().toISOString();
+    order.payment_status = 'refunded';
+    order.order_status = 'refunded';
+    order.refunded_at = nowIso;
+    order.refund_amount = refundAmount;
+    order.refund_reason = reason || 'Customer requested refund';
+    order.updated_at = nowIso;
+
+    this.ordersStore.set(order.id, order);
+    this.ordersStore.set(order.order_number, order);
+
+    try {
+      await supabaseAdmin
+        .from('orders')
+        .update({
+          payment_status: 'refunded',
+          status: 'refunded',
+          order_status: 'refunded',
+          refunded_at: nowIso,
+          refund_amount: refundAmount,
+          refund_reason: order.refund_reason,
+          updated_at: nowIso,
+        })
+        .eq('id', order.id);
+
+      await supabaseAdmin
+        .from('payments')
+        .update({
+          status: 'refunded',
+          refunded_at: nowIso,
+          refund_amount: refundAmount,
+          refund_reason: order.refund_reason,
+          updated_at: nowIso,
+        })
+        .eq('order_id', order.id);
+    } catch (e) {
+      console.error('[SupabaseOrderRepository] Error recording refund:', e);
+    }
+
+    return order;
   }
 }

@@ -67,6 +67,8 @@ export interface AuthSessionPayload {
   roleId?: string;
   permissions?: string[];
   mustChangePassword?: boolean;
+  loginTime?: number;
+  lastActive?: number;
   iat?: number;
   exp?: number;
 }

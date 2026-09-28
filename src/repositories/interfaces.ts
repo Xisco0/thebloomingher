@@ -52,6 +52,10 @@ export interface IOrderRepository {
   getAllOrders(): Promise<Order[]>;
   savePayment(payment: PaymentRecord): Promise<PaymentRecord>;
   getPaymentByReference(reference: string): Promise<PaymentRecord | null>;
+  getPayments(): Promise<PaymentRecord[]>;
+  getPaymentsByOrderId(orderId: string): Promise<PaymentRecord[]>;
+  markAbandonedOrders(minutesOld?: number): Promise<{ count: number; orderIds: string[] }>;
+  recordRefund(orderId: string, refundAmount: number, reason?: string): Promise<Order>;
 }
 
 export interface IRecommendationRepository {

@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { ExternalLink } from 'lucide-react';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
+import { AdminSessionGuard } from '@/components/admin/AdminSessionGuard';
 
 interface AdminLayoutShellProps {
   children: React.ReactNode;
@@ -44,6 +45,7 @@ export function AdminLayoutShell({ children }: AdminLayoutShellProps) {
 
   return (
     <div className="min-h-screen bg-[#FDFBF9] text-text-body font-sans flex flex-col lg:flex-row">
+      <AdminSessionGuard />
       {/* Sidebar */}
       <AdminSidebar />
 

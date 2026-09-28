@@ -1,10 +1,13 @@
 export type PaymentStatus =
   | 'pending'
   | 'payment_pending'
+  | 'successful'
   | 'paid'
+  | 'failed'
   | 'payment_failed'
-  | 'refunded'
-  | 'cancelled';
+  | 'abandoned'
+  | 'cancelled'
+  | 'refunded';
 
 export type OrderStatus =
   | 'pending'
@@ -14,6 +17,7 @@ export type OrderStatus =
   | 'delivered'
   | 'cancelled'
   | 'payment_failed'
+  | 'abandoned'
   | 'refunded';
 
 export type DeliveryType = 'shipping' | 'pickup';
@@ -74,6 +78,10 @@ export interface Order {
   paystack_authorization_url?: string | null;
   payment_channel?: string | null;
   paid_at?: string | null;
+  abandoned_at?: string | null;
+  refunded_at?: string | null;
+  refund_amount?: number | null;
+  refund_reason?: string | null;
   notes?: string | null;
   items: OrderItem[];
   created_at: string;
@@ -83,14 +91,21 @@ export interface Order {
 export interface PaymentRecord {
   id: string;
   order_id: string;
+  customer_id?: string | null;
   reference: string;
   amount: number;
   currency: string;
-  status: 'pending' | 'success' | 'failed' | 'abandoned';
+  status: 'pending' | 'successful' | 'paid' | 'failed' | 'abandoned' | 'cancelled' | 'refunded';
   gateway: 'flutterwave' | 'paystack' | 'bank_transfer' | string;
+  gateway_reference?: string | null;
   gateway_response?: string | null;
   channel?: string | null;
   paid_at?: string | null;
+  abandoned_at?: string | null;
+  refunded_at?: string | null;
+  refund_amount?: number | null;
+  refund_reason?: string | null;
+  metadata?: Record<string, any>;
   created_at: string;
   updated_at: string;
 }
