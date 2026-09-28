@@ -422,10 +422,23 @@ ON CONFLICT (email) DO NOTHING;
 -- 8.7 CMS HERO BANNERS
 INSERT INTO public.marketing_banners (id, title, highlighted_title, subtitle, badge_text, banner_type, placement, primary_cta, secondary_cta, desktop_image_url, mobile_image_url, alt_text, priority_order, status, internal_name)
 VALUES
-    ('banner_hero_1', 'Comfort, Confidence &', 'Gentle Period Wellness', 'From intelligent menstrual cramp relief belts to organic cotton hygiene essentials, we empower every woman with doctor-approved comfort.', '✨ Nigeria''s #1 Trusted Feminine Care', 'custom', 'homepage_hero', '{"text":"Shop Best Sellers","url":"/shop"}'::jsonb, '{"text":"Relieve Cramp Pain","url":"/categories/comfort-relaxation"}'::jsonb, 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789332389/yfwwycybz8ozvxvsgepe.jpg', 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789332798/uxz1r1aohkuxqqxxcw9x.jpg', 'TheBloomingHer Hero Banner', 1, 'active', 'Homepage Primary Hero Showcase')
+    ('banner-hero-1', 'Soothe Severe Period Cramp Pain in', 'Under 10 Minutes.', 'Doctor-tested rechargeable menstrual heating belt with soothing vibration and targeted thermal warmth. Same-day Lagos dispatch!', 'BEST SELLER • FAST ACTING DRUG-FREE COMFORT', 'promotion', 'homepage_hero', '{"text":"Order Cramp Relief Belt","url":"/products/electric-heating-pad-vibration-cramp-relief-belt"}'::jsonb, '{"text":"Explore Pain Relief","url":"/categories/pain-relief-comfort"}'::jsonb, 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789336361/sbeli1b41qdlryawrrzn.jpg', 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789398339/jybtyu4rrytv7mgoksvl.jpg', 'Electric Menstrual Cramp Relief Heating Belt', 1, 'active', 'Hero 1 - Menstrual Cramp Relief Belt Advert'),
+    ('banner-hero-2', 'Upgrade Your Monthly Cycle Care with', '10% Off Your Entire Order.', 'Stock up on premium organic cotton pads, medical-grade menstrual cups, womb wellness teas, and hygiene essentials. Free Lagos doorstep delivery over ₦40,000.', 'LIMITED TIME PROMO • USE CODE BLOOM10', 'promotion', 'homepage_hero', '{"text":"Claim 10% Discount","url":"/products"}'::jsonb, '{"text":"View Under ₦10k Finds","url":"/collections/under-10k-finds"}'::jsonb, 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789332389/yfwwycybz8ozvxvsgepe.jpg', 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789332798/uxz1r1aohkuxqqxxcw9x.jpg', 'TheBloomingHer Care & Wellness Products Special Offer', 2, 'active', 'Hero 2 - Welcome 10% Discount Promotion'),
+    ('banner-hero-3', 'Complete Intimate Hygiene & Herbal Comfort,', 'Delivered Discreetly.', 'pH-balanced intimate washes, herbal womb wellness tea blends, and breathable liners crafted to keep you feeling fresh, confident, and balanced all month long.', 'ALL-IN-ONE CARE • CURATED SELF-CARE KITS', 'promotion', 'homepage_hero', '{"text":"Shop Care Bundles","url":"/collections/bloomie-care"}'::jsonb, '{"text":"Browse Intimate Hygiene","url":"/categories/intimate-hygiene"}'::jsonb, 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789380343/l6qlplskuhasrnxqrb4v.jpg', 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789332865/zilyn2v87v4euwgjcm9a.jpg', 'Bloomie Care Complete Intimate Hygiene Bundles', 3, 'active', 'Hero 3 - Bloomie Care Complete Kits Advert'),
+    ('banner-hero-4', 'Confidence, Dignity & Peace of Mind for', 'Every Blooming Woman.', 'Over 10,000+ satisfied women across Lagos, Abuja, Port Harcourt and nationwide. 100% discrete plain packaging, same-day dispatch & friendly WhatsApp concierge.', 'NIGERIA''S #1 TRUSTED FEMININE CARE', 'promotion', 'homepage_hero', '{"text":"Explore All Essentials","url":"/products"}'::jsonb, '{"text":"Chat on WhatsApp","url":"https://wa.me/2348149725817"}'::jsonb, 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789332798/uxz1r1aohkuxqqxxcw9x.jpg', 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789336361/sbeli1b41qdlryawrrzn.jpg', 'TheBloomingHer Nationwide Delivery & Trust', 4, 'active', 'Hero 4 - Nigeria Trusted Nationwide Delivery')
 ON CONFLICT (id) DO UPDATE SET
     title = EXCLUDED.title,
-    subtitle = EXCLUDED.subtitle;
+    highlighted_title = EXCLUDED.highlighted_title,
+    subtitle = EXCLUDED.subtitle,
+    badge_text = EXCLUDED.badge_text,
+    primary_cta = EXCLUDED.primary_cta,
+    secondary_cta = EXCLUDED.secondary_cta,
+    desktop_image_url = EXCLUDED.desktop_image_url,
+    mobile_image_url = EXCLUDED.mobile_image_url,
+    alt_text = EXCLUDED.alt_text,
+    priority_order = EXCLUDED.priority_order,
+    status = EXCLUDED.status,
+    internal_name = EXCLUDED.internal_name;
 
 -- 8.8 CMS EVENTS
 INSERT INTO public.marketing_events (id, name, slug, event_type, description, long_description, event_date, start_time, end_time, location, is_virtual, registration_url, desktop_image_url, mobile_image_url, status, is_featured)
@@ -439,7 +452,7 @@ ON CONFLICT (id) DO UPDATE SET
 -- 8.9 ANNOUNCEMENTS
 INSERT INTO public.marketing_announcements (id, text, highlight_text, link_text, link_url, style_variant, status)
 VALUES
-    ('ann_free_shipping', '✨ FREE Lagos Doorstep Delivery on orders over ₦40,000 | Same-Day Lagos Dispatch Available', 'FREE Lagos Delivery', 'Shop Now', '/shop', 'brand', 'active')
+    ('ann_free_shipping', 'FREE Lagos Doorstep Delivery on orders over ₦40,000 | Same-Day Lagos Dispatch Available', 'FREE Lagos Delivery', 'Shop Now', '/shop', 'brand', 'active')
 ON CONFLICT (id) DO UPDATE SET
     text = EXCLUDED.text;
 

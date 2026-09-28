@@ -1,12 +1,106 @@
 import { IProductRepository } from '../interfaces';
 import { Product, ProductFilterOptions, PaginatedResult, ProductReview } from '@/types';
 import catalogData from '@/lib/data/catalog.json';
+import { cmsStore } from '@/lib/cms-store';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 
 export class SupabaseProductRepository implements IProductRepository {
-  private products: Product[] = catalogData.products as Product[];
+  private async fetchAllProducts(): Promise<Product[]> {
+    const productMap = new Map<string, Product>();
+    let hasDbProducts = false;
+
+    // 1. Fetch live products directly from Supabase (authoritative source of truth)
+    try {
+      const { data: dbProducts, error: dbError } = await supabaseAdmin
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (!dbError && dbProducts && dbProducts.length > 0) {
+        hasDbProducts = true;
+        dbProducts.forEach(p => {
+          if (cmsStore.isProductDeleted(p.id) || (p.slug && cmsStore.isProductDeleted(p.slug))) {
+            return;
+          }
+
+          let rawImages = p.images;
+          if (typeof rawImages === 'string') {
+            try {
+              rawImages = JSON.parse(rawImages);
+            } catch {
+              rawImages = [rawImages];
+            }
+          }
+          if (!Array.isArray(rawImages) || rawImages.length === 0) {
+            rawImages = ['/images/logo.jpg'];
+          }
+
+          const formattedImages = rawImages.map((img: any, idx: number) => {
+            if (typeof img === 'string') {
+              return {
+                id: `img-${p.id}-${idx}`,
+                product_id: p.id,
+                url: img,
+                alt_text: p.name || 'Product image',
+                display_order: idx + 1,
+                is_primary: idx === 0,
+              };
+            }
+            return img;
+          });
+
+          const formatted: Product = {
+            id: p.id,
+            name: p.name,
+            slug: p.slug,
+            description: p.description || '',
+            short_description: p.short_description || '',
+            price: Number(p.price) || 0,
+            compare_at_price: p.compare_at_price ? Number(p.compare_at_price) : null,
+            currency: p.currency || 'NGN',
+            status: p.status || 'active',
+            features: p.features || [],
+            sku: p.sku || '',
+            stock_quantity: Number(p.stock_quantity ?? 50),
+            low_stock_threshold: Number(p.low_stock_threshold ?? 5),
+            category_id: p.category_id || 'cat-18130',
+            category_name: p.category_name || 'Feminine Care',
+            subcategory: p.subcategory || null,
+            images: formattedImages,
+            is_featured: Boolean(p.is_featured),
+            is_bestseller: Boolean(p.is_bestseller),
+            is_new_arrival: Boolean(p.is_new_arrival),
+            rating: Number(p.rating) || 5.0,
+            rating_count: Number(p.rating_count) || 1,
+            tags: Array.isArray(p.tags) ? p.tags : [],
+            variants: p.variants || [],
+            created_at: p.created_at || new Date().toISOString(),
+            updated_at: p.updated_at || new Date().toISOString(),
+          };
+
+          productMap.set(p.id, formatted);
+        });
+      }
+    } catch (err) {
+      console.warn('Supabase product repo fetch skipped:', err);
+    }
+
+    // 2. If Supabase has no data yet (e.g. unseeded database or network failure), fallback to local baseline
+    if (!hasDbProducts) {
+      const localProducts = (catalogData.products as Product[]) || [];
+      localProducts.forEach(p => {
+        if (!cmsStore.isProductDeleted(p.id) && (!p.slug || !cmsStore.isProductDeleted(p.slug))) {
+          productMap.set(p.id, p);
+        }
+      });
+    }
+
+    return Array.from(productMap.values());
+  }
 
   async getProducts(filter?: ProductFilterOptions): Promise<PaginatedResult<Product>> {
-    let result = [...this.products];
+    const products = await this.fetchAllProducts();
+    let result = [...products];
 
     if (filter?.categorySlug) {
       result = result.filter(p => {
@@ -42,7 +136,6 @@ export class SupabaseProductRepository implements IProductRepository {
     if (filter?.searchQuery) {
       const q = filter.searchQuery.toLowerCase().trim();
       
-      // Keyword synonym map for natural intent matching
       const intentKeywords: Record<string, string[]> = {
         cramp: ['heating belt', 'herbal tea', 'cramps', 'pain relief'],
         pain: ['heating belt', 'herbal tea', 'warm water bottle'],
@@ -54,7 +147,6 @@ export class SupabaseProductRepository implements IProductRepository {
         gummies: ['gummies', 'vitamin', 'biotin', 'collagen'],
       };
 
-      // Match direct text or expand through intent terms
       const matchingIntents = Object.entries(intentKeywords)
         .filter(([key]) => q.includes(key))
         .flatMap(([, syns]) => syns);
@@ -62,13 +154,9 @@ export class SupabaseProductRepository implements IProductRepository {
       result = result.filter(p => {
         const text = `${p.name} ${p.description} ${p.short_description || ''} ${p.category_name || ''} ${p.sku} ${p.tags.join(' ')}`.toLowerCase();
         
-        // Exact substring match
         if (text.includes(q)) return true;
-
-        // Intent synonym match
         if (matchingIntents.some(syn => text.includes(syn))) return true;
 
-        // Individual word tokens match
         const words = q.split(/\s+/).filter(w => w.length > 2);
         return words.some(w => text.includes(w));
       });
@@ -121,37 +209,64 @@ export class SupabaseProductRepository implements IProductRepository {
   }
 
   async getProductBySlug(slug: string): Promise<Product | null> {
-    const product = this.products.find(p => p.slug === slug);
-    return product || null;
+    const products = await this.fetchAllProducts();
+    return products.find(p => p.slug === slug) || null;
   }
 
   async getProductById(id: string): Promise<Product | null> {
-    const product = this.products.find(p => p.id === id || p.id === `prod-${id}`);
-    return product || null;
+    const products = await this.fetchAllProducts();
+    return products.find(p => p.id === id || p.id === `prod-${id}`) || null;
   }
 
   async getBestSellers(limit = 6): Promise<Product[]> {
-    const bestsellers = this.products.filter(p => p.is_bestseller);
+    const products = await this.fetchAllProducts();
+    const bestsellers = products.filter(p => p.is_bestseller);
     return bestsellers.slice(0, limit);
   }
 
   async getUnder10k(limit = 8): Promise<Product[]> {
-    const under10k = this.products.filter(p => p.price < 10000);
+    const products = await this.fetchAllProducts();
+    const under10k = products.filter(p => p.price < 10000);
     return under10k.slice(0, limit);
   }
 
   async getFeaturedProducts(limit = 8): Promise<Product[]> {
-    const featured = this.products.filter(p => p.is_featured);
+    const products = await this.fetchAllProducts();
+    const featured = products.filter(p => p.is_featured);
     return featured.slice(0, limit);
   }
 
   async getProductReviews(productId: string): Promise<ProductReview[]> {
-    const product = this.products.find(p => p.id === productId);
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('product_reviews')
+        .select('*')
+        .eq('product_id', productId)
+        .order('created_at', { ascending: false });
+
+      if (!error && data && data.length > 0) {
+        return data.map((r: any) => ({
+          id: r.id,
+          product_id: r.product_id,
+          author_name: r.author_name,
+          rating: Number(r.rating || 5),
+          title: r.title,
+          comment: r.comment,
+          is_verified_purchase: Boolean(r.is_verified_purchase),
+          helpful_votes: Number(r.helpful_votes || 0),
+          created_at: r.created_at,
+        }));
+      }
+    } catch (err) {
+      console.warn('Supabase product reviews fetch skipped:', err);
+    }
+
+    const products = await this.fetchAllProducts();
+    const product = products.find(p => p.id === productId);
     if (!product) return [];
 
-    // Seeded authentic customer reviews tailored to the product type
     const category = product.category_name || '';
-    const reviews: ProductReview[] = [
+    const fallbackReviews: ProductReview[] = [
       {
         id: `rev-${productId}-1`,
         product_id: productId,
@@ -187,6 +302,7 @@ export class SupabaseProductRepository implements IProductRepository {
       },
     ];
 
-    return reviews;
+    return fallbackReviews;
   }
 }
+

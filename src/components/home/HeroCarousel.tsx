@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight, ShieldCheck, Sparkles } from 'lucide-react';
 import { MarketingBanner } from '@/types/marketing-cms.types';
 
 interface HeroCarouselProps {
@@ -14,25 +14,25 @@ interface HeroCarouselProps {
 const SYSTEM_DEFAULT_BANNER: MarketingBanner = {
   id: 'system-permanent-fallback-hero',
   internal_name: 'The BloomingHer Brand Fallback Hero',
-  badge_text: 'THE BLOOMINGHER CARE & WELLNESS',
-  title: 'Wellness, Beauty &',
-  highlighted_title: 'Self-Care',
-  subtitle: 'Discover products thoughtfully selected to support your everyday wellness and self-care journey.',
-  banner_type: 'custom',
+  badge_text: 'BEST SELLER • FAST ACTING DRUG-FREE COMFORT',
+  title: 'Soothe Severe Period Cramp Pain in',
+  highlighted_title: 'Under 10 Minutes.',
+  subtitle: 'Doctor-tested rechargeable menstrual heating belt with soothing vibration and targeted thermal warmth. Same-day Lagos dispatch!',
+  banner_type: 'promotion',
   placement: 'homepage_hero',
   primary_cta: {
-    text: 'Shop Now',
+    text: 'Order Cramp Relief Belt',
+    destinationType: 'product',
+    url: '/products/electric-heating-pad-vibration-cramp-relief-belt',
+  },
+  secondary_cta: {
+    text: 'Explore All Essentials',
     destinationType: 'custom_page',
     url: '/products',
   },
-  secondary_cta: {
-    text: 'Explore Collections',
-    destinationType: 'collection',
-    url: '/collections/bloomie-care',
-  },
-  desktop_image_url: 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789332389/yfwwycybz8ozvxvsgepe.jpg',
-  mobile_image_url: 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789332798/uxz1r1aohkuxqqxxcw9x.jpg',
-  alt_text: 'The BloomingHer Care & Wellness — Wellness, Beauty & Self-Care',
+  desktop_image_url: 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789336361/sbeli1b41qdlryawrrzn.jpg',
+  mobile_image_url: 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789398339/jybtyu4rrytv7mgoksvl.jpg',
+  alt_text: 'The BloomingHer Care & Wellness — Electric Heating Pad Cramp Relief Belt',
   priority_order: 1,
   status: 'active',
   timezone: 'Africa/Lagos',
@@ -52,6 +52,10 @@ export function HeroCarousel({ banners = [] }: HeroCarouselProps) {
     setCurrentIndex(prev => (prev + 1) % slides.length);
   }, [slides.length]);
 
+  const prevSlide = useCallback(() => {
+    setCurrentIndex(prev => (prev - 1 + slides.length) % slides.length);
+  }, [slides.length]);
+
   // Clean 5-second automatic rotation when multiple eligible banners exist
   useEffect(() => {
     if (slides.length <= 1) return;
@@ -65,33 +69,44 @@ export function HeroCarousel({ banners = [] }: HeroCarouselProps) {
 
     const timer = setInterval(() => {
       nextSlide();
-    }, 5000);
+    }, 5500);
 
     return () => clearInterval(timer);
   }, [slides.length, isHovered, nextSlide]);
+
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (slides.length <= 1) return;
+      if (e.key === 'ArrowLeft') prevSlide();
+      if (e.key === 'ArrowRight') nextSlide();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [slides.length, prevSlide, nextSlide]);
 
   const currentSlide = slides[currentIndex] || SYSTEM_DEFAULT_BANNER;
   const isMultiSlide = slides.length > 1;
 
   return (
     <section
-      className="relative overflow-hidden bg-gradient-to-b from-brand-light/70 via-background to-background pt-8 pb-12 sm:pb-16 lg:pt-12 lg:pb-20 select-none"
+      className="group relative overflow-hidden bg-gradient-to-b from-brand-light/70 via-background to-background pt-8 pb-12 sm:pb-16 lg:pt-12 lg:pb-20 select-none"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       aria-roledescription="carousel"
       aria-label="Promotional Hero Showcase"
     >
       <div className="w-[94%] sm:w-[90%] md:w-[85%] max-w-[85%] mx-auto relative">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center min-h-[420px]">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center min-h-[440px]">
           {/* Left Content Area (7 Cols) */}
           <div
             key={`content-${currentSlide.id}-${currentIndex}`}
-            className="lg:col-span-7 space-y-6 text-center lg:text-left z-10 animate-in fade-in duration-500"
+            className="lg:col-span-7 space-y-6 text-center lg:text-left z-10 animate-in fade-in slide-in-from-left-2 duration-500"
           >
             {/* Tagline Badge */}
             {currentSlide.badge_text && (
-              <div className="inline-flex items-center px-3.5 py-1.5 rounded-full bg-brand-light border border-brand/20 text-brand text-xs font-semibold tracking-wider uppercase shadow-xs">
-                <span>{currentSlide.badge_text}</span>
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-brand-light border border-brand/20 text-brand text-xs font-semibold tracking-wider uppercase shadow-xs">
+                <span>{currentSlide.badge_text.replace(/^[✨🌟⭐*•\s]+/, '')}</span>
               </div>
             )}
 
@@ -138,7 +153,7 @@ export function HeroCarousel({ banners = [] }: HeroCarouselProps) {
           {/* Right Image Composition (5 Cols) with Responsive Desktop vs Mobile Creative */}
           <div
             key={`image-${currentSlide.id}-${currentIndex}`}
-            className="lg:col-span-5 relative animate-in fade-in duration-500"
+            className="lg:col-span-5 relative animate-in fade-in zoom-in-95 duration-500"
           >
             <div className="relative mx-auto max-w-md lg:max-w-none aspect-[4/3] sm:aspect-square rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-surface-muted">
               {/* Desktop Image */}
@@ -169,34 +184,55 @@ export function HeroCarousel({ banners = [] }: HeroCarouselProps) {
               <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/20 via-transparent to-transparent pointer-events-none" />
             </div>
 
-            {/* Subtle Floating Trust Pill Badge */}
-            <div className="absolute -bottom-3 left-2 sm:bottom-6 sm:-left-6 bg-surface/95 backdrop-blur-md p-2.5 sm:p-4 rounded-2xl shadow-elevated border border-border flex items-center gap-2.5 sm:gap-3 max-w-[180px] sm:max-w-[220px]">
+            {/* Floating Trust Pill Badge */}
+            <div className="absolute -bottom-3 left-2 sm:bottom-6 sm:-left-6 bg-surface/95 backdrop-blur-md p-2.5 sm:p-4 rounded-2xl shadow-elevated border border-border flex items-center gap-2.5 sm:gap-3 max-w-[190px] sm:max-w-[230px]">
               <div className="w-9 h-9 rounded-full bg-brand-light text-brand flex items-center justify-center flex-shrink-0 font-bold text-sm">
                 🌸
               </div>
               <div className="text-left">
                 <p className="text-xs font-bold text-text-main">Bloomie Care</p>
-                <p className="text-[10px] text-text-muted">Thoughtful comfort</p>
+                <p className="text-[10px] text-text-muted">Doctor-tested & trusted</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Minimal Pagination Dots — Only displayed when multiple eligible banners exist */}
+        {/* Carousel Navigation Controls (Arrows & Indicators) */}
         {isMultiSlide && (
-          <div className="mt-8 pt-4 flex items-center justify-center">
+          <div className="mt-8 pt-4 flex items-center justify-between">
+            {/* Previous Arrow */}
+            <button
+              onClick={prevSlide}
+              className="p-2.5 rounded-full bg-surface/90 hover:bg-surface border border-border/80 text-text-muted hover:text-brand shadow-subtle hover:shadow-card transition-all active:scale-95 cursor-pointer"
+              aria-label="Previous slide"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+
+            {/* Pagination Indicators */}
             <div className="flex items-center gap-2">
               {slides.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => setCurrentIndex(idx)}
-                  className={`h-2 rounded-full transition-all duration-300 ${
-                    currentIndex === idx ? 'w-8 bg-brand' : 'w-2 bg-brand/20 hover:bg-brand/40'
+                  className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                    currentIndex === idx
+                      ? 'w-8 bg-brand'
+                      : 'w-2 bg-brand/20 hover:bg-brand/40'
                   }`}
                   aria-label={`Go to slide ${idx + 1}`}
                 />
               ))}
             </div>
+
+            {/* Next Arrow */}
+            <button
+              onClick={nextSlide}
+              className="p-2.5 rounded-full bg-surface/90 hover:bg-surface border border-border/80 text-text-muted hover:text-brand shadow-subtle hover:shadow-card transition-all active:scale-95 cursor-pointer"
+              aria-label="Next slide"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
         )}
       </div>

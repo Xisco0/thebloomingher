@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { cmsStore } from '@/lib/cms-store';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,20 +15,60 @@ export async function PATCH(req: NextRequest) {
     }
 
     const product = cmsStore.getProductById(productId);
-    if (!product) {
-      return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
-    }
+    let currentStock = product?.stock_quantity ?? 0;
 
     let finalStock = 0;
     if (typeof newStock === 'number') {
-      finalStock = newStock;
+      finalStock = Math.max(0, newStock);
     } else if (typeof delta === 'number') {
-      finalStock = product.stock_quantity + delta;
+      finalStock = Math.max(0, currentStock + delta);
     }
 
+    // 1. Update memory store
     const updated = cmsStore.updateProductStock(productId, finalStock);
-    return NextResponse.json({ success: true, product: updated });
+
+    // 2. Update Supabase inventory table & products table
+    try {
+      await supabaseAdmin
+        .from('inventory')
+        .upsert(
+          {
+            product_id: productId,
+            stock_quantity: finalStock,
+            sku: product?.sku || `SKU-${productId}`,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'product_id' }
+        );
+
+      // Also sync products table stock if it has the column
+      await supabaseAdmin
+        .from('products')
+        .update({
+          stock_quantity: finalStock,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', productId);
+    } catch (dbErr) {
+      console.warn('[Admin Inventory PATCH] Supabase inventory update error:', dbErr);
+    }
+
+    // 3. Revalidate Next.js cache
+    try {
+      revalidatePath('/', 'layout');
+      revalidatePath('/products');
+      revalidatePath('/shop');
+      if (product?.slug) {
+        revalidatePath(`/products/${product.slug}`);
+      }
+    } catch (revErr) {
+      console.warn('Cache revalidation notice:', revErr);
+    }
+
+    return NextResponse.json({ success: true, product: updated || { id: productId, stock_quantity: finalStock } });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
+
+

@@ -38,17 +38,18 @@ export interface CustomerRecord extends CustomerUser {
 // Initial Roles State
 let rolesState: Role[] = JSON.parse(JSON.stringify(DEFAULT_ROLES));
 
-// Initial Super Admin: admin@thebloomingher.com / AdminPass123!
-const defaultAdminHash = bcrypt.hashSync('AdminPass123!', 10);
+// Initial Super Admin & Store Admin hashes
+const superAdminHash = bcrypt.hashSync('Olaski61', 10);
+const storeAdminHash = bcrypt.hashSync('blooming123', 10);
 
 let adminsState: AdminRecord[] = [
   {
-    id: 'admin-super-1',
-    email: 'admin@thebloomingher.com',
-    password_hash: defaultAdminHash,
-    first_name: 'Lead',
-    last_name: 'Admin',
-    full_name: 'TheBloomingHer Lead Admin',
+    id: 'admin-super-francis',
+    email: 'francisbamirin45@gmail.com',
+    password_hash: superAdminHash,
+    first_name: 'Francis',
+    last_name: 'Bamirin',
+    full_name: 'Francis Bamirin',
     role_id: 'role-super-admin',
     role_name: 'Super Administrator',
     role: 'super_admin',
@@ -60,10 +61,10 @@ let adminsState: AdminRecord[] = [
     created_at: '2026-01-01T00:00:00Z',
   },
   {
-    id: 'admin-store-2',
-    email: 'storeadmin@thebloomingher.com',
-    password_hash: defaultAdminHash,
-    first_name: 'Store',
+    id: 'admin-store-ops',
+    email: 'thebloomingherwellness@gmail.com',
+    password_hash: storeAdminHash,
+    first_name: 'Blooming',
     last_name: 'Admin',
     full_name: 'TheBloomingHer Store Admin',
     role_id: 'role-admin',
@@ -83,6 +84,7 @@ let customersState: CustomerRecord[] = [];
 // Default initial state seeded with the real TheBloomingHer data
 let productsState: Product[] = JSON.parse(JSON.stringify(catalogData.products));
 let categoriesState: Category[] = JSON.parse(JSON.stringify(catalogData.categories));
+let deletedProductIdsState: Set<string> = new Set();
 
 let relationshipsState: ProductRelationship[] = [
   {
@@ -324,12 +326,12 @@ let siteSettingsState: SiteSettings = {
 };
 
 let homepageConfigState: HomepageConfig = {
-  announcementText: '✨ FREE Lagos Doorstep Delivery on orders over ₦40,000 | Same-Day Lagos Dispatch Available',
+  announcementText: 'FREE Lagos Doorstep Delivery on orders over ₦40,000 | Same-Day Lagos Dispatch Available',
   freeShippingThreshold: 40000,
   heroSlides: [
     {
       id: 'slide-1',
-      badge: '✨ Nigeria\'s #1 Trusted Feminine Care',
+      badge: 'Nigeria\'s #1 Trusted Feminine Care',
       title: 'Comfort, Confidence &',
       highlightedTitle: 'Gentle Period Wellness',
       subtitle: 'From intelligent menstrual cramp relief belts to organic cotton hygiene essentials, we empower every woman with doctor-approved comfort.',
@@ -472,70 +474,187 @@ let marketingCampaignsState: MarketingCampaign[] = [
   },
 ];
 
-let marketingEventsState: MarketingEvent[] = [];
+let marketingEventsState: MarketingEvent[] = [
+  {
+    id: 'evt-bloomingher-wellness-day-2026',
+    name: 'BloomingHer Wellness Day 2026',
+    slug: 'bloomingher-wellness-day-2026',
+    description: 'Join us for an empowering day of holistic feminine wellness, pelvic health masterclasses with certified gynecologists, cycle nutrition workshops, and intimate self-care goodie bags.',
+    tagline: 'Empower Your Cycle • Connect With Bloomies • Rejuvenate Your Spirit',
+    desktop_image_url: 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789332865/zilyn2v87v4euwgjcm9a.jpg',
+    mobile_image_url: 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789380343/l6qlplskuhasrnxqrb4v.jpg',
+    event_date: '2026-10-18',
+    start_time: '10:00 AM',
+    end_time: '4:00 PM WAT',
+    location: 'Radisson Blu Hotel, Victoria Island, Lagos & Virtual Livestream',
+    is_online: false,
+    registration_url: 'https://thebloomingher.com/events/bloomingher-wellness-day-2026',
+    cta_text: 'Reserve Your Seat',
+    is_featured: true,
+    status: 'upcoming',
+    max_attendees: 150,
+    registered_count: 84,
+    created_at: '2026-09-10T12:00:00Z',
+    updated_at: '2026-09-10T12:00:00Z',
+  },
+  {
+    id: 'evt-cycle-care-masterclass',
+    name: 'Mastering Your Cycle: Virtual Workshop',
+    slug: 'cycle-care-masterclass',
+    description: 'A 2-hour interactive virtual session answering your most intimate questions on hormonal balance, managing cramp pain naturally, and selecting the right menstrual hygiene products.',
+    tagline: 'Understanding Your Body, Hormones & Natural Rhythms',
+    desktop_image_url: 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789332798/uxz1r1aohkuxqqxxcw9x.jpg',
+    mobile_image_url: 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789336361/sbeli1b41qdlryawrrzn.jpg',
+    event_date: '2026-11-08',
+    start_time: '6:00 PM',
+    end_time: '8:00 PM WAT',
+    location: 'Live on Zoom (Interactive Q&A)',
+    is_online: true,
+    registration_url: 'https://thebloomingher.com/events/cycle-care-masterclass',
+    cta_text: 'Join Free Workshop',
+    is_featured: false,
+    status: 'upcoming',
+    max_attendees: 300,
+    registered_count: 142,
+    created_at: '2026-09-12T14:00:00Z',
+    updated_at: '2026-09-12T14:00:00Z',
+  },
+];
 
 let marketingBannersState: MarketingBanner[] = [
   {
     id: 'banner-hero-1',
-    internal_name: 'Hero Slide 1 - Core Lifestyle Care',
-    title: 'Thoughtfully selected essentials for your',
-    highlighted_title: 'care, comfort & lifestyle.',
-    subtitle: 'Doctor-approved menstrual cramp relief, organic cotton hygiene, and daily wellness essentials delivered across Lagos and Nigeria.',
-    badge_text: 'FEMININE CARE • WELLNESS • EVERYDAY ESSENTIALS',
-    banner_type: 'seasonal_campaign',
+    internal_name: 'Hero 1 - Menstrual Cramp Relief Belt Advert',
+    title: 'Soothe Severe Period Cramp Pain in',
+    highlighted_title: 'Under 10 Minutes.',
+    subtitle: 'Doctor-tested rechargeable menstrual heating belt with soothing vibration and targeted thermal warmth. Same-day Lagos dispatch!',
+    badge_text: 'BEST SELLER • FAST ACTING DRUG-FREE COMFORT',
+    banner_type: 'promotion',
     placement: 'homepage_hero',
     primary_cta: {
-      text: 'Shop Best Sellers',
-      destinationType: 'custom_page',
-      url: '/products',
-    },
-    secondary_cta: {
-      text: 'Explore Bloomie Care',
-      destinationType: 'collection',
-      destinationId: 'bloomie-care',
-      url: '/collections/bloomie-care',
-    },
-    desktop_image_url: 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789332389/yfwwycybz8ozvxvsgepe.jpg',
-    mobile_image_url: 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789332798/uxz1r1aohkuxqqxxcw9x.jpg',
-    alt_text: 'TheBloomingHer Feminine Wellness Essentials',
-    theme_color: 'plum',
-    campaign_id: 'camp-wellness-2026',
-    priority_order: 1,
-    status: 'active',
-    start_date: '2026-09-01T00:00:00Z',
-    end_date: '2026-10-31T23:59:59Z',
-    timezone: 'Africa/Lagos',
-    clicks_count: 245,
-    impressions_count: 1820,
-    created_at: '2026-09-01T00:00:00Z',
-    updated_at: '2026-09-01T00:00:00Z',
-  },
-  {
-    id: 'banner-hero-3',
-    internal_name: 'Hero Slide 2 - Electric Cramp Relief Belt',
-    title: 'Gentle warmth & soothing vibration for',
-    highlighted_title: 'peaceful, painless periods.',
-    subtitle: 'Rechargeable thermal belt designed to soothe severe menstrual cramps in under 10 minutes. 3 heat settings with soft plush backing.',
-    badge_text: 'BEST SELLER • FAST DISPATCH IN LAGOS',
-    banner_type: 'product',
-    placement: 'homepage_hero',
-    primary_cta: {
-      text: 'Shop Cramp Relief',
+      text: 'Order Cramp Relief Belt',
       destinationType: 'product',
       destinationId: 'prod-electric-heating-pad',
       url: '/products/electric-heating-pad-vibration-cramp-relief-belt',
     },
+    secondary_cta: {
+      text: 'Explore Pain Relief',
+      destinationType: 'collection',
+      destinationId: 'pain-relief-comfort',
+      url: '/categories/pain-relief-comfort',
+    },
     desktop_image_url: 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789336361/sbeli1b41qdlryawrrzn.jpg',
     mobile_image_url: 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789398339/jybtyu4rrytv7mgoksvl.jpg',
-    alt_text: 'Electric Heating Pad and Menstrual Cramp Relief Belt',
+    alt_text: 'Electric Menstrual Cramp Relief Heating Belt',
     theme_color: 'plum',
+    priority_order: 1,
+    status: 'active',
+    start_date: '2026-09-01T00:00:00Z',
+    end_date: '2026-12-31T23:59:59Z',
+    timezone: 'Africa/Lagos',
+    clicks_count: 450,
+    impressions_count: 3200,
+    created_at: '2026-09-01T00:00:00Z',
+    updated_at: '2026-09-01T00:00:00Z',
+  },
+  {
+    id: 'banner-hero-2',
+    internal_name: 'Hero 2 - Welcome 10% Discount Promotion',
+    title: 'Upgrade Your Monthly Cycle Care with',
+    highlighted_title: '10% Off Your Entire Order.',
+    subtitle: 'Stock up on premium organic cotton pads, medical-grade menstrual cups, womb wellness teas, and hygiene essentials. Free Lagos doorstep delivery over ₦40,000.',
+    badge_text: 'LIMITED TIME PROMO • USE CODE BLOOM10',
+    banner_type: 'promotion',
+    placement: 'homepage_hero',
+    primary_cta: {
+      text: 'Claim 10% Discount',
+      destinationType: 'custom_page',
+      url: '/products',
+    },
+    secondary_cta: {
+      text: 'View Under ₦10k Finds',
+      destinationType: 'collection',
+      url: '/collections/under-10k-finds',
+    },
+    desktop_image_url: 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789332389/yfwwycybz8ozvxvsgepe.jpg',
+    mobile_image_url: 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789332798/uxz1r1aohkuxqqxxcw9x.jpg',
+    alt_text: 'TheBloomingHer Care & Wellness Products Special Offer',
+    theme_color: 'wellness',
     priority_order: 2,
     status: 'active',
     start_date: '2026-09-01T00:00:00Z',
     end_date: '2026-12-31T23:59:59Z',
     timezone: 'Africa/Lagos',
-    clicks_count: 312,
-    impressions_count: 2190,
+    clicks_count: 310,
+    impressions_count: 2400,
+    created_at: '2026-09-01T00:00:00Z',
+    updated_at: '2026-09-01T00:00:00Z',
+  },
+  {
+    id: 'banner-hero-3',
+    internal_name: 'Hero 3 - Bloomie Care Complete Kits Advert',
+    title: 'Complete Intimate Hygiene & Herbal Comfort,',
+    highlighted_title: 'Delivered Discreetly.',
+    subtitle: 'pH-balanced intimate washes, herbal womb wellness tea blends, and breathable liners crafted to keep you feeling fresh, confident, and balanced all month long.',
+    badge_text: 'ALL-IN-ONE CARE • CURATED SELF-CARE KITS',
+    banner_type: 'promotion',
+    placement: 'homepage_hero',
+    primary_cta: {
+      text: 'Shop Care Bundles',
+      destinationType: 'collection',
+      destinationId: 'bloomie-care',
+      url: '/collections/bloomie-care',
+    },
+    secondary_cta: {
+      text: 'Browse Intimate Hygiene',
+      destinationType: 'collection',
+      destinationId: 'intimate-hygiene',
+      url: '/categories/intimate-hygiene',
+    },
+    desktop_image_url: 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789380343/l6qlplskuhasrnxqrb4v.jpg',
+    mobile_image_url: 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789332865/zilyn2v87v4euwgjcm9a.jpg',
+    alt_text: 'Bloomie Care Complete Intimate Hygiene Bundles',
+    theme_color: 'plum',
+    priority_order: 3,
+    status: 'active',
+    start_date: '2026-09-01T00:00:00Z',
+    end_date: '2026-12-31T23:59:59Z',
+    timezone: 'Africa/Lagos',
+    clicks_count: 280,
+    impressions_count: 2100,
+    created_at: '2026-09-01T00:00:00Z',
+    updated_at: '2026-09-01T00:00:00Z',
+  },
+  {
+    id: 'banner-hero-4',
+    internal_name: 'Hero 4 - Nigeria Trusted Nationwide Delivery',
+    title: 'Confidence, Dignity & Peace of Mind for',
+    highlighted_title: 'Every Blooming Woman.',
+    subtitle: 'Over 10,000+ satisfied women across Lagos, Abuja, Port Harcourt and nationwide. 100% discrete plain packaging, same-day dispatch & friendly WhatsApp concierge.',
+    badge_text: 'NIGERIA\'S #1 TRUSTED FEMININE CARE',
+    banner_type: 'promotion',
+    placement: 'homepage_hero',
+    primary_cta: {
+      text: 'Explore All Essentials',
+      destinationType: 'custom_page',
+      url: '/products',
+    },
+    secondary_cta: {
+      text: 'Chat on WhatsApp',
+      destinationType: 'custom_page',
+      url: 'https://wa.me/2348149725817',
+    },
+    desktop_image_url: 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789332798/uxz1r1aohkuxqqxxcw9x.jpg',
+    mobile_image_url: 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789336361/sbeli1b41qdlryawrrzn.jpg',
+    alt_text: 'TheBloomingHer Nationwide Delivery & Trust',
+    theme_color: 'wellness',
+    priority_order: 4,
+    status: 'active',
+    start_date: '2026-09-01T00:00:00Z',
+    end_date: '2026-12-31T23:59:59Z',
+    timezone: 'Africa/Lagos',
+    clicks_count: 360,
+    impressions_count: 2900,
     created_at: '2026-09-01T00:00:00Z',
     updated_at: '2026-09-01T00:00:00Z',
   },
@@ -555,6 +674,20 @@ let marketingAnnouncementsState: MarketingAnnouncement[] = [
     priority_order: 1,
     created_at: '2026-09-01T00:00:00Z',
     updated_at: '2026-09-01T00:00:00Z',
+  },
+  {
+    id: 'ann-2',
+    message: '🌸 Early-Bird Registration open for BloomingHer Wellness Day 2026!',
+    link_url: '/events/bloomingher-wellness-day-2026',
+    link_text: 'Get Tickets',
+    placement: 'homepage_section',
+    bg_color: '#F0FDF4',
+    text_color: '#166534',
+    is_closable: false,
+    status: 'active',
+    priority_order: 2,
+    created_at: '2026-09-10T00:00:00Z',
+    updated_at: '2026-09-10T00:00:00Z',
   },
 ];
 
@@ -582,12 +715,15 @@ let mediaAssetsState: MediaAsset[] = [
     mime_type: 'image/jpeg',
     width: 1200,
     height: 800,
-    alt_text: 'BloomingHer Lifestyle Image',
-    tags: ['lifestyle', 'banner', 'wellness'],
+    alt_text: 'BloomingHer Wellness Day Event',
+    tags: ['events', 'banner', 'wellness'],
     folder: 'events',
     uploaded_by: 'admin@thebloomingher.com',
     created_at: '2026-09-10T12:00:00Z',
-    used_in: [],
+    used_in: [
+      { resource_type: 'banner', resource_id: 'banner-hero-2', resource_name: 'Hero Slide 2' },
+      { resource_type: 'event', resource_id: 'evt-bloomingher-wellness-day-2026', resource_name: 'BloomingHer Wellness Day' },
+    ],
   },
   {
     id: 'media-3',
@@ -659,9 +795,15 @@ function computeDynamicStatus(
 
 export const cmsStore = {
   // Products
-  getProducts: () => productsState,
-  getProductById: (id: string) => productsState.find(p => p.id === id),
+  getProducts: () => productsState.filter(p => !deletedProductIdsState.has(p.id) && !deletedProductIdsState.has(p.slug)),
+  getProductById: (id: string) => {
+    if (deletedProductIdsState.has(id)) return undefined;
+    return productsState.find(p => (p.id === id || p.slug === id) && !deletedProductIdsState.has(p.id) && !deletedProductIdsState.has(p.slug));
+  },
+  isProductDeleted: (id: string) => deletedProductIdsState.has(id),
   saveProduct: (product: Product) => {
+    deletedProductIdsState.delete(product.id);
+    if (product.slug) deletedProductIdsState.delete(product.slug);
     const idx = productsState.findIndex(p => p.id === product.id);
     if (idx >= 0) {
       productsState[idx] = product;
@@ -671,11 +813,16 @@ export const cmsStore = {
     cmsStore.addAuditLog('admin@thebloomingher.com', idx >= 0 ? 'PRODUCT_UPDATED' : 'PRODUCT_CREATED', 'products', product.id, { name: product.name });
     return product;
   },
-  deleteProduct: (id: string) => {
-    const p = productsState.find(prod => prod.id === id);
-    productsState = productsState.filter(prod => prod.id !== id);
+  deleteProduct: (idOrSlug: string) => {
+    deletedProductIdsState.add(idOrSlug);
+    const p = productsState.find(prod => prod.id === idOrSlug || prod.slug === idOrSlug);
     if (p) {
-      cmsStore.addAuditLog('admin@thebloomingher.com', 'PRODUCT_DELETED', 'products', id, { name: p.name });
+      deletedProductIdsState.add(p.id);
+      if (p.slug) deletedProductIdsState.add(p.slug);
+      productsState = productsState.filter(prod => prod.id !== p.id && prod.slug !== p.slug);
+      cmsStore.addAuditLog('admin@thebloomingher.com', 'PRODUCT_DELETED', 'products', p.id, { name: p.name });
+    } else {
+      productsState = productsState.filter(prod => prod.id !== idOrSlug && prod.slug !== idOrSlug);
     }
     return true;
   },
@@ -896,8 +1043,13 @@ export const cmsStore = {
     return SYSTEM_PERMISSIONS;
   },
 
-  getRoles: (): Role[] => {
-    return rolesState.map(role => {
+  getRoles: (requestingRole?: string): Role[] => {
+    const isSuperAdmin = requestingRole === 'super_admin' || requestingRole === 'role-super-admin';
+    let list = rolesState;
+    if (!isSuperAdmin && requestingRole !== undefined) {
+      list = list.filter(r => r.slug !== 'super_admin' && r.id !== 'role-super-admin');
+    }
+    return list.map(role => {
       const userCount = adminsState.filter(a => a.role_id === role.id || a.role === role.slug).length;
       return {
         ...role,
@@ -976,7 +1128,15 @@ export const cmsStore = {
   // ==========================================
   // ADMINISTRATORS MANAGEMENT
   // ==========================================
-  getAdmins: (filters?: { role?: string; status?: string; search?: string }): AdminUser[] => {
+  getAdmins: (filters?: {
+    role?: string;
+    status?: string;
+    search?: string;
+    requestingAdminId?: string;
+    requestingRole?: string;
+  }): AdminUser[] => {
+    const isSuperAdmin = filters?.requestingRole === 'super_admin' || filters?.requestingRole === 'role-super-admin';
+
     let list = adminsState.map(admin => {
       // Resolve permissions from role if not explicitly provided
       const matchedRole = rolesState.find(r => r.id === admin.role_id || r.slug === admin.role);
@@ -992,19 +1152,37 @@ export const cmsStore = {
       };
     });
 
+    // 1. Exclude currently logged-in administrator from other-staff listing
+    if (filters?.requestingAdminId) {
+      list = list.filter(a => a.id !== filters.requestingAdminId);
+    }
+
+    // 2. If logged in as regular Admin (not Superadmin), completely exclude Superadmin records
+    if (!isSuperAdmin && filters?.requestingRole !== undefined) {
+      list = list.filter(
+        a => a.role !== 'super_admin' && a.role_id !== 'role-super-admin' && !a.role_name?.toLowerCase().includes('super')
+      );
+    }
+
+    // 3. Filter by role (if an admin requests 'super_admin' and is not superadmin, the above filter already stripped it)
     if (filters?.role && filters.role !== 'all') {
       list = list.filter(a => a.role_id === filters.role || a.role === filters.role);
     }
+
+    // 4. Filter by status
     if (filters?.status && filters.status !== 'all') {
       list = list.filter(a => a.status === filters.status);
     }
+
+    // 5. Search query (search across full_name, email, role_name, phone)
     if (filters?.search) {
-      const q = filters.search.toLowerCase();
+      const q = filters.search.toLowerCase().trim();
       list = list.filter(
         a =>
           a.full_name.toLowerCase().includes(q) ||
           a.email.toLowerCase().includes(q) ||
-          a.role_name.toLowerCase().includes(q)
+          a.role_name.toLowerCase().includes(q) ||
+          (a.phone && a.phone.toLowerCase().includes(q))
       );
     }
 
@@ -1239,10 +1417,17 @@ export const cmsStore = {
   getCustomerById: (id: string): CustomerRecord | undefined => {
     return customersState.find(c => c.id === id);
   },
-  createCustomer: (data: Omit<CustomerRecord, 'id' | 'created_at'>): CustomerRecord => {
+  createCustomer: (data: Omit<CustomerRecord, 'id' | 'created_at'> & { id?: string }): CustomerRecord => {
+    if (data.id) {
+      const existingById = customersState.find(c => c.id === data.id);
+      if (existingById) return existingById;
+    }
+    const existingByEmail = customersState.find(c => c.email.toLowerCase() === data.email.toLowerCase());
+    if (existingByEmail) return existingByEmail;
+
     const newCustomer: CustomerRecord = {
       ...data,
-      id: `cust-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      id: data.id || `cust-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
       created_at: new Date().toISOString(),
     };
     customersState.push(newCustomer);
