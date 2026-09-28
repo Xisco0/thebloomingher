@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifySessionToken, ADMIN_COOKIE_NAME } from '@/lib/auth/jwt';
 import { cmsStore } from '@/lib/cms-store';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,7 +19,24 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 });
     }
 
-    const admin = cmsStore.getAdminById(session.userId);
+    let admin = cmsStore.getAdminById(session.userId);
+    if (!admin) {
+      try {
+        const { data: dbAdmin } = await supabaseAdmin
+          .from('admin_users')
+          .select('*')
+          .or(`id.eq.${session.userId},email.eq.${session.email}`)
+          .maybeSingle();
+
+        if (dbAdmin) {
+          cmsStore.syncAdminsFromDb([dbAdmin]);
+          admin = cmsStore.getAdminById(session.userId) || cmsStore.getAdminByEmail(session.email);
+        }
+      } catch (dbErr) {
+        console.warn('[Admin Me Lookup Notice]:', dbErr);
+      }
+    }
+
     if (!admin) {
       return NextResponse.json({ success: false, error: 'Administrator not found' }, { status: 404 });
     }

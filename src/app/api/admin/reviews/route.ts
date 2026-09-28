@@ -8,8 +8,8 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const memoryReviews = cmsStore.getReviews();
     const reviewsMap = new Map<string, ProductReview>();
+    let hasDbReviews = false;
 
     // 1. Fetch live reviews from Supabase
     try {
@@ -18,7 +18,8 @@ export async function GET() {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (!error && data) {
+      if (!error && Array.isArray(data)) {
+        hasDbReviews = true;
         data.forEach((r: any) => {
           reviewsMap.set(r.id, {
             id: r.id,
@@ -37,12 +38,13 @@ export async function GET() {
       console.warn('[Admin Reviews GET] Supabase fetch error:', dbErr);
     }
 
-    // 2. Merge memory reviews
-    memoryReviews.forEach(r => {
-      if (!reviewsMap.has(r.id)) {
+    // 2. Fallback to memory reviews only if DB query failed
+    if (!hasDbReviews) {
+      const memoryReviews = cmsStore.getReviews();
+      memoryReviews.forEach(r => {
         reviewsMap.set(r.id, r);
-      }
-    });
+      });
+    }
 
     const reviews = Array.from(reviewsMap.values()).sort(
       (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()

@@ -14,7 +14,8 @@ export const metadata: Metadata = {
   },
 };
 
-export const revalidate = 3600;
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function EventsPage() {
   const events = await cmsService.getEvents();

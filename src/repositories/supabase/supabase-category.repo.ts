@@ -15,7 +15,7 @@ export class SupabaseCategoryRepository implements ICategoryRepository {
         .select('*')
         .order('display_order', { ascending: true });
 
-      if (!error && dbCategories && dbCategories.length > 0) {
+      if (!error && Array.isArray(dbCategories)) {
         hasDbCategories = true;
         for (const c of dbCategories) {
           const formatted: Category = {
@@ -38,7 +38,7 @@ export class SupabaseCategoryRepository implements ICategoryRepository {
       console.warn('Supabase categories fetch skipped:', err);
     }
 
-    // 2. Fallback to base catalog if database is unseeded or unreachable
+    // 2. Fallback to base catalog only if database query failed
     if (!hasDbCategories) {
       const local = (catalogData.categories as Category[]) || [];
       local.forEach(c => {

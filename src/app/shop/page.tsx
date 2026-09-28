@@ -27,6 +27,9 @@ export const metadata: Metadata = {
   },
 };
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function ShopPage() {
   const [productsResult, categories] = await Promise.all([
     catalogService.getProducts({ pageSize: 100 }),

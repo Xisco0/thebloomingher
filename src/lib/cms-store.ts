@@ -853,6 +853,16 @@ export const cmsStore = {
     cmsStore.addAuditLog('admin@thebloomingher.com', idx >= 0 ? 'CATEGORY_UPDATED' : 'CATEGORY_CREATED', 'categories', category.id, { name: category.name });
     return category;
   },
+  deleteCategory: (id: string) => {
+    const idx = categoriesState.findIndex(c => c.id === id || c.slug === id);
+    if (idx >= 0) {
+      const cat = categoriesState[idx];
+      categoriesState.splice(idx, 1);
+      cmsStore.addAuditLog('admin@thebloomingher.com', 'CATEGORY_DELETED', 'categories', cat.id, { name: cat.name });
+      return true;
+    }
+    return false;
+  },
 
   // Discounts
   getDiscounts: () => discountsState,
@@ -1234,7 +1244,7 @@ export const cmsStore = {
     role?: string;
     phone?: string;
     custom_password?: string;
-  }): { admin: AdminUser; temporaryPassword: string } => {
+  }): { admin: AdminUser; adminRecord: AdminRecord; temporaryPassword: string } => {
     const cleanEmail = data.email.toLowerCase().trim();
     const cleanFirst = data.first_name.trim();
     const cleanLast = data.last_name.trim();
@@ -1282,7 +1292,45 @@ export const cmsStore = {
     });
 
     const { password_hash, ...safeAdmin } = newAdmin;
-    return { admin: safeAdmin, temporaryPassword };
+    return { admin: safeAdmin, adminRecord: newAdmin, temporaryPassword };
+  },
+
+  syncAdminsFromDb: (dbAdmins: any[]) => {
+    dbAdmins.forEach(dbA => {
+      const idx = adminsState.findIndex(a => a.id === dbA.id || a.email.toLowerCase() === dbA.email.toLowerCase());
+      const matchedRole =
+        DEFAULT_ROLES.find(r => r.id === dbA.role_id || r.slug === dbA.role_slug || r.slug === dbA.role) ||
+        rolesState.find(r => r.id === dbA.role_id || r.slug === dbA.role_slug);
+      const adminRecord: AdminRecord = {
+        id: dbA.id,
+        email: dbA.email.toLowerCase(),
+        password_hash: dbA.password_hash,
+        first_name: dbA.first_name,
+        last_name: dbA.last_name,
+        full_name: dbA.full_name || `${dbA.first_name} ${dbA.last_name}`.trim(),
+        role_id: matchedRole ? matchedRole.id : dbA.role_id,
+        role_name: matchedRole ? matchedRole.name : (dbA.role_name || 'Staff'),
+        role: matchedRole ? matchedRole.slug : (dbA.role_slug || 'staff'),
+        permissions: matchedRole ? matchedRole.permissions : [],
+        status: dbA.status || 'active',
+        is_active: dbA.is_active !== undefined ? dbA.is_active : dbA.status === 'active',
+        must_change_password: dbA.must_change_password || false,
+        phone: dbA.phone || '',
+        avatar_url: dbA.avatar_url,
+        last_login_at: dbA.last_login || dbA.last_login_at,
+        created_at: dbA.created_at || new Date().toISOString(),
+        updated_at: dbA.updated_at || new Date().toISOString(),
+      };
+
+      if (idx >= 0) {
+        adminsState[idx] = {
+          ...adminsState[idx],
+          ...adminRecord,
+        };
+      } else {
+        adminsState.push(adminRecord);
+      }
+    });
   },
 
   updateAdmin: (id: string, updates: Partial<AdminRecord>): { success: boolean; admin?: AdminUser; error?: string } => {

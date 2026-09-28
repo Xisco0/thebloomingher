@@ -1,9 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminPermission } from '@/lib/auth/rbac';
 import { cmsStore } from '@/lib/cms-store';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 import { AdminStatus } from '@/types/auth.types';
 
 export const dynamic = 'force-dynamic';
+
+async function getOrSyncAdmin(id: string) {
+  let admin = cmsStore.getAdminById(id);
+  if (!admin) {
+    try {
+      const { data: dbAdmin } = await supabaseAdmin
+        .from('admin_users')
+        .select('*')
+        .or(`id.eq.${id},email.eq.${id}`)
+        .maybeSingle();
+
+      if (dbAdmin) {
+        cmsStore.syncAdminsFromDb([dbAdmin]);
+        admin = cmsStore.getAdminById(id) || cmsStore.getAdminById(dbAdmin.id) || cmsStore.getAdminByEmail(id);
+      }
+    } catch (syncErr) {
+      console.warn('[Supabase Admin Status Lookup Warning]:', syncErr);
+    }
+  }
+  return admin;
+}
 
 export async function PATCH(
   req: NextRequest,
@@ -23,7 +45,7 @@ export async function PATCH(
   }
 
   try {
-    const targetAdmin = cmsStore.getAdminById(params.id);
+    const targetAdmin = await getOrSyncAdmin(params.id);
     if (!targetAdmin) {
       return NextResponse.json({ success: false, error: 'Administrator not found.' }, { status: 404 });
     }
@@ -52,6 +74,17 @@ export async function PATCH(
     const result = cmsStore.setAdminStatus(params.id, status);
     if (!result.success) {
       return NextResponse.json({ success: false, error: result.error }, { status: 400 });
+    }
+
+    // Sync status to Supabase
+    try {
+      await supabaseAdmin.from('admin_users').update({
+        status,
+        is_active: status === 'active',
+        updated_at: new Date().toISOString(),
+      }).eq('id', params.id);
+    } catch (dbErr) {
+      console.error('[Supabase Status Update Error]:', dbErr);
     }
 
     return NextResponse.json({

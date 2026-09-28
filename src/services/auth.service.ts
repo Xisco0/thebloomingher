@@ -1,6 +1,7 @@
 import { hashPassword, comparePassword } from '@/lib/auth/password';
 import { createSessionToken, verifySessionToken, ADMIN_COOKIE_NAME, CUSTOMER_COOKIE_NAME } from '@/lib/auth/jwt';
 import { cmsStore } from '@/lib/cms-store';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 import { AdminUser, CustomerUser, AuthSessionPayload } from '@/types/auth.types';
 
 export class AuthService {
@@ -9,7 +10,20 @@ export class AuthService {
    */
   async adminLogin(email: string, password: string): Promise<{ success: boolean; token?: string; admin?: AdminUser; error?: string }> {
     const cleanEmail = email.toLowerCase().trim();
-    const admin = cmsStore.getAdminByEmail(cleanEmail);
+    let admin = cmsStore.getAdminByEmail(cleanEmail);
+
+    // If not found in memory, fetch from Supabase
+    if (!admin) {
+      try {
+        const { data: dbAdmin } = await supabaseAdmin.from('admin_users').select('*').eq('email', cleanEmail).maybeSingle();
+        if (dbAdmin) {
+          cmsStore.syncAdminsFromDb([dbAdmin]);
+          admin = cmsStore.getAdminByEmail(cleanEmail);
+        }
+      } catch (dbErr) {
+        console.warn('[Admin DB lookup notice]:', dbErr);
+      }
+    }
 
     if (!admin) {
       return { success: false, error: 'Invalid email address or password.' };
@@ -30,6 +44,12 @@ export class AuthService {
 
     // Update last login
     cmsStore.updateAdminLastLogin(admin.id);
+    try {
+      await supabaseAdmin.from('admin_users').update({
+        last_login: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }).eq('id', admin.id);
+    } catch (e) {}
 
     // Create session token with RBAC permissions
     const token = await createSessionToken({
@@ -72,6 +92,16 @@ export class AuthService {
     cmsStore.changeAdminPassword(admin.id, newPassword);
     const updatedAdmin = cmsStore.getAdminById(admin.id)!;
 
+    try {
+      await supabaseAdmin.from('admin_users').update({
+        password_hash: updatedAdmin.password_hash,
+        must_change_password: false,
+        updated_at: new Date().toISOString(),
+      }).eq('id', admin.id);
+    } catch (dbErr) {
+      console.error('[Supabase Password Change Error]:', dbErr);
+    }
+
     // Issue updated token
     const token = await createSessionToken({
       userId: updatedAdmin.id,
@@ -103,7 +133,18 @@ export class AuthService {
   }): Promise<{ success: boolean; token?: string; customer?: CustomerUser; error?: string }> {
     const cleanEmail = data.email.toLowerCase().trim();
 
-    // Check existing customer
+    // Check existing customer in Supabase & memory
+    try {
+      const { data: dbCustomer } = await supabaseAdmin
+        .from('customers')
+        .select('*')
+        .eq('email', cleanEmail)
+        .maybeSingle();
+      if (dbCustomer) {
+        return { success: false, error: 'An account with this email address already exists. Please log in.' };
+      }
+    } catch (e) {}
+
     const existing = cmsStore.getCustomerByEmail(cleanEmail);
     if (existing) {
       return { success: false, error: 'An account with this email address already exists. Please log in.' };
@@ -119,6 +160,31 @@ export class AuthService {
       phone: data.phone?.trim() || '',
       is_active: true,
     });
+
+    // Persist to Supabase customers table
+    try {
+      const { data: inserted } = await supabaseAdmin
+        .from('customers')
+        .upsert({
+          id: newCustomer.id,
+          first_name: newCustomer.first_name,
+          last_name: newCustomer.last_name,
+          email: newCustomer.email,
+          password_hash: passwordHash,
+          phone: newCustomer.phone || null,
+          is_active: true,
+          created_at: newCustomer.created_at,
+          updated_at: new Date().toISOString(),
+        })
+        .select()
+        .maybeSingle();
+
+      if (inserted?.id) {
+        newCustomer.id = inserted.id;
+      }
+    } catch (e) {
+      console.warn('[Supabase Customer Insert Notice]:', e);
+    }
 
     const token = await createSessionToken({
       userId: newCustomer.id,
@@ -141,7 +207,31 @@ export class AuthService {
    */
   async customerLogin(email: string, password: string): Promise<{ success: boolean; token?: string; customer?: CustomerUser; error?: string }> {
     const cleanEmail = email.toLowerCase().trim();
-    const customer = cmsStore.getCustomerByEmail(cleanEmail);
+    let customer = cmsStore.getCustomerByEmail(cleanEmail);
+
+    // If not found in memory, query Supabase customers table
+    if (!customer) {
+      try {
+        const { data: dbCustomer } = await supabaseAdmin
+          .from('customers')
+          .select('*')
+          .eq('email', cleanEmail)
+          .maybeSingle();
+
+        if (dbCustomer) {
+          customer = cmsStore.createCustomer({
+            id: dbCustomer.id,
+            first_name: dbCustomer.first_name,
+            last_name: dbCustomer.last_name,
+            email: dbCustomer.email,
+            password_hash: dbCustomer.password_hash,
+            phone: dbCustomer.phone || '',
+            is_active: dbCustomer.is_active !== false,
+            delivery_address: dbCustomer.delivery_address || undefined,
+          });
+        }
+      } catch (e) {}
+    }
 
     if (!customer) {
       return { success: false, error: 'Invalid email address or password.' };
@@ -157,6 +247,12 @@ export class AuthService {
     }
 
     cmsStore.updateCustomerLastLogin(customer.id);
+    try {
+      await supabaseAdmin.from('customers').update({
+        last_login_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }).eq('id', customer.id);
+    } catch (e) {}
 
     const token = await createSessionToken({
       userId: customer.id,
@@ -190,6 +286,30 @@ export class AuthService {
     let customer = cmsStore.getCustomerByEmail(cleanEmail);
 
     if (!customer) {
+      // Check Supabase
+      try {
+        const { data: dbCustomer } = await supabaseAdmin
+          .from('customers')
+          .select('*')
+          .eq('email', cleanEmail)
+          .maybeSingle();
+
+        if (dbCustomer) {
+          customer = cmsStore.createCustomer({
+            id: dbCustomer.id,
+            first_name: dbCustomer.first_name,
+            last_name: dbCustomer.last_name,
+            email: dbCustomer.email,
+            password_hash: dbCustomer.password_hash,
+            phone: dbCustomer.phone || '',
+            is_active: dbCustomer.is_active !== false,
+            delivery_address: dbCustomer.delivery_address || undefined,
+          });
+        }
+      } catch (e) {}
+    }
+
+    if (!customer) {
       // Parse name if firstName/lastName not explicitly separated
       let first = data.firstName?.trim() || '';
       let last = data.lastName?.trim() || '';
@@ -211,6 +331,28 @@ export class AuthService {
         password_hash: '', // Social login
         is_active: true,
       });
+
+      // Persist to Supabase
+      try {
+        const { data: inserted } = await supabaseAdmin
+          .from('customers')
+          .upsert({
+            id: customer.id,
+            first_name: customer.first_name,
+            last_name: customer.last_name,
+            email: customer.email,
+            password_hash: '',
+            is_active: true,
+            created_at: customer.created_at,
+            updated_at: new Date().toISOString(),
+          })
+          .select()
+          .maybeSingle();
+
+        if (inserted?.id) {
+          customer.id = inserted.id;
+        }
+      } catch (e) {}
     }
 
     if (!customer.is_active) {

@@ -8,6 +8,9 @@ import { catalogService } from '@/services';
 import { ShopCatalogClient } from '@/components/shop/ShopCatalogClient';
 import { generateBreadcrumbSchema } from '@/lib/seo/schema';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface CategoryPageProps {
   params: {
     slug: string;

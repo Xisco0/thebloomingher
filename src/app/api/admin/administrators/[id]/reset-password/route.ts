@@ -1,8 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminPermission } from '@/lib/auth/rbac';
 import { cmsStore } from '@/lib/cms-store';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 
 export const dynamic = 'force-dynamic';
+
+async function getOrSyncAdmin(id: string) {
+  let admin = cmsStore.getAdminById(id);
+  if (!admin) {
+    try {
+      const { data: dbAdmin } = await supabaseAdmin
+        .from('admin_users')
+        .select('*')
+        .or(`id.eq.${id},email.eq.${id}`)
+        .maybeSingle();
+
+      if (dbAdmin) {
+        cmsStore.syncAdminsFromDb([dbAdmin]);
+        admin = cmsStore.getAdminById(id) || cmsStore.getAdminById(dbAdmin.id) || cmsStore.getAdminByEmail(id);
+      }
+    } catch (syncErr) {
+      console.warn('[Supabase Admin Reset Lookup Warning]:', syncErr);
+    }
+  }
+  return admin;
+}
 
 export async function POST(
   req: NextRequest,
@@ -14,7 +36,7 @@ export async function POST(
   }
 
   try {
-    const targetAdmin = cmsStore.getAdminById(params.id);
+    const targetAdmin = await getOrSyncAdmin(params.id);
     if (!targetAdmin) {
       return NextResponse.json({ success: false, error: 'Administrator not found.' }, { status: 404 });
     }
@@ -33,6 +55,20 @@ export async function POST(
     const result = cmsStore.resetAdminPassword(params.id);
     if (!result.success) {
       return NextResponse.json({ success: false, error: result.error }, { status: 400 });
+    }
+
+    // Sync updated password hash to Supabase
+    const updatedRecord = cmsStore.getAdminById(params.id);
+    if (updatedRecord) {
+      try {
+        await supabaseAdmin.from('admin_users').update({
+          password_hash: updatedRecord.password_hash,
+          must_change_password: true,
+          updated_at: new Date().toISOString(),
+        }).eq('id', params.id);
+      } catch (dbErr) {
+        console.error('[Supabase Password Reset Error]:', dbErr);
+      }
     }
 
     return NextResponse.json({

@@ -1,8 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminPermission } from '@/lib/auth/rbac';
 import { cmsStore } from '@/lib/cms-store';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 
 export const dynamic = 'force-dynamic';
+
+async function getOrSyncAdmin(id: string) {
+  let admin = cmsStore.getAdminById(id);
+  if (!admin) {
+    try {
+      const { data: dbAdmin } = await supabaseAdmin
+        .from('admin_users')
+        .select('*')
+        .or(`id.eq.${id},email.eq.${id}`)
+        .maybeSingle();
+
+      if (dbAdmin) {
+        cmsStore.syncAdminsFromDb([dbAdmin]);
+        admin = cmsStore.getAdminById(id) || cmsStore.getAdminById(dbAdmin.id) || cmsStore.getAdminByEmail(id);
+      }
+    } catch (syncErr) {
+      console.warn('[Supabase Admin Lookup Warning]:', syncErr);
+    }
+  }
+  return admin;
+}
 
 export async function GET(
   req: NextRequest,
@@ -14,7 +36,7 @@ export async function GET(
   }
 
   try {
-    const admin = cmsStore.getAdminById(params.id);
+    const admin = await getOrSyncAdmin(params.id);
     if (!admin) {
       return NextResponse.json({ success: false, error: 'Administrator not found.' }, { status: 404 });
     }
@@ -57,7 +79,7 @@ export async function PUT(
   }
 
   try {
-    const targetAdmin = cmsStore.getAdminById(params.id);
+    const targetAdmin = await getOrSyncAdmin(params.id);
     if (!targetAdmin) {
       return NextResponse.json({ success: false, error: 'Administrator not found.' }, { status: 404 });
     }
@@ -89,6 +111,22 @@ export async function PUT(
       return NextResponse.json({ success: false, error: result.error }, { status: 400 });
     }
 
+    // Sync updates to Supabase
+    try {
+      await supabaseAdmin.from('admin_users').update({
+        first_name: result.admin?.first_name,
+        last_name: result.admin?.last_name,
+        full_name: result.admin?.full_name,
+        role_id: result.admin?.role_id,
+        role_name: result.admin?.role_name,
+        role_slug: result.admin?.role,
+        phone: result.admin?.phone || null,
+        updated_at: new Date().toISOString(),
+      }).eq('id', params.id);
+    } catch (dbErr) {
+      console.error('[Supabase Admin Update Error]:', dbErr);
+    }
+
     return NextResponse.json({
       success: true,
       message: 'Administrator updated successfully.',
@@ -117,7 +155,7 @@ export async function DELETE(
   }
 
   try {
-    const targetAdmin = cmsStore.getAdminById(params.id);
+    const targetAdmin = await getOrSyncAdmin(params.id);
     if (!targetAdmin) {
       return NextResponse.json({ success: false, error: 'Administrator not found.' }, { status: 404 });
     }
@@ -136,6 +174,13 @@ export async function DELETE(
     const result = cmsStore.deleteAdmin(params.id);
     if (!result.success) {
       return NextResponse.json({ success: false, error: result.error }, { status: 400 });
+    }
+
+    // Sync deletion to Supabase
+    try {
+      await supabaseAdmin.from('admin_users').delete().eq('id', params.id);
+    } catch (dbErr) {
+      console.error('[Supabase Admin Delete Error]:', dbErr);
     }
 
     return NextResponse.json({

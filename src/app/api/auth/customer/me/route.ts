@@ -3,6 +3,7 @@ import { verifySessionToken, createSessionToken, CUSTOMER_COOKIE_NAME } from '@/
 import { cmsStore } from '@/lib/cms-store';
 import { orderRepository } from '@/repositories';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 import { authService } from '@/services/auth.service';
 
 export const dynamic = 'force-dynamic';
@@ -60,7 +61,33 @@ export async function GET(req: NextRequest) {
       customer = cmsStore.getCustomerByEmail(customerEmail);
     }
 
-    // Auto-heal / restore in-memory customer if session is valid
+    // Direct fetch from Supabase customers table if not in memory
+    if (!customer && (customerId || customerEmail)) {
+      try {
+        let query = supabaseAdmin.from('customers').select('*');
+        if (customerId) {
+          query = query.or(`id.eq.${customerId},email.eq.${customerEmail || customerId}`);
+        } else if (customerEmail) {
+          query = query.eq('email', customerEmail);
+        }
+        const { data: dbCustomer } = await query.maybeSingle();
+
+        if (dbCustomer) {
+          customer = cmsStore.createCustomer({
+            id: dbCustomer.id,
+            first_name: dbCustomer.first_name,
+            last_name: dbCustomer.last_name,
+            email: dbCustomer.email,
+            password_hash: dbCustomer.password_hash,
+            phone: dbCustomer.phone || '',
+            is_active: dbCustomer.is_active !== false,
+            delivery_address: dbCustomer.delivery_address || undefined,
+          });
+        }
+      } catch (e) {}
+    }
+
+    // Auto-heal / restore customer if session is valid
     if (!customer && customerEmail) {
       const parts = (customerName || '').trim().split(' ');
       const first = parts[0] || customerEmail.split('@')[0] || 'Customer';
@@ -73,6 +100,19 @@ export async function GET(req: NextRequest) {
         password_hash: '',
         is_active: true,
       });
+
+      // Save to Supabase
+      try {
+        await supabaseAdmin.from('customers').upsert({
+          id: customer.id,
+          first_name: customer.first_name,
+          last_name: customer.last_name,
+          email: customer.email,
+          password_hash: '',
+          is_active: true,
+          updated_at: new Date().toISOString(),
+        });
+      } catch (e) {}
     }
 
     if (!customer) {
@@ -126,13 +166,22 @@ export async function PATCH(req: NextRequest) {
     const body = await req.json();
     const updated = cmsStore.updateCustomerProfile(session.userId, body);
 
-    if (!updated) {
-      return NextResponse.json({ success: false, error: 'Failed to update profile' }, { status: 400 });
+    // Sync updates to Supabase
+    try {
+      await supabaseAdmin.from('customers').update({
+        first_name: body.first_name || updated?.first_name,
+        last_name: body.last_name || updated?.last_name,
+        phone: body.phone !== undefined ? body.phone : updated?.phone,
+        delivery_address: body.delivery_address || updated?.delivery_address,
+        updated_at: new Date().toISOString(),
+      }).or(`id.eq.${session.userId},email.eq.${session.email}`);
+    } catch (e) {
+      console.warn('[Supabase Customer Update Notice]:', e);
     }
 
     return NextResponse.json({
       success: true,
-      customer: updated,
+      customer: updated || body,
       message: 'Profile updated successfully.',
     });
   } catch (error: any) {

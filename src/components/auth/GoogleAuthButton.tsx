@@ -34,7 +34,7 @@ export function GoogleAuthButton({
 
       const supabase = createClient();
       const origin = typeof window !== 'undefined' ? window.location.origin : '';
-      const callbackUrl = `${origin}/api/auth/callback`;
+      const callbackUrl = `${origin}/auth/callback?redirect=${encodeURIComponent(redirectUrl)}`;
 
       // 2. Trigger Supabase Google OAuth
       const { data, error } = await supabase.auth.signInWithOAuth({
@@ -51,12 +51,20 @@ export function GoogleAuthButton({
       if (error) {
         console.warn('Supabase Google OAuth initialization notice:', error.message);
         setLoading(false);
-        setIsModalOpen(true);
+        if (onError) {
+          onError(error.message);
+        } else {
+          setIsModalOpen(true);
+        }
       }
     } catch (err: any) {
       console.error('Google Sign-In Error:', err);
       setLoading(false);
-      setIsModalOpen(true);
+      if (onError) {
+        onError(err.message || 'Google Sign-In initialization failed.');
+      } else {
+        setIsModalOpen(true);
+      }
     }
   };
 

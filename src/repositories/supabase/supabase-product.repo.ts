@@ -16,7 +16,7 @@ export class SupabaseProductRepository implements IProductRepository {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (!dbError && dbProducts && dbProducts.length > 0) {
+      if (!dbError && Array.isArray(dbProducts)) {
         hasDbProducts = true;
         dbProducts.forEach(p => {
           if (cmsStore.isProductDeleted(p.id) || (p.slug && cmsStore.isProductDeleted(p.slug))) {
@@ -85,7 +85,7 @@ export class SupabaseProductRepository implements IProductRepository {
       console.warn('Supabase product repo fetch skipped:', err);
     }
 
-    // 2. If Supabase has no data yet (e.g. unseeded database or network failure), fallback to local baseline
+    // 2. If Supabase query failed (network failure or uninitialized table), fallback to local baseline
     if (!hasDbProducts) {
       const localProducts = (catalogData.products as Product[]) || [];
       localProducts.forEach(p => {
@@ -103,9 +103,13 @@ export class SupabaseProductRepository implements IProductRepository {
     let result = [...products];
 
     if (filter?.categorySlug) {
+      const targetSlug = filter.categorySlug.toLowerCase().trim();
       result = result.filter(p => {
-        const cat = catalogData.categories.find(c => c.slug === filter.categorySlug);
-        return cat ? p.category_id === cat.id : false;
+        const cat = catalogData.categories.find(c => c.slug === targetSlug || c.id === targetSlug);
+        if (cat && p.category_id === cat.id) return true;
+        const normalizedCatName = (p.category_name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        const normalizedSubcat = (p.subcategory || '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        return p.category_id === targetSlug || normalizedCatName === targetSlug || normalizedSubcat === targetSlug;
       });
     }
 

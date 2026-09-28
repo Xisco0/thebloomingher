@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminPermission } from '@/lib/auth/rbac';
 import { cmsStore } from '@/lib/cms-store';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,6 +12,16 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    // 1. Sync from Supabase DB
+    try {
+      const { data: dbAdmins } = await supabaseAdmin.from('admin_users').select('*');
+      if (dbAdmins && dbAdmins.length > 0) {
+        cmsStore.syncAdminsFromDb(dbAdmins);
+      }
+    } catch (syncErr) {
+      console.warn('[Supabase Admin Sync Warning]:', syncErr);
+    }
+
     const { searchParams } = new URL(req.url);
     const role = searchParams.get('role') || undefined;
     const status = searchParams.get('status') || undefined;
@@ -83,6 +94,21 @@ export async function POST(req: NextRequest) {
     }
 
     const cleanEmail = email.toLowerCase().trim();
+
+    // Check if email already exists in Supabase or memory store
+    try {
+      const { data: dbAdmin } = await supabaseAdmin
+        .from('admin_users')
+        .select('*')
+        .eq('email', cleanEmail)
+        .maybeSingle();
+      if (dbAdmin) {
+        cmsStore.syncAdminsFromDb([dbAdmin]);
+      }
+    } catch (syncErr) {
+      console.warn('[Supabase Sync Admin Warning]:', syncErr);
+    }
+
     const existing = cmsStore.getAdminByEmail(cleanEmail);
     if (existing) {
       return NextResponse.json(
@@ -91,7 +117,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { admin, temporaryPassword } = cmsStore.createAdmin({
+    const { admin, adminRecord, temporaryPassword } = cmsStore.createAdmin({
       first_name,
       last_name,
       email: cleanEmail,
@@ -99,6 +125,33 @@ export async function POST(req: NextRequest) {
       role,
       phone,
     });
+
+    // Persist directly into Supabase admin_users table
+    try {
+      const { error: dbError } = await supabaseAdmin.from('admin_users').upsert({
+        id: admin.id,
+        email: admin.email,
+        password_hash: adminRecord.password_hash,
+        first_name: admin.first_name,
+        last_name: admin.last_name,
+        full_name: admin.full_name,
+        role_id: admin.role_id,
+        role_name: admin.role_name,
+        role_slug: admin.role,
+        status: admin.status,
+        is_active: admin.is_active,
+        must_change_password: admin.must_change_password,
+        phone: admin.phone || null,
+        created_at: admin.created_at,
+        updated_at: new Date().toISOString(),
+      });
+
+      if (dbError) {
+        console.error('[Supabase admin_users insert error]:', dbError);
+      }
+    } catch (dbErr) {
+      console.error('[Supabase DB Save Exception]:', dbErr);
+    }
 
     return NextResponse.json({
       success: true,

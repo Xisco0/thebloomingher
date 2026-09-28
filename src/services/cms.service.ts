@@ -33,7 +33,7 @@ export class CMSService {
 
       const { data, error } = await query.order('priority_order', { ascending: true });
 
-      if (!error && data && data.length > 0) {
+      if (!error && Array.isArray(data)) {
         let results = data.map((b: any) => ({
           id: b.id,
           internal_name: b.internal_name || b.title || 'Banner',
@@ -83,7 +83,7 @@ export class CMSService {
 
       const { data, error } = await query.order('priority_order', { ascending: true });
 
-      if (!error && data && data.length > 0) {
+      if (!error && Array.isArray(data)) {
         return data.map((b: any) => ({
           id: b.id,
           internal_name: b.internal_name || b.title || 'Banner',
@@ -113,6 +113,41 @@ export class CMSService {
   }
 
   async getBannerById(id: string): Promise<MarketingBanner | undefined> {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('marketing_banners')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+
+      if (!error && data) {
+        return {
+          id: data.id,
+          internal_name: data.internal_name || data.title || 'Banner',
+          title: data.title,
+          highlighted_title: data.highlighted_title || undefined,
+          subtitle: data.subtitle || undefined,
+          badge_text: data.badge_text || undefined,
+          banner_type: data.banner_type || 'custom',
+          placement: data.placement || 'homepage_hero',
+          primary_cta: typeof data.primary_cta === 'string' ? JSON.parse(data.primary_cta) : (data.primary_cta || { text: 'Shop Now', destinationType: 'collection', url: '/shop' }),
+          secondary_cta: typeof data.secondary_cta === 'string' ? JSON.parse(data.secondary_cta) : (data.secondary_cta || undefined),
+          desktop_image_url: data.desktop_image_url,
+          mobile_image_url: data.mobile_image_url || undefined,
+          alt_text: data.alt_text || data.title || '',
+          priority_order: Number(data.priority_order || 1),
+          status: data.status || 'active',
+          timezone: data.timezone || 'Africa/Lagos',
+          created_at: data.created_at,
+          updated_at: data.updated_at,
+        };
+      }
+      if (!error && !data) {
+        return undefined;
+      }
+    } catch (err) {
+      console.warn('Supabase getBannerById error, using fallback:', err);
+    }
     const banners = await this.getBanners();
     return banners.find(b => b.id === id);
   }
@@ -134,7 +169,7 @@ export class CMSService {
         .select('*')
         .order('event_date', { ascending: true });
 
-      if (!error && data && data.length > 0) {
+      if (!error && Array.isArray(data)) {
         return data.map((e: any) => ({
           id: e.id,
           name: e.name,
@@ -171,7 +206,7 @@ export class CMSService {
         .neq('status', 'cancelled')
         .order('event_date', { ascending: true });
 
-      if (!error && data && data.length > 0) {
+      if (!error && Array.isArray(data)) {
         return data.map((e: any) => ({
           id: e.id,
           name: e.name,
@@ -201,13 +236,47 @@ export class CMSService {
   }
 
   async getEventById(id: string): Promise<MarketingEvent | undefined> {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('marketing_events')
+        .select('*')
+        .or(`id.eq.${id},slug.eq.${id}`)
+        .maybeSingle();
+
+      if (!error && data) {
+        return {
+          id: data.id,
+          name: data.name,
+          slug: data.slug,
+          description: data.description || '',
+          tagline: data.tagline || undefined,
+          event_date: data.event_date,
+          start_time: data.start_time,
+          end_time: data.end_time || undefined,
+          location: data.location,
+          is_online: Boolean(data.is_virtual || data.is_online),
+          registration_url: data.registration_url || '',
+          cta_text: data.cta_text || 'Register Now',
+          desktop_image_url: data.desktop_image_url,
+          mobile_image_url: data.mobile_image_url || undefined,
+          status: data.status || 'upcoming',
+          is_featured: Boolean(data.is_featured),
+          created_at: data.created_at,
+          updated_at: data.updated_at,
+        };
+      }
+      if (!error && !data) {
+        return undefined;
+      }
+    } catch (err) {
+      console.warn('Supabase getEventById error, using fallback:', err);
+    }
     const events = await this.getEvents();
     return events.find(e => e.id === id || e.slug === id);
   }
 
   async getEventBySlug(slug: string): Promise<MarketingEvent | undefined> {
-    const events = await this.getEvents();
-    return events.find(e => e.slug === slug || e.id === slug);
+    return this.getEventById(slug);
   }
 
   // Announcements
@@ -218,7 +287,7 @@ export class CMSService {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (!error && data && data.length > 0) {
+      if (!error && Array.isArray(data)) {
         return data.map((a: any) => ({
           id: a.id,
           message: a.text || a.message || '',
@@ -247,7 +316,7 @@ export class CMSService {
       }
       const { data, error } = await query.order('created_at', { ascending: false });
 
-      if (!error && data && data.length > 0) {
+      if (!error && Array.isArray(data)) {
         return data.map((a: any) => ({
           id: a.id,
           message: a.text || a.message || '',

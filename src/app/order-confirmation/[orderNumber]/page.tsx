@@ -21,6 +21,9 @@ import { formatNaira } from '@/lib/utils/currency';
 import { generateWhatsAppOrderLink } from '@/lib/utils/whatsapp';
 import { STORE_PICKUP_LOCATION } from '@/lib/utils/nigeria-data';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface OrderConfirmationPageProps {
   params: {
     orderNumber: string;

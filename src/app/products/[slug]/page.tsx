@@ -16,6 +16,9 @@ import { ProductViewTracker } from '@/components/product/ProductViewTracker';
 import { formatNaira } from '@/lib/utils/currency';
 import { generateProductSchema, generateBreadcrumbSchema } from '@/lib/seo/schema';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface ProductPageProps {
   params: {
     slug: string;

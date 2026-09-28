@@ -8,8 +8,8 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const memoryCategories = cmsStore.getCategories();
     const catMap = new Map<string, Category>();
+    let hasDbCategories = false;
 
     // 1. Fetch live categories from Supabase
     try {
@@ -18,7 +18,8 @@ export async function GET() {
         .select('*')
         .order('display_order', { ascending: true });
 
-      if (!error && dbCategories && dbCategories.length > 0) {
+      if (!error && Array.isArray(dbCategories)) {
+        hasDbCategories = true;
         dbCategories.forEach((c: any) => {
           catMap.set(c.id, {
             id: c.id,
@@ -39,12 +40,13 @@ export async function GET() {
       console.warn('[Admin Categories GET] Supabase fetch error:', dbErr);
     }
 
-    // 2. Merge memory categories
-    memoryCategories.forEach(c => {
-      if (!catMap.has(c.id)) {
+    // 2. Fallback to memory store only if database query failed
+    if (!hasDbCategories) {
+      const memoryCategories = cmsStore.getCategories();
+      memoryCategories.forEach(c => {
         catMap.set(c.id, c);
-      }
-    });
+      });
+    }
 
     const categories = Array.from(catMap.values()).sort(
       (a, b) => (a.display_order || 1) - (b.display_order || 1)
@@ -115,14 +117,17 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Category ID required' }, { status: 400 });
     }
 
-    // 1. Delete from Supabase
+    // 1. Delete from memory store
+    cmsStore.deleteCategory(id);
+
+    // 2. Delete from Supabase
     try {
       await supabaseAdmin.from('categories').delete().eq('id', id);
     } catch (dbErr) {
       console.warn('[Admin Categories DELETE] Supabase delete error:', dbErr);
     }
 
-    // 2. Revalidate cache
+    // 3. Revalidate cache
     try {
       revalidatePath('/', 'layout');
       revalidatePath('/products');

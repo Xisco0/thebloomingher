@@ -7,8 +7,8 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const memoryDiscounts = cmsStore.getDiscounts();
     const discountsMap = new Map<string, DiscountCoupon>();
+    let hasDbDiscounts = false;
 
     // 1. Fetch from Supabase
     try {
@@ -17,7 +17,8 @@ export async function GET() {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (!error && data) {
+      if (!error && Array.isArray(data)) {
+        hasDbDiscounts = true;
         data.forEach((c: any) => {
           discountsMap.set(c.id, {
             id: c.id,
@@ -36,12 +37,13 @@ export async function GET() {
       console.warn('[Admin Discounts GET] Supabase fetch error:', dbErr);
     }
 
-    // 2. Merge memory discounts
-    memoryDiscounts.forEach(d => {
-      if (!discountsMap.has(d.id)) {
+    // 2. Fallback to memory store only if DB query failed
+    if (!hasDbDiscounts) {
+      const memoryDiscounts = cmsStore.getDiscounts();
+      memoryDiscounts.forEach(d => {
         discountsMap.set(d.id, d);
-      }
-    });
+      });
+    }
 
     const discounts = Array.from(discountsMap.values()).sort(
       (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()

@@ -12,7 +12,8 @@ interface EventPageProps {
   };
 }
 
-export const revalidate = 3600;
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function generateMetadata({ params }: EventPageProps): Promise<Metadata> {
   const event = await cmsService.getEventById(params.slug);

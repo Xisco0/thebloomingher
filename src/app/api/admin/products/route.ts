@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (!dbError && dbProducts && dbProducts.length > 0) {
+      if (!dbError && Array.isArray(dbProducts)) {
         hasDbProducts = true;
         dbProducts.forEach(p => {
           if (cmsStore.isProductDeleted(p.id) || (p.slug && cmsStore.isProductDeleted(p.slug))) {
@@ -88,7 +88,7 @@ export async function GET(req: NextRequest) {
       console.warn('Supabase products fetch skipped or schema pending:', dbErr);
     }
 
-    // 2. Fallback to cmsStore / catalog ONLY if database is not populated yet
+    // 2. Fallback to cmsStore / catalog ONLY if database query failed
     if (!hasDbProducts) {
       const storeProducts = cmsStore.getProducts();
       storeProducts.forEach(p => {
