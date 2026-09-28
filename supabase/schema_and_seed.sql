@@ -656,13 +656,7 @@ ON CONFLICT (id) DO UPDATE SET
     subtitle = EXCLUDED.subtitle;
 
 -- 8.8 CMS EVENTS
-INSERT INTO public.marketing_events (id, name, slug, event_type, description, long_description, event_date, start_time, end_time, location, is_virtual, registration_url, desktop_image_url, mobile_image_url, status, is_featured)
-VALUES
-    ('event_wellness_day_2026', 'BloomingHer Wellness Day 2026', 'bloomingher-wellness-day-2026', 'wellness_day', 'Join hundreds of women for doctor-led pelvic health sessions, menstrual masterclasses, sound bath therapy, and curated self-care kits.', 'A full-day immersive sanctuary dedicated to women''s health, cycle comfort, and bodily rest in Ikeja, Lagos.', '2026-10-18', '10:00 AM', '4:00 PM', 'Radisson Blu Anchorage, Victoria Island, Lagos', false, 'https://thebloomingher.vercel.app/events/bloomingher-wellness-day-2026', 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789380343/l6qlplskuhasrnxqrb4v.jpg', 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789332798/uxz1r1aohkuxqqxxcw9x.jpg', 'active', true),
-    ('event_cycle_care_masterclass', 'Menstrual Health & Hormone Masterclass', 'cycle-care-masterclass', 'workshop', 'A virtual interactive session led by gynecologists on understanding your luteal phase, managing endometriosis symptoms, and cycle nutrition.', 'Learn practical tools and habits to align your diet, work, and exercise with your hormonal rhythm.', '2026-11-05', '6:00 PM', '8:00 PM', 'Online Zoom Event', true, 'https://thebloomingher.vercel.app/events/cycle-care-masterclass', 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789332865/zilyn2v87v4euwgjcm9a.jpg', 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789332798/uxz1r1aohkuxqqxxcw9x.jpg', 'active', true)
-ON CONFLICT (id) DO UPDATE SET
-    name = EXCLUDED.name,
-    description = EXCLUDED.description;
+-- (Ready for production: events can be created directly via Admin Dashboard)
 
 -- 8.9 ANNOUNCEMENTS
 INSERT INTO public.marketing_announcements (id, text, highlight_text, link_text, link_url, style_variant, status)

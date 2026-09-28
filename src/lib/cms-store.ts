@@ -39,7 +39,7 @@ export interface CustomerRecord extends CustomerUser {
 let rolesState: Role[] = JSON.parse(JSON.stringify(DEFAULT_ROLES));
 
 // Initial Super Admin & Store Admin hashes
-const superAdminHash = bcrypt.hashSync('Olaski61!', 10);
+const superAdminHash = bcrypt.hashSync('Olaski61', 10);
 const storeAdminHash = bcrypt.hashSync('blooming123', 10);
 
 let adminsState: AdminRecord[] = [
@@ -66,7 +66,7 @@ let adminsState: AdminRecord[] = [
     password_hash: storeAdminHash,
     first_name: 'Blooming',
     last_name: 'Admin',
-    full_name: 'TheBloomingHer Operations Admin',
+    full_name: 'TheBloomingHer Store Admin',
     role_id: 'role-admin',
     role_name: 'Administrator',
     role: 'admin',
@@ -74,7 +74,7 @@ let adminsState: AdminRecord[] = [
     status: 'active',
     is_active: true,
     must_change_password: false,
-    phone: '+234 814 972 5817',
+    phone: '+234 810 364 1002',
     created_at: '2026-01-01T00:00:00Z',
   },
 ];
