@@ -64,9 +64,12 @@ export async function GET(req: NextRequest) {
     // Direct fetch from Supabase customers table if not in memory
     if (!customer && (customerId || customerEmail)) {
       try {
+        const isUUID = customerId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(customerId);
         let query = supabaseAdmin.from('customers').select('*');
-        if (customerId) {
-          query = query.or(`id.eq.${customerId},email.eq.${customerEmail || customerId}`);
+        if (isUUID && customerEmail) {
+          query = query.or(`id.eq.${customerId},email.eq.${customerEmail}`);
+        } else if (isUUID) {
+          query = query.eq('id', customerId);
         } else if (customerEmail) {
           query = query.eq('email', customerEmail);
         }

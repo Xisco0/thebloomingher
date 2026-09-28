@@ -81,17 +81,26 @@ export async function handleAuthCallback(request: NextRequest) {
           avatarUrl,
         });
 
-        if (authResult.success && authResult.token) {
-          redirectResponse.cookies.set({
-            name: CUSTOMER_COOKIE_NAME,
-            value: authResult.token,
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            path: '/',
-            maxAge: 7 * 24 * 60 * 60, // 7 days
-          });
+        if (!authResult.success || !authResult.token) {
+          console.warn('[Customer Google Auth Notice]:', authResult.error);
+          const redirectErrorUrl = new URL(
+            `/account/login?error=${encodeURIComponent(authResult.error || 'Authentication synchronization failed')}`,
+            targetOrigin
+          );
+          const res = NextResponse.redirect(redirectErrorUrl);
+          res.cookies.delete('auth_redirect');
+          return res;
         }
+
+        redirectResponse.cookies.set({
+          name: CUSTOMER_COOKIE_NAME,
+          value: authResult.token,
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          path: '/',
+          maxAge: 7 * 24 * 60 * 60, // 7 days
+        });
 
         return redirectResponse;
       } else if (error) {

@@ -163,27 +163,32 @@ export class AuthService {
 
     // Persist to Supabase customers table
     try {
-      const { data: inserted } = await supabaseAdmin
+      const { data: inserted, error: insertErr } = await supabaseAdmin
         .from('customers')
-        .upsert({
-          id: newCustomer.id,
-          first_name: newCustomer.first_name,
-          last_name: newCustomer.last_name,
-          email: newCustomer.email,
-          password_hash: passwordHash,
-          phone: newCustomer.phone || null,
-          is_active: true,
-          created_at: newCustomer.created_at,
-          updated_at: new Date().toISOString(),
-        })
+        .upsert(
+          {
+            id: newCustomer.id,
+            first_name: newCustomer.first_name,
+            last_name: newCustomer.last_name,
+            email: newCustomer.email,
+            password_hash: passwordHash,
+            phone: newCustomer.phone || null,
+            is_active: true,
+            created_at: newCustomer.created_at,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'email' }
+        )
         .select()
         .maybeSingle();
 
-      if (inserted?.id) {
+      if (insertErr) {
+        console.warn('[Supabase Customer Insert Notice]:', insertErr.message);
+      } else if (inserted?.id) {
         newCustomer.id = inserted.id;
       }
     } catch (e) {
-      console.warn('[Supabase Customer Insert Notice]:', e);
+      console.warn('[Supabase Customer Insert Exception]:', e);
     }
 
     const token = await createSessionToken({
@@ -324,7 +329,10 @@ export class AuthService {
         first = cleanEmail.split('@')[0];
       }
 
+      const isUUID = data.googleId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(data.googleId);
+
       customer = cmsStore.createCustomer({
+        id: isUUID ? data.googleId : undefined,
         first_name: first,
         last_name: last,
         email: cleanEmail,
@@ -334,25 +342,32 @@ export class AuthService {
 
       // Persist to Supabase
       try {
-        const { data: inserted } = await supabaseAdmin
+        const { data: inserted, error: upsertErr } = await supabaseAdmin
           .from('customers')
-          .upsert({
-            id: customer.id,
-            first_name: customer.first_name,
-            last_name: customer.last_name,
-            email: customer.email,
-            password_hash: '',
-            is_active: true,
-            created_at: customer.created_at,
-            updated_at: new Date().toISOString(),
-          })
+          .upsert(
+            {
+              id: customer.id,
+              first_name: customer.first_name,
+              last_name: customer.last_name,
+              email: customer.email,
+              password_hash: '',
+              is_active: true,
+              created_at: customer.created_at,
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: 'email' }
+          )
           .select()
           .maybeSingle();
 
-        if (inserted?.id) {
+        if (upsertErr) {
+          console.warn('[Supabase Customer Upsert Notice]:', upsertErr.message);
+        } else if (inserted?.id) {
           customer.id = inserted.id;
         }
-      } catch (e) {}
+      } catch (e) {
+        console.warn('[Supabase Customer Upsert Exception]:', e);
+      }
     }
 
     if (!customer.is_active) {

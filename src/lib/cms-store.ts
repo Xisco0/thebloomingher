@@ -1496,9 +1496,12 @@ export const cmsStore = {
     const existingByEmail = customersState.find(c => c.email.toLowerCase() === data.email.toLowerCase());
     if (existingByEmail) return existingByEmail;
 
+    const isUUID = data.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(data.id);
+    const customerId = isUUID ? data.id! : (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `cust-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`);
+
     const newCustomer: CustomerRecord = {
       ...data,
-      id: data.id || `cust-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      id: customerId,
       created_at: new Date().toISOString(),
     };
     customersState.push(newCustomer);

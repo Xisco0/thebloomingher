@@ -2,7 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifySessionToken, ADMIN_COOKIE_NAME, CUSTOMER_COOKIE_NAME } from '@/lib/auth/jwt';
 
 export async function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
+  const { pathname, searchParams } = req.nextUrl;
+
+  // 0. Catch OAuth Authorization Code if landed on root or non-callback page
+  if (
+    searchParams.has('code') &&
+    !pathname.startsWith('/auth/callback') &&
+    !pathname.startsWith('/api/auth/callback')
+  ) {
+    const callbackUrl = new URL('/auth/callback', req.url);
+    callbackUrl.search = req.nextUrl.search;
+    return NextResponse.redirect(callbackUrl);
+  }
 
   // 1. Admin Route Protection
   if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
@@ -105,8 +116,13 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    '/admin/:path*',
-    '/api/admin/:path*',
-    '/account/:path*',
+    /*
+     * Match all request paths except:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - images, public files
+     */
+    '/((?!_next/static|_next/image|favicon.ico|images|api/images).*)',
   ],
 };
