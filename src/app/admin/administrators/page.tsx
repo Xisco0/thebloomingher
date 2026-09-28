@@ -766,7 +766,10 @@ export default function AdministratorsPage() {
                       </option>
                     ))
                   ) : (
-                    <option value="role-admin">Administrator</option>
+                    <>
+                      <option value="role-admin">Administrator</option>
+                      <option value="role-staff">Staff</option>
+                    </>
                   )}
                 </select>
               </div>
@@ -869,7 +872,10 @@ export default function AdministratorsPage() {
                         </option>
                       ))
                     ) : (
-                      <option value="role-admin">Administrator</option>
+                      <>
+                        <option value="role-admin">Administrator</option>
+                        <option value="role-staff">Staff</option>
+                      </>
                     )}
                   </select>
                 </div>
