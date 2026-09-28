@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { authService } from '@/services/auth.service';
 import { CUSTOMER_COOKIE_NAME } from '@/lib/auth/jwt';
 import { getSiteUrl } from '@/lib/site-url';
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   const redirect = cookieRedirect ? decodeURIComponent(cookieRedirect) : (requestUrl.searchParams.get('redirect') || '/account');
   const targetOrigin = requestUrl.origin || getSiteUrl();
 
-  // If OAuth returned an error
+  // If OAuth provider returned an error query parameter
   if (errorParam || errorDescription) {
     const errorMsg = errorDescription || errorParam || 'Google authentication failed';
     const redirectErrorUrl = new URL(`/account/login?error=${encodeURIComponent(errorMsg)}`, targetOrigin);
@@ -26,8 +26,31 @@ export async function GET(request: NextRequest) {
   }
 
   if (code) {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://xbhyafrdczdazuueibeu.supabase.co';
+    const supabaseKey =
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+      'sb_publishable_znrQgeyTg5CdTygxT_JPzg_i06ON-jw';
+
+    const safeRedirect = redirect.startsWith('/') ? redirect : '/account';
+    let redirectResponse = NextResponse.redirect(new URL(safeRedirect, targetOrigin));
+    redirectResponse.cookies.delete('auth_redirect');
+
+    const supabase = createServerClient(supabaseUrl, supabaseKey, {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet: Array<{ name: string; value: string; options?: CookieOptions }>) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            request.cookies.set(name, value);
+            redirectResponse.cookies.set(name, value, options);
+          });
+        },
+      },
+    });
+
     try {
-      const supabase = createServerSupabaseClient();
       const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
       if (!error && data?.session?.user) {
@@ -48,12 +71,8 @@ export async function GET(request: NextRequest) {
           avatarUrl,
         });
 
-        const safeRedirect = redirect.startsWith('/') ? redirect : '/account';
-        const response = NextResponse.redirect(new URL(safeRedirect, targetOrigin));
-        response.cookies.delete('auth_redirect');
-
         if (authResult.success && authResult.token) {
-          response.cookies.set({
+          redirectResponse.cookies.set({
             name: CUSTOMER_COOKIE_NAME,
             value: authResult.token,
             httpOnly: true,
@@ -64,7 +83,7 @@ export async function GET(request: NextRequest) {
           });
         }
 
-        return response;
+        return redirectResponse;
       } else if (error) {
         console.warn('[Supabase Auth Callback Exchange Error]:', error.message);
         const redirectErrorUrl = new URL(`/account/login?error=${encodeURIComponent(error.message)}`, targetOrigin);
