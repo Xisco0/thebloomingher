@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { authService } from '@/services/auth.service';
-import { CUSTOMER_COOKIE_NAME, createSessionToken } from '@/lib/auth/jwt';
+import { CUSTOMER_COOKIE_NAME } from '@/lib/auth/jwt';
 import { getSiteUrl } from '@/lib/site-url';
 
 export const dynamic = 'force-dynamic';
@@ -9,49 +9,81 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
-  const redirect = requestUrl.searchParams.get('redirect') || '/account';
+  const errorParam = requestUrl.searchParams.get('error');
+  const errorDescription = requestUrl.searchParams.get('error_description');
+
+  const cookieRedirect = request.cookies.get('auth_redirect')?.value;
+  const redirect = cookieRedirect ? decodeURIComponent(cookieRedirect) : (requestUrl.searchParams.get('redirect') || '/account');
   const targetOrigin = requestUrl.origin || getSiteUrl();
 
+  // If OAuth returned an error
+  if (errorParam || errorDescription) {
+    const errorMsg = errorDescription || errorParam || 'Google authentication failed';
+    const redirectErrorUrl = new URL(`/account/login?error=${encodeURIComponent(errorMsg)}`, targetOrigin);
+    const res = NextResponse.redirect(redirectErrorUrl);
+    res.cookies.delete('auth_redirect');
+    return res;
+  }
+
   if (code) {
-    const supabase = createServerSupabaseClient();
-    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+    try {
+      const supabase = createServerSupabaseClient();
+      const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
-    if (!error && data?.session?.user) {
-      const user = data.session.user;
-      const email = user.email || '';
-      const fullName = user.user_metadata?.full_name || user.user_metadata?.name || '';
-      const firstName = user.user_metadata?.first_name || fullName.split(' ')[0] || 'Customer';
-      const lastName = user.user_metadata?.last_name || fullName.split(' ').slice(1).join(' ') || '';
-      const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || '';
+      if (!error && data?.session?.user) {
+        const user = data.session.user;
+        const email = user.email || '';
+        const fullName = user.user_metadata?.full_name || user.user_metadata?.name || '';
+        const firstName = user.user_metadata?.first_name || fullName.split(' ')[0] || 'Customer';
+        const lastName = user.user_metadata?.last_name || fullName.split(' ').slice(1).join(' ') || '';
+        const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || '';
 
-      // Sync customer in database/auth service
-      const authResult = await authService.customerGoogleAuth({
-        email,
-        name: fullName,
-        firstName,
-        lastName,
-        googleId: user.id,
-        avatarUrl,
-      });
-
-      const response = NextResponse.redirect(new URL(redirect, targetOrigin));
-
-      if (authResult.success && authResult.token) {
-        response.cookies.set({
-          name: CUSTOMER_COOKIE_NAME,
-          value: authResult.token,
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          path: '/',
-          maxAge: 7 * 24 * 60 * 60, // 7 days
+        // Sync customer in database/auth service
+        const authResult = await authService.customerGoogleAuth({
+          email,
+          name: fullName,
+          firstName,
+          lastName,
+          googleId: user.id,
+          avatarUrl,
         });
-      }
 
-      return response;
+        const safeRedirect = redirect.startsWith('/') ? redirect : '/account';
+        const response = NextResponse.redirect(new URL(safeRedirect, targetOrigin));
+        response.cookies.delete('auth_redirect');
+
+        if (authResult.success && authResult.token) {
+          response.cookies.set({
+            name: CUSTOMER_COOKIE_NAME,
+            value: authResult.token,
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            path: '/',
+            maxAge: 7 * 24 * 60 * 60, // 7 days
+          });
+        }
+
+        return response;
+      } else if (error) {
+        console.warn('[Supabase Auth Callback Exchange Error]:', error.message);
+        const redirectErrorUrl = new URL(`/account/login?error=${encodeURIComponent(error.message)}`, targetOrigin);
+        const res = NextResponse.redirect(redirectErrorUrl);
+        res.cookies.delete('auth_redirect');
+        return res;
+      }
+    } catch (err: any) {
+      console.error('[Auth Callback Exception]:', err);
+      const redirectErrorUrl = new URL(`/account/login?error=${encodeURIComponent(err.message || 'Authentication error')}`, targetOrigin);
+      const res = NextResponse.redirect(redirectErrorUrl);
+      res.cookies.delete('auth_redirect');
+      return res;
     }
   }
 
   // Fallback redirect
-  return NextResponse.redirect(new URL(redirect, targetOrigin));
+  const safeRedirect = redirect.startsWith('/') ? redirect : '/account';
+  const response = NextResponse.redirect(new URL(safeRedirect, targetOrigin));
+  response.cookies.delete('auth_redirect');
+  return response;
 }

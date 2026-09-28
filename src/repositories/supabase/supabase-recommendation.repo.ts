@@ -9,11 +9,19 @@ import {
   RecommendationMetrics,
 } from '@/types';
 import { cmsStore } from '@/lib/cms-store';
+import { SupabaseProductRepository } from './supabase-product.repo';
 import { hybridRecommendationEngine } from '@/lib/recommendation/hybrid-engine';
 
 export class SupabaseRecommendationRepository implements IRecommendationRepository {
+  private productRepo = new SupabaseProductRepository();
+
+  private async getLiveProducts(): Promise<Product[]> {
+    const res = await this.productRepo.getProducts({ pageSize: 250 });
+    return res.data;
+  }
+
   async getRecommendations(request: RecommendationRequest): Promise<RecommendedProduct[]> {
-    const allProducts = cmsStore.getProducts();
+    const allProducts = await this.getLiveProducts();
     const relationships = cmsStore.getRelationships();
     const coPurchases = cmsStore.getCoPurchases();
     const events = cmsStore.getAnalyticsEvents();
@@ -37,7 +45,7 @@ export class SupabaseRecommendationRepository implements IRecommendationReposito
   }
 
   async getFrequentlyBoughtTogether(productId: string): Promise<Product[]> {
-    const allProducts = cmsStore.getProducts();
+    const allProducts = await this.getLiveProducts();
     const current = allProducts.find(p => p.id === productId);
     if (!current) return [];
 
@@ -90,7 +98,7 @@ export class SupabaseRecommendationRepository implements IRecommendationReposito
 
   async getRecentlyViewed(productIds: string[], limit = 6): Promise<Product[]> {
     if (!productIds || productIds.length === 0) return [];
-    const allProducts = cmsStore.getProducts();
+    const allProducts = await this.getLiveProducts();
     const map = new Map(allProducts.map(p => [p.id, p]));
     
     // Preserve customer's most recent order
@@ -107,7 +115,7 @@ export class SupabaseRecommendationRepository implements IRecommendationReposito
 
   async getProductRelationships(productId?: string): Promise<ProductRelationship[]> {
     const all = cmsStore.getRelationships();
-    const products = cmsStore.getProducts();
+    const products = await this.getLiveProducts();
     const filtered = productId ? all.filter(r => r.source_product_id === productId) : all;
 
     return filtered.map(r => ({
@@ -136,3 +144,4 @@ export class SupabaseRecommendationRepository implements IRecommendationReposito
     return cmsStore.getRecommendationMetrics();
   }
 }
+

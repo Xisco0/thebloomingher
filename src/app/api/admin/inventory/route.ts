@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { cmsStore } from '@/lib/cms-store';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 
@@ -26,7 +27,7 @@ export async function PATCH(req: NextRequest) {
     // 1. Update memory store
     const updated = cmsStore.updateProductStock(productId, finalStock);
 
-    // 2. Update Supabase inventory table
+    // 2. Update Supabase inventory table & products table
     try {
       await supabaseAdmin
         .from('inventory')
@@ -39,8 +40,29 @@ export async function PATCH(req: NextRequest) {
           },
           { onConflict: 'product_id' }
         );
+
+      // Also sync products table stock if it has the column
+      await supabaseAdmin
+        .from('products')
+        .update({
+          stock_quantity: finalStock,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', productId);
     } catch (dbErr) {
       console.warn('[Admin Inventory PATCH] Supabase inventory update error:', dbErr);
+    }
+
+    // 3. Revalidate Next.js cache
+    try {
+      revalidatePath('/', 'layout');
+      revalidatePath('/products');
+      revalidatePath('/shop');
+      if (product?.slug) {
+        revalidatePath(`/products/${product.slug}`);
+      }
+    } catch (revErr) {
+      console.warn('Cache revalidation notice:', revErr);
     }
 
     return NextResponse.json({ success: true, product: updated || { id: productId, stock_quantity: finalStock } });
@@ -48,4 +70,5 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
+
 

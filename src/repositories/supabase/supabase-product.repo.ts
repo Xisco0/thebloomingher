@@ -9,7 +9,7 @@ export class SupabaseProductRepository implements IProductRepository {
     const productMap = new Map<string, Product>();
     let hasDbProducts = false;
 
-    // 1. Fetch live products directly from Supabase (source of truth)
+    // 1. Fetch live products directly from Supabase (authoritative source of truth)
     try {
       const { data: dbProducts, error: dbError } = await supabaseAdmin
         .from('products')
@@ -85,7 +85,7 @@ export class SupabaseProductRepository implements IProductRepository {
       console.warn('Supabase product repo fetch skipped:', err);
     }
 
-    // 2. If Supabase has no data yet, fallback to local baseline
+    // 2. If Supabase has no data yet (e.g. unseeded database or network failure), fallback to local baseline
     if (!hasDbProducts) {
       const localProducts = (catalogData.products as Product[]) || [];
       localProducts.forEach(p => {
@@ -94,18 +94,6 @@ export class SupabaseProductRepository implements IProductRepository {
         }
       });
     }
-
-    // 3. Merge in-memory products from cmsStore
-    try {
-      const stored = cmsStore.getProducts();
-      if (stored && stored.length > 0) {
-        stored.forEach(p => {
-          if (!cmsStore.isProductDeleted(p.id) && (!p.slug || !cmsStore.isProductDeleted(p.slug))) {
-            productMap.set(p.id, p);
-          }
-        });
-      }
-    } catch {}
 
     return Array.from(productMap.values());
   }
@@ -249,12 +237,36 @@ export class SupabaseProductRepository implements IProductRepository {
   }
 
   async getProductReviews(productId: string): Promise<ProductReview[]> {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('product_reviews')
+        .select('*')
+        .eq('product_id', productId)
+        .order('created_at', { ascending: false });
+
+      if (!error && data && data.length > 0) {
+        return data.map((r: any) => ({
+          id: r.id,
+          product_id: r.product_id,
+          author_name: r.author_name,
+          rating: Number(r.rating || 5),
+          title: r.title,
+          comment: r.comment,
+          is_verified_purchase: Boolean(r.is_verified_purchase),
+          helpful_votes: Number(r.helpful_votes || 0),
+          created_at: r.created_at,
+        }));
+      }
+    } catch (err) {
+      console.warn('Supabase product reviews fetch skipped:', err);
+    }
+
     const products = await this.fetchAllProducts();
     const product = products.find(p => p.id === productId);
     if (!product) return [];
 
     const category = product.category_name || '';
-    const reviews: ProductReview[] = [
+    const fallbackReviews: ProductReview[] = [
       {
         id: `rev-${productId}-1`,
         product_id: productId,
@@ -290,6 +302,7 @@ export class SupabaseProductRepository implements IProductRepository {
       },
     ];
 
-    return reviews;
+    return fallbackReviews;
   }
 }
+

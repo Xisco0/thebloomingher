@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { cmsStore } from '@/lib/cms-store';
-import { BannerFilterOptions, BannerPlacement, BannerStatus, BannerType, MarketingBanner } from '@/types/marketing-cms.types';
+import { cmsService } from '@/services/cms.service';
+import { BannerFilterOptions, BannerPlacement, BannerStatus, BannerType } from '@/types/marketing-cms.types';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 
 export const dynamic = 'force-dynamic';
@@ -22,54 +24,7 @@ export async function GET(req: NextRequest) {
       campaign_id,
     };
 
-    const memoryBanners = cmsStore.getBanners(filters);
-    const bannersMap = new Map<string, MarketingBanner>();
-
-    // 1. Fetch from Supabase
-    try {
-      const { data, error } = await supabaseAdmin
-        .from('marketing_banners')
-        .select('*')
-        .order('priority_order', { ascending: true });
-
-      if (!error && data) {
-        data.forEach((b: any) => {
-          bannersMap.set(b.id, {
-            id: b.id,
-            internal_name: b.internal_name || b.title || 'Banner',
-            title: b.title,
-            highlighted_title: b.highlighted_title || undefined,
-            subtitle: b.subtitle || undefined,
-            badge_text: b.badge_text || undefined,
-            banner_type: b.banner_type || 'custom',
-            placement: b.placement || 'homepage_hero',
-            primary_cta: typeof b.primary_cta === 'string' ? JSON.parse(b.primary_cta) : (b.primary_cta || { text: 'Shop Now', destinationType: 'collection', url: '/shop' }),
-            secondary_cta: typeof b.secondary_cta === 'string' ? JSON.parse(b.secondary_cta) : (b.secondary_cta || undefined),
-            desktop_image_url: b.desktop_image_url,
-            mobile_image_url: b.mobile_image_url || undefined,
-            alt_text: b.alt_text || b.title || '',
-            priority_order: Number(b.priority_order || 1),
-            status: b.status || 'active',
-            timezone: b.timezone || 'Africa/Lagos',
-            created_at: b.created_at,
-            updated_at: b.updated_at,
-          });
-        });
-      }
-    } catch (dbErr) {
-      console.warn('[Admin Banners GET] Supabase fetch error:', dbErr);
-    }
-
-    // 2. Merge memory banners
-    memoryBanners.forEach(b => {
-      if (!bannersMap.has(b.id)) {
-        bannersMap.set(b.id, b);
-      }
-    });
-
-    const banners = Array.from(bannersMap.values()).sort(
-      (a, b) => (a.priority_order || 1) - (b.priority_order || 1)
-    );
+    const banners = await cmsService.getBanners(filters);
 
     return NextResponse.json({ success: true, banners });
   } catch (error: any) {
@@ -115,6 +70,13 @@ export async function POST(req: NextRequest) {
       console.warn('[Admin Banners POST] Supabase upsert error:', dbErr);
     }
 
+    // 3. Revalidate cache
+    try {
+      revalidatePath('/', 'layout');
+    } catch (revErr) {
+      console.warn('Cache revalidation notice:', revErr);
+    }
+
     return NextResponse.json({ success: true, banner: saved });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
@@ -156,6 +118,13 @@ export async function PUT(req: NextRequest) {
       console.warn('[Admin Banners PUT] Supabase upsert error:', dbErr);
     }
 
+    // 3. Revalidate cache
+    try {
+      revalidatePath('/', 'layout');
+    } catch (revErr) {
+      console.warn('Cache revalidation notice:', revErr);
+    }
+
     return NextResponse.json({ success: true, banner: saved });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
@@ -178,6 +147,13 @@ export async function DELETE(req: NextRequest) {
       await supabaseAdmin.from('marketing_banners').delete().eq('id', id);
     } catch (dbErr) {
       console.warn('[Admin Banners DELETE] Supabase delete error:', dbErr);
+    }
+
+    // 3. Revalidate cache
+    try {
+      revalidatePath('/', 'layout');
+    } catch (revErr) {
+      console.warn('Cache revalidation notice:', revErr);
     }
 
     return NextResponse.json({ success: deleted, message: 'Banner deleted' });

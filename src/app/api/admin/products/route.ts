@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { cmsStore } from '@/lib/cms-store';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { Product } from '@/types';
@@ -87,7 +88,7 @@ export async function GET(req: NextRequest) {
       console.warn('Supabase products fetch skipped or schema pending:', dbErr);
     }
 
-    // 2. Fallback to cmsStore / catalog if database is not populated yet
+    // 2. Fallback to cmsStore / catalog ONLY if database is not populated yet
     if (!hasDbProducts) {
       const storeProducts = cmsStore.getProducts();
       storeProducts.forEach(p => {
@@ -96,16 +97,6 @@ export async function GET(req: NextRequest) {
         }
       });
     }
-
-    // 3. Merge in-memory products from cmsStore
-    try {
-      const stored = cmsStore.getProducts();
-      stored.forEach(p => {
-        if (!cmsStore.isProductDeleted(p.id) && (!p.slug || !cmsStore.isProductDeleted(p.slug))) {
-          productMap.set(p.id, p);
-        }
-      });
-    } catch {}
 
     const uniqueProducts = Array.from(productMap.values());
 
@@ -234,6 +225,16 @@ export async function POST(req: NextRequest) {
     // 2. Always persist to store
     const saved = cmsStore.saveProduct(product);
 
+    // 3. Revalidate Next.js cache so changes immediately appear across the storefront
+    try {
+      revalidatePath('/', 'layout');
+      revalidatePath('/products');
+      revalidatePath('/shop');
+      revalidatePath(`/products/${product.slug}`);
+    } catch (revErr) {
+      console.warn('Cache revalidation notice:', revErr);
+    }
+
     return NextResponse.json({
       success: true,
       product: saved,
@@ -256,15 +257,41 @@ export async function PUT(req: NextRequest) {
       ? generateProfessionalSlug(body.slug)
       : (body.name ? generateProfessionalSlug(body.name) : existing?.slug || '');
 
+    // Format images properly if provided
+    let formattedImages = existing?.images || [];
+    if (body.images && Array.isArray(body.images) && body.images.length > 0) {
+      formattedImages = body.images.map((img: any, idx: number) => {
+        if (typeof img === 'string') {
+          return {
+            id: `img-${body.id}-${idx}`,
+            product_id: body.id,
+            url: img,
+            alt_text: body.name || existing?.name || 'Product Image',
+            display_order: idx + 1,
+            is_primary: idx === 0,
+          };
+        }
+        return img;
+      });
+    }
+
     const updated: Product = {
       ...(existing || {} as Product),
       ...body,
       slug: updatedSlug || existing?.slug || generateProfessionalSlug(body.name || 'product'),
       price: Number(body.price),
       compare_at_price: body.compare_at_price ? Number(body.compare_at_price) : undefined,
-      stock_quantity: Number(body.stock_quantity),
+      stock_quantity: Number(body.stock_quantity ?? existing?.stock_quantity ?? 0),
+      low_stock_threshold: Number(body.low_stock_threshold ?? existing?.low_stock_threshold ?? 5),
+      images: formattedImages,
+      is_featured: body.is_featured !== undefined ? Boolean(body.is_featured) : (existing?.is_featured ?? false),
+      is_bestseller: body.is_bestseller !== undefined ? Boolean(body.is_bestseller) : (existing?.is_bestseller ?? false),
+      is_new_arrival: body.is_new_arrival !== undefined ? Boolean(body.is_new_arrival) : (existing?.is_new_arrival ?? false),
+      tags: Array.isArray(body.tags) ? body.tags : (body.tags ? body.tags.split(',').map((t: string) => t.trim()).filter(Boolean) : (existing?.tags || [])),
       updated_at: new Date().toISOString(),
     };
+
+    const imageUrls = updated.images.map((img: any) => (typeof img === 'string' ? img : img.url));
 
     // Update in Supabase if table exists
     try {
@@ -275,16 +302,22 @@ export async function PUT(req: NextRequest) {
           slug: updated.slug,
           sku: updated.sku,
           price: updated.price,
-          compare_at_price: updated.compare_at_price,
+          compare_at_price: updated.compare_at_price || null,
           category_id: updated.category_id,
           category_name: updated.category_name,
-          short_description: updated.short_description,
-          description: updated.description,
+          subcategory: updated.subcategory || null,
+          short_description: updated.short_description || null,
+          description: updated.description || '',
+          images: imageUrls,
           is_featured: updated.is_featured,
           is_bestseller: updated.is_bestseller,
           is_new_arrival: updated.is_new_arrival,
+          status: updated.status || 'active',
           tags: updated.tags,
-          updated_at: new Date().toISOString(),
+          rating: updated.rating,
+          rating_count: updated.rating_count,
+          features: updated.features || [],
+          updated_at: updated.updated_at,
         })
         .eq('id', updated.id);
 
@@ -306,6 +339,20 @@ export async function PUT(req: NextRequest) {
     }
 
     const saved = cmsStore.saveProduct(updated);
+
+    // Revalidate Next.js cache so storefront updates immediately
+    try {
+      revalidatePath('/', 'layout');
+      revalidatePath('/products');
+      revalidatePath('/shop');
+      revalidatePath(`/products/${updated.slug}`);
+      if (existing?.slug && existing.slug !== updated.slug) {
+        revalidatePath(`/products/${existing.slug}`);
+      }
+    } catch (revErr) {
+      console.warn('Cache revalidation notice:', revErr);
+    }
+
     return NextResponse.json({ success: true, product: saved });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
@@ -360,6 +407,18 @@ export async function DELETE(req: NextRequest) {
     cmsStore.deleteProduct(id);
     if (slug) {
       cmsStore.deleteProduct(slug);
+    }
+
+    // 4. Revalidate Next.js cache
+    try {
+      revalidatePath('/', 'layout');
+      revalidatePath('/products');
+      revalidatePath('/shop');
+      if (slug) {
+        revalidatePath(`/products/${slug}`);
+      }
+    } catch (revErr) {
+      console.warn('Cache revalidation notice:', revErr);
     }
 
     return NextResponse.json({

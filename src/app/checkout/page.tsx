@@ -17,6 +17,8 @@ import {
   CreditCard,
   Building2,
   RefreshCw,
+  Edit3,
+  User,
 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { formatNaira } from '@/lib/utils/currency';
@@ -30,11 +32,29 @@ import {
 } from '@/lib/utils/nigeria-data';
 import { analytics } from '@/lib/analytics/events';
 
+interface AuthenticatedCustomer {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone?: string;
+  delivery_address?: {
+    street?: string;
+    city?: string;
+    state?: string;
+    lga?: string;
+  };
+}
+
 function CheckoutContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const paymentErrorParam = searchParams.get('error');
   const { items, subtotal, clearCart } = useCart();
+
+  // Authenticated Customer State
+  const [customer, setCustomer] = useState<AuthenticatedCustomer | null>(null);
+  const [isEditingContact, setIsEditingContact] = useState(false);
 
   // Delivery & Contact State
   const [deliveryType, setDeliveryType] = useState<'shipping' | 'pickup'>('shipping');
@@ -58,6 +78,30 @@ function CheckoutContent() {
   const [appliedDiscount, setAppliedDiscount] = useState<{ code: string; amount: number } | null>(null);
   const [discountInput, setDiscountInput] = useState('');
   const [discountError, setDiscountError] = useState('');
+
+  // Fetch logged in customer on mount
+  useEffect(() => {
+    fetch('/api/auth/customer/me')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.customer) {
+          setCustomer(data.customer);
+          const cust = data.customer;
+          const fullName = `${cust.first_name || ''} ${cust.last_name || ''}`.trim();
+          setFormData(prev => ({
+            ...prev,
+            fullName: fullName || prev.fullName,
+            email: cust.email || prev.email,
+            phone: prev.phone || cust.phone || '',
+            street: prev.street || cust.delivery_address?.street || '',
+            state: cust.delivery_address?.state || prev.state,
+            city: cust.delivery_address?.city || prev.city,
+            lga: cust.delivery_address?.lga || prev.lga,
+          }));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (items.length > 0) {
@@ -287,56 +331,146 @@ function CheckoutContent() {
                   </span>
                   <span>Contact Information</span>
                 </h2>
-                <span className="text-xs text-text-muted">Guest Checkout</span>
+                {customer ? (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-semibold">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                    <span>Signed In</span>
+                  </span>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-text-muted">Guest Checkout</span>
+                    <span className="text-text-muted text-xs">•</span>
+                    <Link
+                      href={`/account/login?redirect=${encodeURIComponent('/checkout')}`}
+                      className="text-xs text-brand font-semibold hover:underline"
+                    >
+                      Sign In
+                    </Link>
+                  </div>
+                )}
               </div>
 
-              <div className="space-y-3 text-xs sm:text-sm">
-                <div>
-                  <label className="block font-medium text-text-main mb-1">Full Name *</label>
-                  <input
-                    type="text"
-                    name="fullName"
-                    required
-                    value={formData.fullName}
-                    onChange={handleInputChange}
-                    placeholder="e.g. Zainab Balogun"
-                    className="w-full px-4 py-3 bg-surface-muted rounded-xl border border-border text-text-main focus:outline-none focus:border-brand"
-                  />
-                </div>
+              {customer && !isEditingContact ? (
+                /* Authenticated User Verified Profile View */
+                <div className="p-4 sm:p-5 rounded-2xl bg-brand-light/30 border border-brand/20 space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center font-bold text-sm shadow-xs flex-shrink-0">
+                        {customer.first_name ? customer.first_name.charAt(0).toUpperCase() : 'U'}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="font-bold text-sm text-text-main">
+                            {customer.first_name} {customer.last_name}
+                          </p>
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-semibold">
+                            <CheckCircle2 className="w-3 h-3" />
+                            Verified Customer
+                          </span>
+                        </div>
+                        <p className="text-xs text-text-muted">{customer.email}</p>
+                      </div>
+                    </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingContact(true)}
+                      className="text-xs text-brand font-semibold hover:underline self-start sm:self-auto flex items-center gap-1 cursor-pointer"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                      <span>Change contact details</span>
+                    </button>
+                  </div>
+
+                  {/* Phone number confirmation / input if missing */}
+                  {!formData.phone ? (
+                    <div className="pt-2 border-t border-brand/10">
+                      <label className="block text-xs font-semibold text-text-main mb-1">
+                        Nigerian Delivery / WhatsApp Phone * <span className="text-text-muted font-normal">(Required for dispatch rider)</span>
+                      </label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        required
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        placeholder="0810 364 1002"
+                        className="w-full px-4 py-2.5 bg-surface rounded-xl border border-border text-xs text-text-main focus:outline-none focus:border-brand"
+                      />
+                      {phoneError && (
+                        <p className="text-[11px] text-red-600 mt-1 font-medium">{phoneError}</p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-xs text-text-body/90 flex items-center gap-1.5 pt-1 border-t border-brand/10">
+                      <span className="text-text-muted font-medium">Delivery WhatsApp / Phone:</span>
+                      <span className="font-semibold text-text-main">{formData.phone}</span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* Guest Checkout Form or Expanded Edit Mode */
+                <div className="space-y-3 text-xs sm:text-sm">
+                  {customer && isEditingContact && (
+                    <div className="flex items-center justify-between pb-1">
+                      <p className="text-xs text-text-muted">Edit contact details for this order:</p>
+                      <button
+                        type="button"
+                        onClick={() => setIsEditingContact(false)}
+                        className="text-xs text-brand font-semibold hover:underline cursor-pointer"
+                      >
+                        Done Editing
+                      </button>
+                    </div>
+                  )}
+
                   <div>
-                    <label className="block font-medium text-text-main mb-1">Email Address *</label>
+                    <label className="block font-medium text-text-main mb-1">Full Name *</label>
                     <input
-                      type="email"
-                      name="email"
+                      type="text"
+                      name="fullName"
                       required
-                      value={formData.email}
+                      value={formData.fullName}
                       onChange={handleInputChange}
-                      placeholder="zainab@example.com"
+                      placeholder="e.g. Zainab Balogun"
                       className="w-full px-4 py-3 bg-surface-muted rounded-xl border border-border text-text-main focus:outline-none focus:border-brand"
                     />
                   </div>
 
-                  <div>
-                    <label className="block font-medium text-text-main mb-1">
-                      Nigerian WhatsApp / Phone *
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      required
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      placeholder="0810 364 1002"
-                      className="w-full px-4 py-3 bg-surface-muted rounded-xl border border-border text-text-main focus:outline-none focus:border-brand"
-                    />
-                    {phoneError && (
-                      <p className="text-[11px] text-red-600 mt-1 font-medium">{phoneError}</p>
-                    )}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block font-medium text-text-main mb-1">Email Address *</label>
+                      <input
+                        type="email"
+                        name="email"
+                        required
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        placeholder="zainab@example.com"
+                        className="w-full px-4 py-3 bg-surface-muted rounded-xl border border-border text-text-main focus:outline-none focus:border-brand"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-medium text-text-main mb-1">
+                        Nigerian WhatsApp / Phone *
+                      </label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        required
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        placeholder="0810 364 1002"
+                        className="w-full px-4 py-3 bg-surface-muted rounded-xl border border-border text-text-main focus:outline-none focus:border-brand"
+                      />
+                      {phoneError && (
+                        <p className="text-[11px] text-red-600 mt-1 font-medium">{phoneError}</p>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Step 2: Delivery Method */}

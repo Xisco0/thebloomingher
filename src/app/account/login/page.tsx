@@ -15,7 +15,8 @@ function CustomerLoginForm() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const urlError = searchParams.get('error');
+  const [error, setError] = useState<string | null>(urlError || null);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

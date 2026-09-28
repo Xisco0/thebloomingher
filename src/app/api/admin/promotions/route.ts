@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { cmsStore } from '@/lib/cms-store';
 import { PromotionCampaign } from '@/types/cms.types';
 
@@ -33,6 +34,14 @@ export async function POST(req: NextRequest) {
     };
 
     const saved = cmsStore.savePromotion(promotion);
+
+    // Revalidate Next.js cache
+    try {
+      revalidatePath('/', 'layout');
+    } catch (revErr) {
+      console.warn('Cache revalidation notice:', revErr);
+    }
+
     return NextResponse.json({ success: true, promotion: saved });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
@@ -48,6 +57,14 @@ export async function DELETE(req: NextRequest) {
     }
 
     cmsStore.deletePromotion(id);
+
+    // Revalidate Next.js cache
+    try {
+      revalidatePath('/', 'layout');
+    } catch (revErr) {
+      console.warn('Cache revalidation notice:', revErr);
+    }
+
     return NextResponse.json({ success: true, message: 'Promotion deleted' });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

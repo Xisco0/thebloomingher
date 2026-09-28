@@ -14,4 +14,9 @@ export const supabaseAdmin = createClient(supabaseUrl, supabaseKey, {
     persistSession: false,
     autoRefreshToken: false,
   },
+  realtime: {
+    params: {
+      eventsPerSecond: 0,
+    },
+  },
 });

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { cmsStore } from '@/lib/cms-store';
 import { ProductReview } from '@/types';
 import { supabaseAdmin } from '@/lib/supabase/admin';
@@ -88,6 +89,14 @@ export async function POST(req: NextRequest) {
       console.warn('[Admin Reviews POST] Supabase insert error:', dbErr);
     }
 
+    // 3. Revalidate cache
+    try {
+      revalidatePath('/', 'layout');
+      revalidatePath('/products');
+    } catch (revErr) {
+      console.warn('Cache revalidation notice:', revErr);
+    }
+
     return NextResponse.json({ success: true, review: saved });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
@@ -110,6 +119,14 @@ export async function DELETE(req: NextRequest) {
       await supabaseAdmin.from('product_reviews').delete().eq('id', id);
     } catch (dbErr) {
       console.warn('[Admin Reviews DELETE] Supabase delete error:', dbErr);
+    }
+
+    // 3. Revalidate cache
+    try {
+      revalidatePath('/', 'layout');
+      revalidatePath('/products');
+    } catch (revErr) {
+      console.warn('Cache revalidation notice:', revErr);
     }
 
     return NextResponse.json({ success: true, message: 'Review deleted' });
