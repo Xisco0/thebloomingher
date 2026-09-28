@@ -87,7 +87,9 @@ export default function AdministratorsPage() {
       if (selectedStatus !== 'all') queryParams.set('status', selectedStatus);
       if (searchQuery) queryParams.set('search', searchQuery);
 
-      const res = await fetch(`/api/admin/administrators?${queryParams.toString()}`);
+      const res = await fetch(`/api/admin/administrators?${queryParams.toString()}&_t=${Date.now()}`, {
+        cache: 'no-store',
+      });
       const data = await res.json();
       if (data.success) {
         setAdmins(data.data || []);
@@ -104,7 +106,9 @@ export default function AdministratorsPage() {
 
   const fetchRoles = async () => {
     try {
-      const res = await fetch('/api/admin/roles');
+      const res = await fetch(`/api/admin/roles?_t=${Date.now()}`, {
+        cache: 'no-store',
+      });
       const data = await res.json();
       if (data.success) {
         setRoles(data.data || []);

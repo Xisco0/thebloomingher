@@ -28,17 +28,25 @@ export async function GET(req: NextRequest) {
       status,
       search,
       requestingAdminId: auth.session.userId,
+      requestingEmail: auth.session.email,
       requestingRole: auth.session.role,
     });
 
     const roles = cmsStore.getRoles(auth.session.role);
 
-    return NextResponse.json({
-      success: true,
-      data: admins,
-      roles,
-      total: admins.length,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        data: admins,
+        roles,
+        total: admins.length,
+      },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        },
+      }
+    );
   } catch (error: any) {
     console.error('[Admin List Error]:', error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

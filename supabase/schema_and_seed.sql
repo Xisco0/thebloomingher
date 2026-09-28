@@ -633,9 +633,11 @@ ON CONFLICT (product_id) DO UPDATE SET
 INSERT INTO public.roles (id, name, slug, description, permissions, is_system)
 VALUES
     ('role-super-admin', 'Super Administrator', 'super_admin', 'Full platform control, access to system settings, development features, and database management.', '["*"]'::jsonb, true),
-    ('role-store-admin', 'Store Administrator', 'admin', 'Store operations, product catalog, customer management, orders, discounts, and marketing content.', '["dashboard:view","analytics:view","orders:view","orders:edit","products:view","products:create","products:edit","products:delete","inventory:view","inventory:manage","categories:manage","customers:view","reviews:manage","cms:view","cms:edit","marketing:view","marketing:manage"]'::jsonb, true)
-ON CONFLICT (id) DO UPDATE SET
+    ('role-admin', 'Administrator', 'admin', 'Store operations, product catalog, customer management, orders, discounts, staff management, and marketing content.', '["analytics.view", "banners.view", "banners.manage", "campaigns.view", "campaigns.manage", "events.view", "events.manage", "promotions.view", "promotions.manage", "announcements.view", "announcements.manage", "coupons.view", "coupons.manage", "media.view", "media.manage", "products.view", "products.manage", "categories.view", "categories.manage", "collections.view", "collections.manage", "inventory.view", "inventory.manage", "reviews.view", "reviews.manage", "orders.view", "orders.manage", "customers.view", "customers.manage", "admins.view", "admins.manage", "roles.view", "settings.view", "settings.manage", "audit_logs.view"]'::jsonb, true),
+    ('role-staff', 'Staff', 'staff', 'Store operational staff with access to manage products, orders, inventory, customers, and marketing. Cannot view/add staff or access store settings.', '["analytics.view", "banners.view", "banners.manage", "campaigns.view", "campaigns.manage", "events.view", "events.manage", "promotions.view", "promotions.manage", "announcements.view", "announcements.manage", "coupons.view", "coupons.manage", "media.view", "media.manage", "products.view", "products.manage", "categories.view", "categories.manage", "collections.view", "collections.manage", "inventory.view", "inventory.manage", "reviews.view", "reviews.manage", "orders.view", "orders.manage", "customers.view", "customers.manage"]'::jsonb, true)
+ON CONFLICT (slug) DO UPDATE SET
     name = EXCLUDED.name,
+    description = EXCLUDED.description,
     permissions = EXCLUDED.permissions;
 
 -- 8.6 ADMIN ACCOUNTS

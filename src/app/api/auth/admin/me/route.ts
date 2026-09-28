@@ -25,12 +25,19 @@ export async function GET(req: NextRequest) {
 
     const { password_hash, ...safeAdmin } = admin;
 
-    return NextResponse.json({
-      success: true,
-      admin: safeAdmin,
-      permissions: safeAdmin.permissions || [],
-      must_change_password: safeAdmin.must_change_password || false,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        admin: safeAdmin,
+        permissions: safeAdmin.permissions || [],
+        must_change_password: safeAdmin.must_change_password || false,
+      },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        },
+      }
+    );
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }

@@ -1045,6 +1045,19 @@ export const cmsStore = {
 
   getRoles: (requestingRole?: string): Role[] => {
     const isSuperAdmin = requestingRole === 'super_admin' || requestingRole === 'role-super-admin';
+    // Guarantee DEFAULT_ROLES (Administrator and Staff) are present in rolesState
+    DEFAULT_ROLES.forEach(defRole => {
+      const idx = rolesState.findIndex(r => r.id === defRole.id || r.slug === defRole.slug);
+      if (idx === -1) {
+        rolesState.push(JSON.parse(JSON.stringify(defRole)));
+      } else {
+        rolesState[idx] = {
+          ...rolesState[idx],
+          ...defRole,
+        };
+      }
+    });
+
     let list = rolesState;
     if (!isSuperAdmin && requestingRole !== undefined) {
       list = list.filter(r => r.slug !== 'super_admin' && r.id !== 'role-super-admin');
@@ -1133,16 +1146,15 @@ export const cmsStore = {
     status?: string;
     search?: string;
     requestingAdminId?: string;
+    requestingEmail?: string;
     requestingRole?: string;
   }): AdminUser[] => {
     const isSuperAdmin = filters?.requestingRole === 'super_admin' || filters?.requestingRole === 'role-super-admin';
 
     let list = adminsState.map(admin => {
       // Resolve permissions from role if not explicitly provided
-      const matchedRole = rolesState.find(r => r.id === admin.role_id || r.slug === admin.role);
-      const permissions = admin.permissions && admin.permissions.length > 0 
-        ? admin.permissions 
-        : (matchedRole ? matchedRole.permissions : []);
+      const matchedRole = DEFAULT_ROLES.find(r => r.id === admin.role_id || r.slug === admin.role) || rolesState.find(r => r.id === admin.role_id || r.slug === admin.role);
+      const permissions = matchedRole ? matchedRole.permissions : (admin.permissions || []);
 
       const { password_hash, ...safeAdmin } = admin;
       return {
@@ -1152,7 +1164,15 @@ export const cmsStore = {
       };
     });
 
-    // 1. If logged in as regular Admin (not Superadmin), completely exclude Superadmin records
+    // 1. Exclude the currently authenticated user (they manage their own profile separately)
+    if (filters?.requestingAdminId) {
+      list = list.filter(a => a.id !== filters.requestingAdminId);
+    }
+    if (filters?.requestingEmail) {
+      list = list.filter(a => a.email.toLowerCase() !== filters.requestingEmail?.toLowerCase());
+    }
+
+    // 2. If logged in as regular Admin (not Superadmin), completely exclude Superadmin records
     if (!isSuperAdmin && filters?.requestingRole !== undefined) {
       list = list.filter(
         a => a.role !== 'super_admin' && a.role_id !== 'role-super-admin' && !a.role_name?.toLowerCase().includes('super')
@@ -1225,7 +1245,15 @@ export const cmsStore = {
     const passwordHash = bcrypt.hashSync(temporaryPassword, 10);
 
     // Find role
-    const matchedRole = rolesState.find(r => r.id === data.role_id || r.slug === data.role || r.id === data.role) || rolesState[1];
+    const matchedRole =
+      DEFAULT_ROLES.find(
+        r => r.id === data.role_id || r.slug === data.role || r.id === data.role || r.slug === data.role_id
+      ) ||
+      rolesState.find(
+        r => r.id === data.role_id || r.slug === data.role || r.id === data.role || r.slug === data.role_id
+      ) ||
+      DEFAULT_ROLES.find(r => r.id === 'role-staff') ||
+      DEFAULT_ROLES[1];
 
     const newAdmin: AdminRecord = {
       id: `admin-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
