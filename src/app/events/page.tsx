@@ -34,63 +34,93 @@ export default async function EventsPage() {
         </p>
       </div>
 
-      {/* Events Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {events.map((ev, idx) => (
-          <div
-            key={ev.id}
-            data-aos="fade-up"
-            data-aos-delay={idx * 100}
-            className="bg-surface rounded-3xl border border-border/80 shadow-subtle hover:shadow-card-hover transition-all overflow-hidden flex flex-col justify-between"
-          >
-            <div>
-              <div className="relative aspect-[16/9] w-full bg-neutral-100 overflow-hidden">
-                <Image
-                  src={ev.desktop_image_url}
-                  alt={ev.name}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className="object-cover"
-                />
-                <div className="absolute top-4 left-4 bg-brand text-white font-bold text-xs px-3.5 py-1.5 rounded-full uppercase tracking-wider shadow-md">
-                  {new Date(ev.event_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                </div>
-              </div>
-
-              <div className="p-6 sm:p-8 space-y-4">
-                <h2 className="font-display font-bold text-xl sm:text-2xl text-text-main">
-                  {ev.name}
-                </h2>
-                {ev.tagline && (
-                  <p className="text-xs font-semibold text-brand italic">{ev.tagline}</p>
-                )}
-                <p className="text-xs sm:text-sm text-text-body leading-relaxed">{ev.description}</p>
-
-                <div className="space-y-2 text-xs text-text-muted pt-3 border-t border-border/60">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-brand flex-shrink-0" />
-                    <span>{ev.start_time} {ev.end_time ? `– ${ev.end_time}` : ''}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-brand flex-shrink-0" />
-                    <span>{ev.location}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6 sm:p-8 pt-0">
-              <Link
-                href={`/events/${ev.slug || ev.id}`}
-                className="w-full py-3.5 bg-brand hover:bg-brand-hover text-white rounded-full text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"
-              >
-                <span>View Details</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
+      {/* Events Grid or Empty State */}
+      {events.length === 0 ? (
+        <div className="bg-surface rounded-3xl border border-border p-8 sm:p-12 text-center max-w-xl mx-auto space-y-4 shadow-subtle" data-aos="fade-up">
+          <div className="w-14 h-14 rounded-2xl bg-brand-light text-brand flex items-center justify-center mx-auto">
+            <Calendar className="w-7 h-7" />
           </div>
-        ))}
-      </div>
+          <h2 className="font-display font-bold text-xl text-text-main">
+            No Upcoming Events Right Now
+          </h2>
+          <p className="text-xs sm:text-sm text-text-muted leading-relaxed">
+            We are currently preparing our next season of wellness workshops and community masterclasses. Join our WhatsApp community or check back soon for upcoming announcements!
+          </p>
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link
+              href="/shop"
+              className="px-6 py-3 bg-brand hover:bg-brand-hover text-white rounded-full text-xs font-bold shadow-md transition-all active:scale-95"
+            >
+              Shop Wellness Essentials
+            </Link>
+            <a
+              href="https://wa.me/2348103641002"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-3 bg-surface hover:bg-surface-muted text-text-main border border-border rounded-full text-xs font-semibold transition-all"
+            >
+              Join WhatsApp Updates
+            </a>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {events.map((ev, idx) => (
+            <div
+              key={ev.id}
+              data-aos="fade-up"
+              data-aos-delay={idx * 100}
+              className="bg-surface rounded-3xl border border-border/80 shadow-subtle hover:shadow-card-hover transition-all overflow-hidden flex flex-col justify-between"
+            >
+              <div>
+                <div className="relative aspect-[16/9] w-full bg-neutral-100 overflow-hidden">
+                  <Image
+                    src={ev.desktop_image_url}
+                    alt={ev.name}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className="object-cover"
+                  />
+                  <div className="absolute top-4 left-4 bg-brand text-white font-bold text-xs px-3.5 py-1.5 rounded-full uppercase tracking-wider shadow-md">
+                    {new Date(ev.event_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </div>
+                </div>
+
+                <div className="p-6 sm:p-8 space-y-4">
+                  <h2 className="font-display font-bold text-xl sm:text-2xl text-text-main">
+                    {ev.name}
+                  </h2>
+                  {ev.tagline && (
+                    <p className="text-xs font-semibold text-brand italic">{ev.tagline}</p>
+                  )}
+                  <p className="text-xs sm:text-sm text-text-body leading-relaxed">{ev.description}</p>
+
+                  <div className="space-y-2 text-xs text-text-muted pt-3 border-t border-border/60">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-brand flex-shrink-0" />
+                      <span>{ev.start_time} {ev.end_time ? `– ${ev.end_time}` : ''}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-brand flex-shrink-0" />
+                      <span>{ev.location}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-6 sm:p-8 pt-0">
+                <Link
+                  href={`/events/${ev.slug || ev.id}`}
+                  className="w-full py-3.5 bg-brand hover:bg-brand-hover text-white rounded-full text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"
+                >
+                  <span>View Details</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
