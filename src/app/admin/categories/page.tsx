@@ -16,6 +16,7 @@ import {
 import { Category } from '@/types';
 import catalogData from '@/lib/data/catalog.json';
 import { ImageUploader } from '@/components/admin/ImageUploader';
+import { ProductSubNav } from '@/components/admin/subnav/ProductSubNav';
 
 export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -83,6 +84,8 @@ export default function AdminCategoriesPage() {
 
   return (
     <div className="space-y-6">
+      <ProductSubNav />
+
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -167,7 +170,7 @@ export default function AdminCategoriesPage() {
                 folder="categories"
                 maxFiles={1}
                 label="Category Cover Image"
-                description="Upload a high-quality cover image for this category (saved to Cloudflare R2)."
+                description="Upload a high-quality cover image for this category."
               />
             </div>
 

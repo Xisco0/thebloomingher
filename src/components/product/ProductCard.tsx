@@ -18,7 +18,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const primaryImage = product.images?.[0]?.url || 'https://res.cloudinary.com/dld8u8zjg/image/upload/v1789332798/uxz1r1aohkuxqqxxcw9x.jpg';
 
   return (
-    <div className="group relative bg-surface rounded-2xl border border-border/80 hover:border-brand/40 overflow-hidden shadow-subtle hover:shadow-card-hover transition-all duration-300 flex flex-col justify-between">
+    <div className="group relative bg-surface rounded-2xl border border-border/80 hover:border-brand/40 overflow-hidden shadow-subtle hover:shadow-card-hover transition-all duration-300 flex flex-col justify-between h-full min-w-0 w-full">
       {/* Top Image Container */}
       <div className="relative aspect-square w-full overflow-hidden bg-surface-muted">
         <Link href={`/products/${product.slug}`} className="block w-full h-full">
@@ -65,16 +65,16 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
 
       {/* Body Information */}
-      <div className="p-3.5 sm:p-4 flex flex-col flex-grow justify-between gap-3">
-        <div>
+      <div className="p-3 sm:p-4 flex flex-col flex-grow justify-between gap-2.5 sm:gap-3 min-w-0">
+        <div className="min-w-0">
           {/* Category Subtitle */}
-          <span className="text-[11px] text-text-muted uppercase tracking-wider font-medium block">
+          <span className="text-[10px] sm:text-[11px] text-text-muted uppercase tracking-wider font-medium block truncate">
             {product.category_name}
           </span>
 
           {/* Product Title */}
-          <Link href={`/products/${product.slug}`} className="block group-hover:text-brand transition-colors">
-            <h3 className="font-display font-medium text-sm sm:text-base text-text-main leading-snug line-clamp-2 mt-1">
+          <Link href={`/products/${product.slug}`} className="block group-hover:text-brand transition-colors min-w-0">
+            <h3 className="font-display font-medium text-xs xs:text-sm sm:text-base text-text-main leading-snug line-clamp-2 mt-1 break-words min-w-0">
               {product.name}
             </h3>
           </Link>
@@ -83,21 +83,21 @@ export function ProductCard({ product }: ProductCardProps) {
           <div className="flex items-center gap-1 mt-1.5 text-xs text-text-muted">
             <div className="flex text-gold">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-3 h-3 fill-gold text-gold" />
+                <Star key={i} className="w-3 h-3 fill-gold text-gold flex-shrink-0" />
               ))}
             </div>
-            <span className="text-[11px]">({product.rating_count || 12})</span>
+            <span className="text-[10px] sm:text-[11px]">({product.rating_count || 12})</span>
           </div>
         </div>
 
         {/* Price & Add to Cart Button */}
-        <div className="pt-2 border-t border-border/50 flex items-center justify-between gap-2">
-          <div className="flex flex-col">
-            <span className="font-bold text-base sm:text-lg text-brand font-sans">
+        <div className="pt-2 border-t border-border/50 flex items-center justify-between gap-1.5 sm:gap-2 min-w-0 w-full">
+          <div className="flex flex-col min-w-0 flex-1">
+            <span className="font-bold text-sm xs:text-base sm:text-lg text-brand font-sans truncate tracking-tight">
               {formatNaira(product.price)}
             </span>
-            {product.compare_at_price && (
-              <span className="text-xs text-text-muted line-through font-sans">
+            {product.compare_at_price && product.compare_at_price > product.price && (
+              <span className="text-[10px] sm:text-xs text-text-muted line-through font-sans truncate">
                 {formatNaira(product.compare_at_price)}
               </span>
             )}
@@ -105,11 +105,11 @@ export function ProductCard({ product }: ProductCardProps) {
 
           <button
             onClick={() => addItem(product, 1)}
-            className="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 bg-brand hover:bg-brand-hover text-white rounded-full text-xs font-semibold shadow-sm hover:shadow-md transition-all active:scale-95"
+            className="flex-shrink-0 flex items-center justify-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 bg-brand hover:bg-brand-hover text-white rounded-full text-xs font-semibold shadow-sm hover:shadow-md transition-all active:scale-95"
             aria-label={`Add ${product.name} to bag`}
           >
-            <ShoppingBag className="w-3.5 h-3.5" />
-            <span>Add</span>
+            <ShoppingBag className="w-3.5 h-3.5 flex-shrink-0" />
+            <span className="leading-none">Add</span>
           </button>
         </div>
       </div>

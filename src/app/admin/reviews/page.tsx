@@ -113,10 +113,10 @@ export default function AdminReviewsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-display font-bold text-2xl sm:text-3xl text-text-main">
-            Customer Reviews & Social Proof
+            Reviews
           </h1>
           <p className="text-xs sm:text-sm text-text-muted mt-1">
-            Moderate, verify, and highlight customer experiences displayed across product pages.
+            Customer feedback and ratings displayed across your store products.
           </p>
         </div>
 
@@ -125,6 +125,7 @@ export default function AdminReviewsPage() {
             onClick={fetchData}
             disabled={loading}
             className="p-2.5 bg-surface hover:bg-surface-muted text-text-muted hover:text-brand border border-border rounded-xl transition-colors"
+            title="Refresh reviews"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
@@ -133,7 +134,7 @@ export default function AdminReviewsPage() {
             className="px-4 py-2.5 bg-brand hover:bg-brand-dark text-white font-bold text-xs rounded-xl flex items-center gap-1.5 transition-all shadow-sm"
           >
             <Plus className="w-4 h-4" />
-            <span>Add Verified Review</span>
+            <span>Add Review</span>
           </button>
         </div>
       </div>
@@ -245,7 +246,7 @@ export default function AdminReviewsPage() {
           <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted" />
           <input
             type="text"
-            placeholder="Search reviews by customer name or text..."
+            placeholder="Search reviews..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-2 bg-surface-muted/40 border border-border rounded-xl text-xs text-text-main placeholder:text-text-muted focus:outline-brand"
@@ -272,8 +273,20 @@ export default function AdminReviewsPage() {
       {/* Reviews List */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {filteredReviews.length === 0 ? (
-          <div className="col-span-2 py-12 text-center text-text-muted bg-surface rounded-2xl border border-border">
-            No reviews found matching the selected filter.
+          <div className="col-span-2 py-16 text-center text-text-muted bg-surface rounded-2xl border border-border">
+            <div className="max-w-sm mx-auto space-y-2">
+              <div className="w-12 h-12 rounded-full bg-brand-light/50 text-brand flex items-center justify-center mx-auto">
+                <Star className="w-6 h-6" />
+              </div>
+              <p className="text-sm font-semibold text-text-main">
+                {searchQuery || filterRating !== 'all' ? 'No matching reviews' : 'No reviews yet'}
+              </p>
+              <p className="text-xs text-text-muted">
+                {searchQuery || filterRating !== 'all'
+                  ? 'Try clearing your search or rating filter.'
+                  : 'Customer product reviews will appear here.'}
+              </p>
+            </div>
           </div>
         ) : (
           filteredReviews.map(review => {

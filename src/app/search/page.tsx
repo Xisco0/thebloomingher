@@ -42,7 +42,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   ]);
 
   return (
-    <div className="w-[85%] max-w-[85%] mx-auto py-8 sm:py-12">
+    <div className="w-[94%] sm:w-[90%] md:w-[85%] max-w-[85%] mx-auto py-8 sm:py-12">
       {/* Search Header */}
       <div className="max-w-2xl mx-auto text-center mb-8 space-y-3">
         <span className="text-xs uppercase tracking-wider text-brand font-bold block">
@@ -91,7 +91,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
       {/* Results Grid */}
       {productsRes.data.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-6">
           {productsRes.data.map(prod => (
             <ProductCard key={prod.id} product={prod} />
           ))}

@@ -55,10 +55,10 @@ export default function AdminCustomersPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-display font-bold text-2xl sm:text-3xl text-text-main">
-            Customer Directory
+            Customers
           </h1>
           <p className="text-xs sm:text-sm text-text-muted mt-1">
-            Buyer profiles, cumulative order history, and direct WhatsApp / email customer support.
+            View your store customers, order history, and contact details.
           </p>
         </div>
 
@@ -68,7 +68,7 @@ export default function AdminCustomersPage() {
           className="self-start sm:self-auto p-2.5 bg-surface hover:bg-surface-muted text-text-muted hover:text-brand border border-border rounded-xl transition-colors flex items-center gap-1.5 text-xs font-semibold"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          <span>Refresh Directory</span>
+          <span>Refresh Customers</span>
         </button>
       </div>
 
@@ -116,7 +116,7 @@ export default function AdminCustomersPage() {
           <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted" />
           <input
             type="text"
-            placeholder="Search customer by name, email, or phone number..."
+            placeholder="Search customers..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-2 bg-surface-muted/40 border border-border rounded-xl text-xs text-text-main placeholder:text-text-muted focus:outline-brand"
@@ -124,117 +124,199 @@ export default function AdminCustomersPage() {
         </div>
       </div>
 
-      {/* Customers Table */}
-      <div className="bg-surface rounded-2xl border border-border/80 shadow-xs overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead>
-              <tr className="border-b border-border bg-surface-muted/50 text-text-muted uppercase tracking-wider font-semibold">
-                <th className="py-3.5 px-4">Customer Name</th>
-                <th className="py-3.5 px-4">Contact Info</th>
-                <th className="py-3.5 px-4">Total Orders</th>
-                <th className="py-3.5 px-4">Lifetime Spend</th>
-                <th className="py-3.5 px-4">Last Order Date</th>
-                <th className="py-3.5 px-4 text-right">Quick Contact</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/60">
-              {filteredCustomers.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-12 text-center text-text-muted">
-                    No customers found matching your search.
-                  </td>
-                </tr>
-              ) : (
-                filteredCustomers.map(customer => {
-                  const cleanPhone = customer.phone.replace(/[^0-9]/g, '');
-                  const waNumber = cleanPhone.startsWith('0')
-                    ? `234${cleanPhone.slice(1)}`
-                    : cleanPhone;
-
-                  return (
-                    <tr key={customer.id} className="hover:bg-surface-muted/40 transition-colors">
-                      {/* Name */}
-                      <td className="py-3.5 px-4">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-full bg-brand-light text-brand font-bold text-xs flex items-center justify-center">
-                            {customer.fullName.charAt(0).toUpperCase()}
-                          </div>
-                          <div>
-                            <p className="font-bold text-text-main">{customer.fullName}</p>
-                            {customer.totalSpent > 30000 && (
-                              <span className="inline-flex items-center gap-1 text-[9px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200">
-                                <Award className="w-2.5 h-2.5" /> VIP Buyer
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Contact */}
-                      <td className="py-3.5 px-4">
-                        <div className="space-y-0.5">
-                          <div className="flex items-center gap-1.5 text-text-body font-mono">
-                            <Mail className="w-3 h-3 text-text-muted" />
-                            <span>{customer.email}</span>
-                          </div>
-                          <div className="flex items-center gap-1.5 text-text-muted font-mono text-[10px]">
-                            <Phone className="w-3 h-3 text-text-muted" />
-                            <span>{customer.phone}</span>
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Orders Count */}
-                      <td className="py-3.5 px-4 font-bold text-text-main">
-                        {customer.ordersCount} {customer.ordersCount === 1 ? 'order' : 'orders'}
-                      </td>
-
-                      {/* Lifetime Spend */}
-                      <td className="py-3.5 px-4 font-display font-bold text-emerald-700">
-                        {formatNaira(customer.totalSpent)}
-                      </td>
-
-                      {/* Last Order Date */}
-                      <td className="py-3.5 px-4 text-text-muted text-[11px]">
-                        {customer.lastOrderDate
-                          ? new Date(customer.lastOrderDate).toLocaleDateString('en-GB', {
-                              day: 'numeric',
-                              month: 'short',
-                              year: 'numeric',
-                            })
-                          : 'N/A'}
-                      </td>
-
-                      {/* Actions */}
-                      <td className="py-3.5 px-4 text-right">
-                        <div className="inline-flex items-center gap-1.5">
-                          <a
-                            href={`https://wa.me/${waNumber}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg transition-colors border border-emerald-200"
-                            title="Message on WhatsApp"
-                          >
-                            <MessageCircle className="w-3.5 h-3.5" />
-                          </a>
-                          <a
-                            href={`mailto:${customer.email}`}
-                            className="p-1.5 bg-surface hover:bg-surface-muted text-text-body rounded-lg transition-colors border border-border"
-                            title="Send Email"
-                          >
-                            <Mail className="w-3.5 h-3.5" />
-                          </a>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+      {/* Customers Content */}
+      {filteredCustomers.length === 0 ? (
+        <div className="bg-surface rounded-2xl border border-border/80 shadow-xs p-8 sm:p-16 text-center">
+          <div className="max-w-sm mx-auto space-y-2">
+            <div className="w-12 h-12 rounded-full bg-brand-light/50 text-brand flex items-center justify-center mx-auto">
+              <Users className="w-6 h-6" />
+            </div>
+            <p className="text-sm font-semibold text-text-main">
+              {searchQuery ? 'No matching customers' : 'No customers yet'}
+            </p>
+            <p className="text-xs text-text-muted">
+              {searchQuery
+                ? 'Try searching with a different name or phone number.'
+                : 'Customer profiles will be created automatically when they place orders.'}
+            </p>
+          </div>
         </div>
-      </div>
+      ) : (
+        <>
+          {/* Mobile Customer Cards (< md) */}
+          <div className="md:hidden space-y-3">
+            {filteredCustomers.map(customer => {
+              const cleanPhone = customer.phone.replace(/[^0-9]/g, '');
+              const waNumber = cleanPhone.startsWith('0')
+                ? `234${cleanPhone.slice(1)}`
+                : cleanPhone;
+
+              return (
+                <div
+                  key={customer.id}
+                  className="bg-surface rounded-2xl p-4 border border-border/80 shadow-xs space-y-3"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-9 h-9 rounded-full bg-brand-light text-brand font-bold text-xs flex items-center justify-center flex-shrink-0">
+                        {customer.fullName.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="truncate">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <p className="font-bold text-xs text-text-main truncate">{customer.fullName}</p>
+                          {customer.totalSpent > 30000 && (
+                            <span className="inline-flex items-center gap-1 text-[9px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200">
+                              <Award className="w-2.5 h-2.5" /> VIP
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[10px] text-text-muted font-mono truncate">{customer.email}</p>
+                        {customer.phone && (
+                          <p className="text-[10px] text-text-muted font-mono">{customer.phone}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      <a
+                        href={`https://wa.me/${waNumber}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl transition-colors border border-emerald-200 min-h-[36px] min-w-[36px] flex items-center justify-center"
+                        title="WhatsApp"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                      </a>
+                      <a
+                        href={`mailto:${customer.email}`}
+                        className="p-2 bg-surface hover:bg-surface-muted text-text-body rounded-xl transition-colors border border-border min-h-[36px] min-w-[36px] flex items-center justify-center"
+                        title="Email"
+                      >
+                        <Mail className="w-4 h-4" />
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-border/60 text-xs">
+                    <div>
+                      <span className="text-[10px] text-text-muted block">Orders</span>
+                      <span className="font-bold text-text-main">{customer.ordersCount}</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[10px] text-text-muted block">Total Spent</span>
+                      <span className="font-display font-bold text-emerald-700">{formatNaira(customer.totalSpent)}</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop Customer Table (>= md) */}
+          <div className="hidden md:block bg-surface rounded-2xl border border-border/80 shadow-xs overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-border bg-surface-muted/50 text-text-muted uppercase tracking-wider font-semibold">
+                    <th className="py-3.5 px-4">Customer</th>
+                    <th className="py-3.5 px-4">Contact</th>
+                    <th className="py-3.5 px-4">Orders</th>
+                    <th className="py-3.5 px-4">Total Spent</th>
+                    <th className="py-3.5 px-4">Last Order</th>
+                    <th className="py-3.5 px-4 text-right">Contact</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/60">
+                  {filteredCustomers.map(customer => {
+                    const cleanPhone = customer.phone.replace(/[^0-9]/g, '');
+                    const waNumber = cleanPhone.startsWith('0')
+                      ? `234${cleanPhone.slice(1)}`
+                      : cleanPhone;
+
+                    return (
+                      <tr key={customer.id} className="hover:bg-surface-muted/40 transition-colors">
+                        {/* Name */}
+                        <td className="py-3.5 px-4">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-full bg-brand-light text-brand font-bold text-xs flex items-center justify-center">
+                              {customer.fullName.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <p className="font-bold text-text-main">{customer.fullName}</p>
+                              {customer.totalSpent > 30000 && (
+                                <span className="inline-flex items-center gap-1 text-[9px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200">
+                                  <Award className="w-2.5 h-2.5" /> VIP Buyer
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Contact */}
+                        <td className="py-3.5 px-4">
+                          <div className="space-y-0.5">
+                            <div className="flex items-center gap-1.5 text-text-body font-mono">
+                              <Mail className="w-3 h-3 text-text-muted" />
+                              <span>{customer.email}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-text-muted font-mono text-[10px]">
+                              <Phone className="w-3 h-3 text-text-muted" />
+                              <span>{customer.phone}</span>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Orders Count */}
+                        <td className="py-3.5 px-4 font-bold text-text-main">
+                          {customer.ordersCount} {customer.ordersCount === 1 ? 'order' : 'orders'}
+                        </td>
+
+                        {/* Lifetime Spend */}
+                        <td className="py-3.5 px-4 font-display font-bold text-emerald-700">
+                          {formatNaira(customer.totalSpent)}
+                        </td>
+
+                        {/* Last Order Date */}
+                        <td className="py-3.5 px-4 text-text-muted text-[11px]">
+                          {customer.lastOrderDate
+                            ? new Date(customer.lastOrderDate).toLocaleDateString('en-GB', {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric',
+                              })
+                            : 'N/A'}
+                        </td>
+
+                        {/* Actions */}
+                        <td className="py-3.5 px-4 text-right">
+                          <div className="inline-flex items-center gap-1.5">
+                            <a
+                              href={`https://wa.me/${waNumber}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg transition-colors border border-emerald-200"
+                              title="Message on WhatsApp"
+                            >
+                              <MessageCircle className="w-3.5 h-3.5" />
+                            </a>
+                            <a
+                              href={`mailto:${customer.email}`}
+                              className="p-1.5 bg-surface hover:bg-surface-muted text-text-body rounded-lg transition-colors border border-border"
+                              title="Send Email"
+                            >
+                              <Mail className="w-3.5 h-3.5" />
+                            </a>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

@@ -38,7 +38,7 @@ export default async function ShopPage() {
       initialProducts={productsResult.data}
       categories={categories}
       pageTitle="Shop All Care & Wellness"
-      pageDescription="Browse all 67+ curated products designed for menstrual comfort, intimate hygiene, and everyday personal wellness."
+      pageDescription="Browse all curated products designed for menstrual comfort, intimate hygiene, and everyday personal wellness."
     />
   );
 }

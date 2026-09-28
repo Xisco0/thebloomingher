@@ -2,7 +2,8 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ChevronRight } from 'lucide-react';
+import Image from 'next/image';
+import { ChevronRight, Sparkles } from 'lucide-react';
 import { catalogService } from '@/services';
 import { ShopCatalogClient } from '@/components/shop/ShopCatalogClient';
 import { generateBreadcrumbSchema } from '@/lib/seo/schema';
@@ -71,9 +72,9 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
       />
 
-      <div className="w-[85%] max-w-[85%] mx-auto pt-6">
+      <div className="w-[94%] sm:w-[90%] md:w-[85%] max-w-[85%] mx-auto pt-6 space-y-6">
         {/* Breadcrumb Navigation */}
-        <nav className="flex items-center gap-1.5 text-xs text-text-muted mb-2 overflow-x-auto whitespace-nowrap">
+        <nav className="flex items-center gap-1.5 text-xs text-text-muted overflow-x-auto whitespace-nowrap">
           <Link href="/" className="hover:text-brand transition-colors">
             Home
           </Link>
@@ -84,17 +85,43 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           <ChevronRight className="w-3.5 h-3.5 flex-shrink-0" />
           <span className="text-text-main font-semibold">{category.name}</span>
         </nav>
+
+        {/* Hero Category Banner Card */}
+        <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-brand-light/90 via-pink-50/80 to-surface-muted border border-brand/20 p-6 sm:p-10 shadow-xs flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="max-w-xl space-y-3 text-center md:text-left">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-brand text-white shadow-xs">
+              <Sparkles className="w-3.5 h-3.5" />
+              Category Collection
+            </span>
+            <h1 className="font-display font-bold text-2xl sm:text-4xl text-text-main">
+              {category.name}
+            </h1>
+            <p className="text-xs sm:text-sm text-text-body leading-relaxed">
+              {category.description ||
+                `Explore authentic ${category.name} products curated for your daily comfort, health, and wellbeing.`}
+            </p>
+          </div>
+
+          {category.image_url && (
+            <div className="relative w-28 h-28 sm:w-40 sm:h-40 rounded-2xl overflow-hidden shadow-md border-2 border-white flex-shrink-0">
+              <Image
+                src={category.image_url}
+                alt={category.name}
+                fill
+                priority
+                className="object-cover"
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       <ShopCatalogClient
         initialProducts={allProductsRes.data}
         categories={allCategories}
         initialCategorySlug={category.slug}
-        pageTitle={category.name}
-        pageDescription={
-          category.description ||
-          `Browse all products in ${category.name}, curated specifically for your everyday comfort and health.`
-        }
+        pageTitle=""
+        pageDescription=""
       />
     </>
   );

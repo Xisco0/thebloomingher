@@ -65,6 +65,10 @@ export default function CustomerAccountDashboard() {
       const data = await res.json();
 
       if (!res.ok || !data.success) {
+        if (res.status === 401 || data.error === 'Unauthorized') {
+          router.push('/account/login?redirect=/account');
+          return;
+        }
         throw new Error(data.error || 'Failed to load account information.');
       }
 
@@ -76,11 +80,11 @@ export default function CustomerAccountDashboard() {
         phone: data.customer.phone || '',
       });
     } catch (err: any) {
-      setError(err.message || 'Error loading account.');
-      // If unauthorized, redirect to login
       if (err.message === 'Unauthorized') {
-        router.push('/account/login');
+        router.push('/account/login?redirect=/account');
+        return;
       }
+      setError(err.message || 'Error loading account.');
     } finally {
       setLoading(false);
     }
@@ -195,7 +199,7 @@ export default function CustomerAccountDashboard() {
   }
 
   return (
-    <div className="w-[85%] max-w-[85%] mx-auto py-10 sm:py-16 space-y-8">
+    <div className="w-[94%] sm:w-[90%] md:w-[85%] max-w-[85%] mx-auto py-10 sm:py-16 space-y-8">
       {/* Profile Header */}
       <div className="bg-surface rounded-3xl p-6 sm:p-8 border border-border shadow-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
         <div className="flex items-center gap-4">

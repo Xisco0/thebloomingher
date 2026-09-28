@@ -88,7 +88,7 @@ function AdminLoginForm() {
                 required
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                placeholder="admin@thebloomingher.com"
+                placeholder="admin@email.com"
                 className="w-full pl-10 pr-4 py-2.5 bg-surface-muted/40 border border-border rounded-xl text-xs text-text-main placeholder:text-text-muted focus:outline-brand"
               />
             </div>

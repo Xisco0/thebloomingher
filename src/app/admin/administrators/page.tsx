@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Users,
   UserPlus,
@@ -29,14 +30,20 @@ import {
   Shield,
 } from 'lucide-react';
 import { AdminUser, Role, AdminStatus } from '@/types/auth.types';
+import { TeamSubNav } from '@/components/admin/subnav/TeamSubNav';
 
 export default function AdministratorsPage() {
+  const [mounted, setMounted] = useState(false);
   const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRole, setSelectedRole] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Modals
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -124,7 +131,7 @@ export default function AdministratorsPage() {
       first_name: '',
       last_name: '',
       email: '',
-      role_id: roles[1]?.id || roles[0]?.id || 'role-admin',
+      role_id: roles[0]?.id || 'role-admin',
       phone: '',
     });
     setIsAddModalOpen(true);
@@ -320,6 +327,9 @@ export default function AdministratorsPage() {
     if (slug === 'admin' || roleName.toLowerCase().includes('administrator')) {
       return 'bg-blue-50 text-blue-700 border-blue-200';
     }
+    if (slug === 'staff' || roleName.toLowerCase().includes('staff')) {
+      return 'bg-teal-50 text-teal-700 border-teal-200';
+    }
     if (slug === 'marketing_manager' || roleName.toLowerCase().includes('marketing')) {
       return 'bg-pink-50 text-pink-700 border-pink-200';
     }
@@ -339,18 +349,20 @@ export default function AdministratorsPage() {
 
   return (
     <div className="space-y-6">
+      <TeamSubNav />
+
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-surface p-6 rounded-3xl border border-border shadow-xs">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand-light text-brand rounded-full text-xs font-bold mb-2">
             <Shield className="w-3.5 h-3.5" />
-            <span>Role-Based Access Control</span>
+            <span>Team Management</span>
           </div>
           <h1 className="font-display font-bold text-2xl text-text-main">
-            Administrators & Team
+            Staff
           </h1>
           <p className="text-xs text-text-muted mt-1 max-w-2xl">
-            Manage authorized administrators, assign role privileges, generate temporary onboarding access keys, and enforce security policies.
+            Manage people on your team who have access to your store dashboard.
           </p>
         </div>
 
@@ -359,7 +371,7 @@ export default function AdministratorsPage() {
           className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-brand hover:bg-brand-hover text-white rounded-2xl text-xs font-bold shadow-md hover:shadow-lg transition-all flex-shrink-0"
         >
           <UserPlus className="w-4 h-4" />
-          <span>Add Administrator</span>
+          <span>Add Staff Member</span>
         </button>
       </div>
 
@@ -665,31 +677,32 @@ export default function AdministratorsPage() {
       {/* ========================================================================= */}
       {/* ADD ADMINISTRATOR MODAL */}
       {/* ========================================================================= */}
-      {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-surface border border-border rounded-3xl p-6 sm:p-8 w-full max-w-lg shadow-elevated animate-in fade-in zoom-in-95">
+      {mounted && isAddModalOpen && createPortal(
+        <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs overflow-y-auto p-4 sm:p-6 flex items-center justify-center">
+          <div className="bg-surface border border-border rounded-3xl p-6 sm:p-8 w-full max-w-xl shadow-elevated animate-in fade-in zoom-in-95 my-auto max-h-[calc(100dvh-2rem)] overflow-y-auto">
             <div className="flex items-center justify-between pb-4 border-b border-border">
-              <div className="flex items-center gap-2.5">
-                <div className="p-2.5 bg-brand-light text-brand rounded-xl">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-brand-light text-brand rounded-2xl">
                   <UserPlus className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="font-display font-bold text-base text-text-main">Add New Administrator</h3>
-                  <p className="text-[11px] text-text-muted">Create administrative credentials and assign role permissions</p>
+                  <p className="text-xs text-text-muted">Create administrative credentials and assign role permissions</p>
                 </div>
               </div>
               <button
                 onClick={() => setIsAddModalOpen(false)}
-                className="p-2 text-text-muted hover:text-text-main rounded-xl hover:bg-surface-muted"
+                className="p-2 text-text-muted hover:text-text-main rounded-xl hover:bg-surface-muted transition-colors"
               >
                 <XCircle className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleCreateAdmin} className="space-y-4 mt-5">
-              <div className="grid grid-cols-2 gap-3">
+              {/* 2-Column Grid for Name */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-text-main mb-1">First Name *</label>
+                  <label className="block text-xs font-bold text-text-main mb-1.5">First Name *</label>
                   <input
                     type="text"
                     required
@@ -700,7 +713,7 @@ export default function AdministratorsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-text-main mb-1">Last Name *</label>
+                  <label className="block text-xs font-bold text-text-main mb-1.5">Last Name *</label>
                   <input
                     type="text"
                     required
@@ -712,59 +725,64 @@ export default function AdministratorsPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-text-main mb-1">Email Address *</label>
-                <input
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={e => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="grace.okafor@thebloomingher.com"
-                  className="w-full px-3.5 py-2.5 bg-surface border border-border rounded-xl text-xs text-text-main focus:outline-none focus:border-brand"
-                />
+              {/* 2-Column Grid for Email and Phone */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-text-main mb-1.5">Email Address *</label>
+                  <input
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={e => setFormData({ ...formData, email: e.target.value })}
+                    placeholder="grace.okafor@thebloomingher.com"
+                    className="w-full px-3.5 py-2.5 bg-surface border border-border rounded-xl text-xs text-text-main focus:outline-none focus:border-brand"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-text-main mb-1.5">Phone Number (Optional)</label>
+                  <input
+                    type="tel"
+                    value={formData.phone}
+                    onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                    placeholder="+234 812 345 6789"
+                    className="w-full px-3.5 py-2.5 bg-surface border border-border rounded-xl text-xs text-text-main focus:outline-none focus:border-brand"
+                  />
+                </div>
               </div>
 
+              {/* Assigned Role */}
               <div>
-                <label className="block text-xs font-bold text-text-main mb-1">Assigned Role *</label>
+                <label className="block text-xs font-bold text-text-main mb-1.5">Assigned Role *</label>
                 <select
                   value={formData.role_id}
                   onChange={e => setFormData({ ...formData, role_id: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-surface border border-border rounded-xl text-xs text-text-main focus:outline-none focus:border-brand"
+                  className="w-full px-3.5 py-2.5 bg-surface border border-border rounded-xl text-xs text-text-main focus:outline-none focus:border-brand font-medium"
                 >
-                  {roles.map(r => (
-                    <option key={r.id} value={r.id}>
-                      {r.name} — {r.description?.slice(0, 50)}...
-                    </option>
-                  ))}
+                  {roles.length > 0 ? (
+                    roles.map(r => (
+                      <option key={r.id} value={r.id}>
+                        {r.name}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="role-admin">Administrator</option>
+                  )}
                 </select>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-text-main mb-1">Phone Number (Optional)</label>
-                <input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                  placeholder="+234 812 345 6789"
-                  className="w-full px-3.5 py-2.5 bg-surface border border-border rounded-xl text-xs text-text-main focus:outline-none focus:border-brand"
-                />
-              </div>
-
               {/* Password Rule Notice */}
-              <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl text-[11px] text-amber-900 space-y-1">
-                <div className="font-bold flex items-center gap-1.5 text-amber-800">
-                  <KeyRound className="w-3.5 h-3.5 text-amber-600" />
-                  <span>Automated Initial Password Policy</span>
+              <div className="p-3.5 bg-amber-50/80 border border-amber-200/80 rounded-2xl text-xs text-amber-900 space-y-1">
+                <div className="font-bold flex items-center gap-1.5 text-amber-800 text-xs">
+                  <KeyRound className="w-4 h-4 text-amber-600" />
+                  <span>Initial Password Policy</span>
                 </div>
-                <p>
-                  Initial temporary password is generated as <code className="px-1.5 py-0.5 bg-amber-100 rounded font-bold">{formData.first_name ? `${formData.first_name.toLowerCase()}123` : '{firstname}123'}</code> and securely hashed.
-                </p>
-                <p className="text-amber-700">
-                  The administrator will be <strong>forced to change this password</strong> on their first login.
+                <p className="text-xs text-amber-800 leading-relaxed">
+                  Initial password is automatically generated as <code className="px-1.5 py-0.5 bg-amber-100/90 rounded font-bold">{formData.first_name ? `${formData.first_name.toLowerCase()}123` : '{firstname}123'}</code>. The user will be required to change this password upon their first login.
                 </p>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-border">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
@@ -775,44 +793,46 @@ export default function AdministratorsPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2.5 bg-brand hover:bg-brand-hover text-white rounded-xl text-xs font-bold shadow-sm transition-all"
+                  className="px-5 py-2.5 bg-brand hover:bg-brand-hover text-white rounded-xl text-xs font-bold shadow-xs transition-all"
                 >
                   {saving ? 'Creating Admin...' : 'Create Administrator'}
                 </button>
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ========================================================================= */}
       {/* EDIT ADMINISTRATOR MODAL */}
       {/* ========================================================================= */}
-      {isEditModalOpen && selectedAdmin && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-surface border border-border rounded-3xl p-6 sm:p-8 w-full max-w-lg shadow-elevated animate-in fade-in zoom-in-95">
+      {mounted && isEditModalOpen && selectedAdmin && createPortal(
+        <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs overflow-y-auto p-4 sm:p-6 flex items-center justify-center">
+          <div className="bg-surface border border-border rounded-3xl p-6 sm:p-8 w-full max-w-xl shadow-elevated animate-in fade-in zoom-in-95 my-auto max-h-[calc(100dvh-2rem)] overflow-y-auto">
             <div className="flex items-center justify-between pb-4 border-b border-border">
-              <div className="flex items-center gap-2.5">
-                <div className="p-2.5 bg-brand-light text-brand rounded-xl">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-brand-light text-brand rounded-2xl">
                   <Edit2 className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="font-display font-bold text-base text-text-main">Edit Administrator</h3>
-                  <p className="text-[11px] text-text-muted">{selectedAdmin.email}</p>
+                  <p className="text-xs text-text-muted">{selectedAdmin.email}</p>
                 </div>
               </div>
               <button
                 onClick={() => setIsEditModalOpen(false)}
-                className="p-2 text-text-muted hover:text-text-main rounded-xl hover:bg-surface-muted"
+                className="p-2 text-text-muted hover:text-text-main rounded-xl hover:bg-surface-muted transition-colors"
               >
                 <XCircle className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleUpdateAdmin} className="space-y-4 mt-5">
-              <div className="grid grid-cols-2 gap-3">
+              {/* 2-Column Grid for Name */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-text-main mb-1">First Name *</label>
+                  <label className="block text-xs font-bold text-text-main mb-1.5">First Name *</label>
                   <input
                     type="text"
                     required
@@ -822,7 +842,7 @@ export default function AdministratorsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-text-main mb-1">Last Name *</label>
+                  <label className="block text-xs font-bold text-text-main mb-1.5">Last Name *</label>
                   <input
                     type="text"
                     required
@@ -833,32 +853,39 @@ export default function AdministratorsPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-text-main mb-1">Assigned Role *</label>
-                <select
-                  value={formData.role_id}
-                  onChange={e => setFormData({ ...formData, role_id: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-surface border border-border rounded-xl text-xs text-text-main focus:outline-none focus:border-brand"
-                >
-                  {roles.map(r => (
-                    <option key={r.id} value={r.id}>
-                      {r.name}
-                    </option>
-                  ))}
-                </select>
+              {/* 2-Column Grid for Role and Phone */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-text-main mb-1.5">Assigned Role *</label>
+                  <select
+                    value={formData.role_id}
+                    onChange={e => setFormData({ ...formData, role_id: e.target.value })}
+                    className="w-full px-3.5 py-2.5 bg-surface border border-border rounded-xl text-xs text-text-main focus:outline-none focus:border-brand font-medium"
+                  >
+                    {roles.length > 0 ? (
+                      roles.map(r => (
+                        <option key={r.id} value={r.id}>
+                          {r.name}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="role-admin">Administrator</option>
+                    )}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-text-main mb-1.5">Phone Number</label>
+                  <input
+                    type="tel"
+                    value={formData.phone}
+                    onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                    className="w-full px-3.5 py-2.5 bg-surface border border-border rounded-xl text-xs text-text-main focus:outline-none focus:border-brand"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-text-main mb-1">Phone Number</label>
-                <input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-surface border border-border rounded-xl text-xs text-text-main focus:outline-none focus:border-brand"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-border">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
                 <button
                   type="button"
                   onClick={() => setIsEditModalOpen(false)}
@@ -869,22 +896,23 @@ export default function AdministratorsPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2.5 bg-brand hover:bg-brand-hover text-white rounded-xl text-xs font-bold shadow-sm transition-all"
+                  className="px-5 py-2.5 bg-brand hover:bg-brand-hover text-white rounded-xl text-xs font-bold shadow-xs transition-all"
                 >
                   {saving ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ========================================================================= */}
       {/* RESET PASSWORD CONFIRMATION MODAL */}
       {/* ========================================================================= */}
-      {isResetModalOpen && selectedAdmin && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-surface border border-border rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-elevated animate-in fade-in zoom-in-95">
+      {mounted && isResetModalOpen && selectedAdmin && createPortal(
+        <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs overflow-y-auto p-4 sm:p-6 flex flex-col items-center justify-center">
+          <div className="bg-surface border border-border rounded-3xl p-6 sm:p-7 w-full max-w-md my-auto max-h-[calc(100dvh-3rem)] overflow-y-auto shadow-elevated animate-in fade-in zoom-in-95">
             <div className="p-3 bg-amber-50 text-amber-600 rounded-2xl w-fit mb-4">
               <KeyRound className="w-6 h-6" />
             </div>
@@ -915,15 +943,16 @@ export default function AdministratorsPage() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ========================================================================= */}
       {/* CREATED / RESET CREDENTIAL SUCCESS REVEAL MODAL */}
       {/* ========================================================================= */}
-      {createdCredential && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-surface border border-border rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-elevated animate-in fade-in zoom-in-95 relative overflow-hidden">
+      {mounted && createdCredential && createPortal(
+        <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs overflow-y-auto p-4 sm:p-6 flex flex-col items-center justify-center">
+          <div className="bg-surface border border-border rounded-3xl p-6 sm:p-7 w-full max-w-md my-auto max-h-[calc(100dvh-3rem)] overflow-y-auto shadow-elevated animate-in fade-in zoom-in-95 relative">
             <div className="text-center">
               <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-3">
                 <CheckCircle2 className="w-7 h-7" />
@@ -937,7 +966,7 @@ export default function AdministratorsPage() {
             </div>
 
             {/* Credential Card */}
-            <div className="mt-6 p-4 bg-surface-muted border border-border rounded-2xl space-y-3">
+            <div className="mt-5 p-4 bg-surface-muted border border-border rounded-2xl space-y-3">
               <div>
                 <span className="text-[10px] uppercase font-bold tracking-wider text-text-muted block">Login Email</span>
                 <span className="text-xs font-bold text-text-main">{createdCredential.email}</span>
@@ -968,21 +997,22 @@ export default function AdministratorsPage() {
 
             <button
               onClick={() => setCreatedCredential(null)}
-              className="w-full mt-6 py-3 px-4 bg-brand hover:bg-brand-hover text-white rounded-xl text-xs font-bold shadow-md transition-all"
+              className="w-full mt-5 py-3 px-4 bg-brand hover:bg-brand-hover text-white rounded-xl text-xs font-bold shadow-md transition-all"
             >
               Done & Close
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ========================================================================= */}
       {/* ACTIVITY LOG MODAL */}
       {/* ========================================================================= */}
-      {isActivityModalOpen && selectedAdmin && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-surface border border-border rounded-3xl p-6 sm:p-8 w-full max-w-2xl shadow-elevated animate-in fade-in zoom-in-95 max-h-[85vh] flex flex-col">
-            <div className="flex items-center justify-between pb-4 border-b border-border flex-shrink-0">
+      {mounted && isActivityModalOpen && selectedAdmin && createPortal(
+        <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs overflow-y-auto p-3 sm:p-6 flex flex-col items-center justify-start sm:justify-center">
+          <div className="bg-surface border border-border rounded-3xl p-5 sm:p-7 w-full max-w-2xl my-auto shadow-elevated animate-in fade-in zoom-in-95 max-h-[calc(100dvh-2.5rem)] sm:max-h-[calc(100dvh-4rem)] flex flex-col flex-shrink-0">
+            <div className="flex items-center justify-between pb-3.5 border-b border-border flex-shrink-0">
               <div className="flex items-center gap-2.5">
                 <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
                   <History className="w-5 h-5" />
@@ -1031,7 +1061,7 @@ export default function AdministratorsPage() {
               )}
             </div>
 
-            <div className="pt-4 border-t border-border flex justify-end flex-shrink-0">
+            <div className="pt-3.5 border-t border-border flex justify-end flex-shrink-0">
               <button
                 onClick={() => setIsActivityModalOpen(false)}
                 className="px-5 py-2.5 bg-surface hover:bg-surface-muted border border-border rounded-xl text-xs font-semibold text-text-main"
@@ -1040,15 +1070,16 @@ export default function AdministratorsPage() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ========================================================================= */}
       {/* DELETE CONFIRMATION MODAL */}
       {/* ========================================================================= */}
-      {isDeleteModalOpen && selectedAdmin && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-surface border border-border rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-elevated animate-in fade-in zoom-in-95">
+      {mounted && isDeleteModalOpen && selectedAdmin && createPortal(
+        <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs overflow-y-auto p-4 sm:p-6 flex flex-col items-center justify-center">
+          <div className="bg-surface border border-border rounded-3xl p-6 sm:p-7 w-full max-w-md my-auto max-h-[calc(100dvh-3rem)] overflow-y-auto shadow-elevated animate-in fade-in zoom-in-95">
             <div className="p-3 bg-rose-50 text-rose-600 rounded-2xl w-fit mb-4">
               <Trash2 className="w-6 h-6" />
             </div>
@@ -1075,7 +1106,8 @@ export default function AdministratorsPage() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

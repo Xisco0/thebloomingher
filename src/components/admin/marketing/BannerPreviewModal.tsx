@@ -24,8 +24,8 @@ export function BannerPreviewModal({ banner, isOpen, onClose }: BannerPreviewMod
       : banner.desktop_image_url;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-      <div className="bg-surface rounded-2xl border border-border shadow-2xl w-full max-w-6xl max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm overflow-y-auto p-3 sm:p-6 flex flex-col items-center justify-start sm:justify-center">
+      <div className="bg-surface rounded-2xl border border-border shadow-2xl w-full max-w-6xl max-h-[calc(100dvh-2.5rem)] sm:max-h-[calc(100dvh-4rem)] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200 my-auto flex-shrink-0">
         {/* Top Header & Device Switcher */}
         <div className="p-4 sm:p-5 border-b border-border flex flex-col sm:flex-row gap-3 items-center justify-between bg-surface-muted/30">
           <div>

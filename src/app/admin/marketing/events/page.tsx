@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { MarketingEvent, EventStatus } from '@/types/marketing-cms.types';
 import { MediaPickerModal } from '@/components/admin/marketing/MediaPickerModal';
+import { MarketingSubNav } from '@/components/admin/subnav/MarketingSubNav';
 
 function slugify(text: string): string {
   return text
@@ -146,6 +147,8 @@ export default function EventsManagementPage() {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
+      <MarketingSubNav />
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -265,16 +268,16 @@ export default function EventsManagementPage() {
 
       {/* Editor Modal */}
       {isEditorOpen && editingEvent && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-          <div className="bg-surface rounded-2xl border border-border shadow-2xl w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-5 border-b border-border flex items-center justify-between">
+        <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs overflow-y-auto p-3 sm:p-6 flex flex-col items-center justify-start sm:justify-center">
+          <div className="bg-surface rounded-2xl border border-border shadow-2xl w-full max-w-2xl max-h-[calc(100dvh-2.5rem)] sm:max-h-[calc(100dvh-4rem)] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200 my-auto flex-shrink-0">
+            <div className="p-5 border-b border-border flex items-center justify-between flex-shrink-0">
               <h3 className="font-display font-bold text-lg text-text-main">
                 {editingEvent.id ? 'Edit Informational Event' : 'Create Informational Event'}
               </h3>
               <button onClick={() => setIsEditorOpen(false)} className="p-1.5 rounded-lg hover:bg-surface-muted">✕</button>
             </div>
 
-            <form onSubmit={handleSaveEvent} className="flex-1 overflow-y-auto p-6 space-y-4">
+            <form onSubmit={handleSaveEvent} className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
               <div>
                 <label className="text-xs font-semibold text-text-main block mb-1">Event Title *</label>
                 <input

@@ -13,6 +13,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { DiscountCoupon } from '@/types/cms.types';
+import { MarketingSubNav } from '@/components/admin/subnav/MarketingSubNav';
 
 export default function MarketingCouponsPage() {
   const [coupons, setCoupons] = useState<DiscountCoupon[]>([]);
@@ -113,6 +114,8 @@ export default function MarketingCouponsPage() {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
+      <MarketingSubNav />
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -213,8 +216,8 @@ export default function MarketingCouponsPage() {
 
       {/* New Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-          <div className="bg-surface rounded-2xl border border-border shadow-2xl w-full max-w-lg p-6 space-y-4 animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs overflow-y-auto p-3 sm:p-6 flex flex-col items-center justify-start sm:justify-center">
+          <div className="bg-surface rounded-2xl border border-border shadow-2xl w-full max-w-lg p-5 sm:p-6 space-y-4 my-auto flex-shrink-0 max-h-[calc(100dvh-2.5rem)] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between pb-3 border-b border-border">
               <h3 className="font-display font-bold text-base text-text-main">Create Discount Code</h3>
               <button onClick={() => setShowModal(false)} className="p-1 rounded-lg hover:bg-surface-muted text-text-muted">✕</button>

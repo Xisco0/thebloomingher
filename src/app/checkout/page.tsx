@@ -99,25 +99,45 @@ function CheckoutContent() {
     }
   };
 
-  const handleApplyDiscount = (e: React.FormEvent) => {
+  const [isCheckingDiscount, setIsCheckingDiscount] = useState(false);
+
+  const handleApplyDiscount = async (e: React.FormEvent) => {
     e.preventDefault();
     setDiscountError('');
     const code = discountInput.trim().toUpperCase();
 
     if (!code) return;
 
-    if (code === 'WELCOME10') {
-      const discount = Math.round(subtotal * 0.1);
-      setAppliedDiscount({ code, amount: discount });
-      setFormData(prev => ({ ...prev, discountCode: code }));
-    } else {
-      setDiscountError('Invalid discount code. Try WELCOME10 for 10% off.');
+    setIsCheckingDiscount(true);
+    try {
+      const res = await fetch('/api/discounts/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, subtotal }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success && data.discount) {
+        setAppliedDiscount({
+          code: data.discount.code,
+          amount: data.discount.amount,
+        });
+        setFormData(prev => ({ ...prev, discountCode: data.discount.code }));
+        setDiscountError('');
+      } else {
+        setDiscountError(data.message || 'Invalid or expired discount code.');
+      }
+    } catch (err: any) {
+      setDiscountError('Unable to validate discount code. Please try again.');
+    } finally {
+      setIsCheckingDiscount(false);
     }
   };
 
   const handleRemoveDiscount = () => {
     setAppliedDiscount(null);
     setDiscountInput('');
+    setDiscountError('');
     setFormData(prev => ({ ...prev, discountCode: '' }));
   };
 
@@ -226,7 +246,7 @@ function CheckoutContent() {
   }
 
   return (
-    <div className="w-[85%] max-w-[85%] mx-auto py-8 sm:py-12">
+    <div className="w-[94%] sm:w-[90%] md:w-[85%] max-w-[85%] mx-auto py-8 sm:py-12">
       {/* Checkout Header */}
       <div className="max-w-2xl mx-auto text-center mb-8">
         <span className="text-xs uppercase tracking-wider text-brand font-bold block mb-1">
@@ -682,20 +702,21 @@ function CheckoutContent() {
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleApplyDiscount} className="space-y-1">
+              <form onSubmit={handleApplyDiscount} className="space-y-1.5">
                 <div className="flex gap-2">
                   <input
                     type="text"
                     value={discountInput}
                     onChange={e => setDiscountInput(e.target.value)}
-                    placeholder="Discount code (e.g. WELCOME10)"
-                    className="flex-1 px-3.5 py-2 rounded-xl bg-surface-muted border border-border text-xs text-text-main focus:outline-none focus:border-brand uppercase"
+                    placeholder="Discount code"
+                    className="flex-1 px-3.5 py-2.5 rounded-xl bg-surface-muted border border-border text-xs text-text-main focus:outline-none focus:border-brand uppercase placeholder:normal-case min-w-0"
                   />
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-surface-muted hover:bg-brand hover:text-white text-text-main font-semibold text-xs rounded-xl border border-border transition-colors"
+                    disabled={isCheckingDiscount || !discountInput.trim()}
+                    className="px-4 py-2.5 bg-surface-muted hover:bg-brand hover:text-white text-text-main font-semibold text-xs rounded-xl border border-border transition-colors disabled:opacity-50 flex-shrink-0"
                   >
-                    Apply
+                    {isCheckingDiscount ? 'Checking...' : 'Apply'}
                   </button>
                 </div>
                 {discountError && (

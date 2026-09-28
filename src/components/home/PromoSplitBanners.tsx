@@ -31,14 +31,14 @@ export function PromoSplitBanners({ banners }: PromoSplitBannersProps) {
   };
 
   return (
-    <section className="py-6 w-[85%] max-w-[85%] mx-auto overflow-hidden">
+    <section className="py-6 w-[94%] sm:w-[90%] md:w-[85%] max-w-[85%] mx-auto overflow-hidden">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Left Banner: Period Care (Plum / Rose theme) */}
         <div 
-          className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[#FDF2F8] to-[#FCE7F3] p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 border border-brand/10 shadow-subtle group"
+          className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[#FDF2F8] to-[#FCE7F3] p-5 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 border border-brand/10 shadow-subtle group"
           data-aos="fade-up"
         >
-          <div className="space-y-3 sm:max-w-[55%] text-left z-10">
+          <div className="space-y-3 sm:max-w-[55%] text-left z-10 w-full min-w-0">
             <span className="text-[10px] uppercase font-bold tracking-wider text-brand px-2.5 py-1 bg-white/80 rounded-full inline-block">
               Signature Cycle Care
             </span>
@@ -70,11 +70,11 @@ export function PromoSplitBanners({ banners }: PromoSplitBannersProps) {
 
         {/* Right Banner: Wellness (Warm Green / Botanical theme) */}
         <div 
-          className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[#F0FDF4] to-[#DCFCE7] p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 border border-emerald-100 shadow-subtle group"
+          className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[#F0FDF4] to-[#DCFCE7] p-5 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 border border-emerald-100 shadow-subtle group"
           data-aos="fade-up"
           data-aos-delay="100"
         >
-          <div className="space-y-3 sm:max-w-[55%] text-left z-10">
+          <div className="space-y-3 sm:max-w-[55%] text-left z-10 w-full min-w-0">
             <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-800 px-2.5 py-1 bg-white/80 rounded-full inline-block">
               Body & Herbal Care
             </span>

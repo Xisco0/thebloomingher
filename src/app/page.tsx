@@ -38,7 +38,8 @@ export const metadata: Metadata = {
   },
 };
 
-export const revalidate = 3600; // Revalidate every hour
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function HomePage() {
   const [categories, bestSellers, under10k, cmsConfig, heroBanners, activeEvents] = await Promise.all([
@@ -80,7 +81,7 @@ export default async function HomePage() {
       <TestimonialsSection testimonials={cmsConfig.testimonials} />
 
       {/* 10. Personalized Recommendations & Trending Discoveries */}
-      <div className="w-[85%] max-w-[85%] mx-auto py-12">
+      <div className="w-[94%] sm:w-[90%] md:w-[85%] max-w-[85%] mx-auto py-12">
         <RecommendedProductsGrid
           context="homepage"
           title="Recommended For You"

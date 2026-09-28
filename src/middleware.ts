@@ -49,8 +49,32 @@ export async function middleware(req: NextRequest) {
       }
     }
 
-    // If authenticated admin has already changed password but visits change-password page without need
-    // (They can still visit if they want, but let's allow it)
+    // Enforce role-based access control for administrative pages (e.g. staff role cannot view staff or settings)
+    if (isAdmin && !pathname.startsWith('/api/')) {
+      const role = adminSession?.role;
+      const roleId = adminSession?.roleId;
+      const perms = adminSession?.permissions || [];
+      const isSuperAdmin = role === 'super_admin' || roleId === 'role-super-admin' || perms.includes('*');
+      const isAdministrator = role === 'admin' || roleId === 'role-admin';
+
+      if (!isSuperAdmin && !isAdministrator) {
+        // Staff/custom roles require specific permissions to view Team management pages
+        if (pathname.startsWith('/admin/administrators') || pathname.startsWith('/admin/roles')) {
+          const hasTeamAccess = perms.includes('admins.view') || perms.includes('admins.*') || perms.includes('roles.view') || perms.includes('roles.*');
+          if (!hasTeamAccess) {
+            return NextResponse.redirect(new URL('/admin', req.url));
+          }
+        }
+
+        // Staff/custom roles require specific permissions to view Settings and Audit Trail
+        if (pathname.startsWith('/admin/settings') || pathname.startsWith('/admin/audit-logs')) {
+          const hasSettingsAccess = perms.includes('settings.view') || perms.includes('settings.*') || perms.includes('audit_logs.view') || perms.includes('audit_logs.*');
+          if (!hasSettingsAccess) {
+            return NextResponse.redirect(new URL('/admin', req.url));
+          }
+        }
+      }
+    }
   }
 
   // 2. Customer Account Route Protection

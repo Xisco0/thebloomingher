@@ -18,6 +18,7 @@ import {
   Eye,
 } from 'lucide-react';
 import { MarketingBanner, MarketingCampaign, MarketingEvent, MarketingAnnouncement } from '@/types/marketing-cms.types';
+import { MarketingSubNav } from '@/components/admin/subnav/MarketingSubNav';
 
 export default function MarketingDashboardPage() {
   const [banners, setBanners] = useState<MarketingBanner[]>([]);
@@ -93,17 +94,19 @@ export default function MarketingDashboardPage() {
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
+      <MarketingSubNav />
+
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-brand">
-            Content & Marketing CMS
+            Marketing & Content
           </span>
           <h1 className="font-display font-bold text-2xl sm:text-3xl text-text-main">
-            Promotional & Campaign Hub
+            Marketing
           </h1>
           <p className="text-xs sm:text-sm text-text-muted mt-1">
-            Manage storefront banners, multi-channel campaigns, events, announcements, and media without writing code.
+            Create banners, promotional discounts, community events, and announcements for your store.
           </p>
         </div>
 
@@ -114,7 +117,7 @@ export default function MarketingDashboardPage() {
             className="px-4 py-2.5 bg-surface hover:bg-surface-muted border border-border rounded-xl text-xs font-semibold text-text-main flex items-center gap-1.5 transition-colors shadow-xs"
           >
             <Eye className="w-3.5 h-3.5" />
-            <span>View Live Store</span>
+            <span>View Store</span>
           </Link>
 
           <Link
@@ -122,7 +125,7 @@ export default function MarketingDashboardPage() {
             className="px-4 py-2.5 bg-brand hover:bg-brand-hover text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-md active:scale-95"
           >
             <Plus className="w-4 h-4" />
-            <span>Create New Banner</span>
+            <span>Add Banner</span>
           </Link>
         </div>
       </div>

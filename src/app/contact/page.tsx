@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="w-[85%] max-w-[85%] mx-auto py-10 sm:py-16 space-y-12">
+    <div className="w-[94%] sm:w-[90%] md:w-[85%] max-w-[85%] mx-auto py-10 sm:py-16 space-y-12">
       <div className="text-center max-w-2xl mx-auto space-y-2">
         <span className="text-xs uppercase tracking-wider text-brand font-bold block">
           We Care About You

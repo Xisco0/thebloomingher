@@ -13,11 +13,34 @@ interface AdminLayoutShellProps {
 export function AdminLayoutShell({ children }: AdminLayoutShellProps) {
   const pathname = usePathname();
   const isLoginPage = pathname === '/admin/login';
+  const [admin, setAdmin] = React.useState<{ full_name: string; email: string; role_name?: string } | null>(null);
+
+  React.useEffect(() => {
+    if (!isLoginPage) {
+      fetch('/api/auth/admin/me')
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.admin) {
+            setAdmin(data.admin);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [isLoginPage]);
 
   // If on login page, render clean standalone page without sidebar or admin header
   if (isLoginPage) {
     return <>{children}</>;
   }
+
+  const initials = admin?.full_name
+    ? admin.full_name
+        .split(' ')
+        .map(n => n[0])
+        .slice(0, 2)
+        .join('')
+        .toUpperCase()
+    : 'TB';
 
   return (
     <div className="min-h-screen bg-[#FDFBF9] text-text-body font-sans flex flex-col lg:flex-row">
@@ -52,11 +75,15 @@ export function AdminLayoutShell({ children }: AdminLayoutShellProps) {
 
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-full bg-brand text-white font-bold text-xs flex items-center justify-center shadow-xs">
-                TB
+                {initials}
               </div>
               <div className="text-left">
-                <p className="text-xs font-bold text-text-main leading-tight">Store Administrator</p>
-                <p className="text-[10px] text-text-muted">admin@thebloomingher.com</p>
+                <p className="text-xs font-bold text-text-main leading-tight">
+                  {admin?.full_name || 'Store Administrator'}
+                </p>
+                <p className="text-[10px] text-text-muted">
+                  {admin?.email || 'admin@thebloomingher.com'}
+                </p>
               </div>
             </div>
           </div>

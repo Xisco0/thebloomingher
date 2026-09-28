@@ -225,7 +225,7 @@ export default function AdminHomepageContentPage() {
                 folder="banners"
                 maxFiles={1}
                 label="Hero Background / Lifestyle Image"
-                description="Upload hero lifestyle photo (stored in Cloudflare R2)."
+                description="Upload hero lifestyle photo."
               />
             </div>
           </div>

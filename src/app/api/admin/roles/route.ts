@@ -6,12 +6,12 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
   const auth = await requireAdminPermission(req, 'roles.view');
-  if (!auth.authorized) {
+  if (!auth.authorized || !auth.session) {
     return auth.errorResponse!;
   }
 
   try {
-    const roles = cmsStore.getRoles();
+    const roles = cmsStore.getRoles(auth.session.role);
     return NextResponse.json({
       success: true,
       data: roles,
@@ -25,11 +25,19 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const auth = await requireAdminPermission(req, 'roles.manage');
-  if (!auth.authorized) {
+  if (!auth.authorized || !auth.session) {
     return auth.errorResponse!;
   }
 
   try {
+    const isSuperAdmin = auth.session.role === 'super_admin' || auth.session.roleId === 'role-super-admin';
+    if (!isSuperAdmin) {
+      return NextResponse.json(
+        { success: false, error: 'Permission denied: Only Super Administrators can manage roles.' },
+        { status: 403 }
+      );
+    }
+
     const body = await req.json();
     const { name, description, permissions } = body;
 
@@ -60,3 +68,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
+

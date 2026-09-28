@@ -25,6 +25,9 @@ export async function generateMetadata({ params }: EventPageProps): Promise<Meta
   return {
     title: `${event.name} | TheBloomingHer Events`,
     description: event.description || 'Join us for wellness events and workshops by TheBloomingHer.',
+    alternates: {
+      canonical: `/events/${event.slug || params.slug}`,
+    },
     openGraph: {
       title: event.name,
       description: event.description,

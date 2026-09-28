@@ -15,6 +15,7 @@ import {
   Link as LinkIcon,
 } from 'lucide-react';
 import { MediaAsset } from '@/types/marketing-cms.types';
+import { MarketingSubNav } from '@/components/admin/subnav/MarketingSubNav';
 
 export default function MediaLibraryPage() {
   const [media, setMedia] = useState<MediaAsset[]>([]);
@@ -144,6 +145,8 @@ export default function MediaLibraryPage() {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
+      <MarketingSubNav />
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

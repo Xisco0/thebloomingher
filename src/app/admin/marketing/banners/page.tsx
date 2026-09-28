@@ -32,6 +32,7 @@ import {
 import { MediaPickerModal } from '@/components/admin/marketing/MediaPickerModal';
 import { SmartCTASelector } from '@/components/admin/marketing/SmartCTASelector';
 import { BannerPreviewModal } from '@/components/admin/marketing/BannerPreviewModal';
+import { MarketingSubNav } from '@/components/admin/subnav/MarketingSubNav';
 
 export default function BannersManagementPage() {
   const [banners, setBanners] = useState<MarketingBanner[]>([]);
@@ -233,6 +234,8 @@ export default function BannersManagementPage() {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
+      <MarketingSubNav />
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -437,9 +440,9 @@ export default function BannersManagementPage() {
 
       {/* Create / Edit Drawer Modal */}
       {isEditorOpen && editingBanner && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-          <div className="bg-surface rounded-2xl border border-border shadow-2xl w-full max-w-3xl max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-5 border-b border-border flex items-center justify-between">
+        <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs overflow-y-auto p-3 sm:p-6 flex flex-col items-center justify-start sm:justify-center">
+          <div className="bg-surface rounded-2xl border border-border shadow-2xl w-full max-w-3xl max-h-[calc(100dvh-2.5rem)] sm:max-h-[calc(100dvh-4rem)] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200 my-auto flex-shrink-0">
+            <div className="p-5 border-b border-border flex items-center justify-between flex-shrink-0">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-brand">
                   Banner Composer

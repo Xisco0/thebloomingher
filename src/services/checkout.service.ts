@@ -4,6 +4,7 @@ import { paystackService } from './paystack.service';
 import { CheckoutFormData } from '@/lib/validation/checkout.schema';
 import { calculateDeliveryFee } from '@/lib/utils/nigeria-data';
 import { generatePaystackReference } from '@/lib/utils/paystack';
+import { cmsStore } from '@/lib/cms-store';
 import { Order, CreateOrderDTO } from '@/types';
 
 export interface CheckoutValidationResult {
@@ -105,12 +106,32 @@ export class CheckoutService {
       subtotal
     );
 
-    // Discount validation foundation
+    // Dynamic Discount validation from database/CMS configuration
     let discountAmount = 0;
     if (data.discountCode) {
-      const code = data.discountCode.toUpperCase().trim();
-      if (code === 'WELCOME10') {
-        discountAmount = Math.round(subtotal * 0.1); // 10% Welcome Discount
+      const rawCode = data.discountCode.toUpperCase().trim();
+      const discounts = cmsStore.getDiscounts();
+      const matched = discounts.find(
+        d => d.code.toUpperCase() === rawCode && d.is_active
+      );
+
+      if (matched) {
+        if (matched.end_date && new Date(matched.end_date) < new Date()) {
+          errors.push(`Discount code "${data.discountCode}" has expired.`);
+        } else if (matched.min_spend && subtotal < matched.min_spend) {
+          errors.push(`Discount code requires a minimum purchase of ₦${matched.min_spend.toLocaleString()}.`);
+        } else if (matched.usage_limit && matched.usage_count >= matched.usage_limit) {
+          errors.push(`Discount code usage limit has been reached.`);
+        } else {
+          if (matched.type === 'percentage') {
+            discountAmount = Math.round((subtotal * matched.value) / 100);
+            if (matched.max_discount && discountAmount > matched.max_discount) {
+              discountAmount = matched.max_discount;
+            }
+          } else {
+            discountAmount = Math.min(subtotal, matched.value);
+          }
+        }
       } else {
         errors.push(`Discount code "${data.discountCode}" is invalid or expired.`);
       }

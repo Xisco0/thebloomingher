@@ -16,6 +16,8 @@ import {
   LogOut,
 } from 'lucide-react';
 
+import { SignOutConfirmModal } from '@/components/admin/SignOutConfirmModal';
+
 export default function AdminChangePasswordPage() {
   const router = useRouter();
   const [currentPassword, setCurrentPassword] = useState('');
@@ -25,6 +27,8 @@ export default function AdminChangePasswordPage() {
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [adminUser, setAdminUser] = useState<{ full_name?: string; email?: string; role_name?: string; must_change_password?: boolean } | null>(null);
@@ -41,11 +45,15 @@ export default function AdminChangePasswordPage() {
   }, []);
 
   const handleLogout = async () => {
+    setLoggingOut(true);
     try {
       await fetch('/api/auth/admin/logout', { method: 'POST' });
+      setShowSignOutModal(false);
       router.push('/admin/login');
       router.refresh();
-    } catch {}
+    } catch {} finally {
+      setLoggingOut(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -303,14 +311,25 @@ export default function AdminChangePasswordPage() {
         <div className="mt-8 pt-5 border-t border-border flex items-center justify-between text-xs text-text-muted">
           <span>Need help logging in?</span>
           <button
-            onClick={handleLogout}
-            className="text-rose-600 hover:text-rose-700 font-semibold flex items-center gap-1 hover:underline"
+            type="button"
+            onClick={() => setShowSignOutModal(true)}
+            className="text-rose-600 hover:text-rose-700 font-semibold flex items-center gap-1 hover:underline cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Sign Out</span>
           </button>
         </div>
       </div>
+
+      {/* Sign Out Confirmation Modal */}
+      <SignOutConfirmModal
+        isOpen={showSignOutModal}
+        onClose={() => setShowSignOutModal(false)}
+        onConfirm={handleLogout}
+        loading={loggingOut}
+        adminEmail={adminUser?.email}
+        adminName={adminUser?.full_name}
+      />
     </div>
   );
 }

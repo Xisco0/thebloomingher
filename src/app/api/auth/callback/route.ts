@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
   const redirect = requestUrl.searchParams.get('redirect') || '/account';
-  const siteUrl = getSiteUrl();
+  const targetOrigin = requestUrl.origin || getSiteUrl();
 
   if (code) {
     const supabase = createServerSupabaseClient();
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
         avatarUrl,
       });
 
-      const response = NextResponse.redirect(new URL(redirect, siteUrl));
+      const response = NextResponse.redirect(new URL(redirect, targetOrigin));
 
       if (authResult.success && authResult.token) {
         response.cookies.set({
@@ -53,5 +53,5 @@ export async function GET(request: NextRequest) {
   }
 
   // Fallback redirect
-  return NextResponse.redirect(new URL(redirect, siteUrl));
+  return NextResponse.redirect(new URL(redirect, targetOrigin));
 }

@@ -10,8 +10,8 @@ export function AnnouncementBar() {
   const { amountUntilFreeShipping, hasFreeShipping } = useCart();
 
   return (
-    <div className="bg-brand text-white text-xs py-2 px-4 select-none">
-      <div className="w-[85%] max-w-[85%] mx-auto flex flex-col sm:flex-row justify-between items-center gap-1 sm:gap-4 text-center sm:text-left">
+    <div className="bg-brand text-white text-xs py-2 px-3 sm:px-4 select-none">
+      <div className="w-[94%] sm:w-[90%] md:w-[85%] max-w-[85%] mx-auto flex flex-col sm:flex-row justify-between items-center gap-1 sm:gap-4 text-center sm:text-left">
         <div className="flex items-center gap-2 font-medium">
           <Truck className="w-3.5 h-3.5 text-brand-light flex-shrink-0" />
           <span>

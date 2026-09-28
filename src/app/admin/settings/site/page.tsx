@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { SiteSettings } from '@/types/cms.types';
 import { formatNaira } from '@/lib/utils/currency';
+import { SettingsSubNav } from '@/components/admin/subnav/SettingsSubNav';
 
 export default function AdminSiteSettingsPage() {
   const [settings, setSettings] = useState<SiteSettings | null>(null);
@@ -77,14 +78,16 @@ export default function AdminSiteSettingsPage() {
 
   return (
     <form onSubmit={handleSave} className="space-y-6 max-w-4xl">
+      <SettingsSubNav />
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-display font-bold text-2xl sm:text-3xl text-text-main">
-            Store & Shipping Settings
+            Store Settings
           </h1>
           <p className="text-xs sm:text-sm text-text-muted mt-1">
-            Configure Nigerian delivery charges, physical store address in Ifako-Ijaiye, and contact channels.
+            Update delivery fees, store address, contact numbers, and WhatsApp support.
           </p>
         </div>
 
@@ -92,7 +95,7 @@ export default function AdminSiteSettingsPage() {
           {savedSuccess && (
             <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200">
               <CheckCircle2 className="w-3.5 h-3.5" />
-              Settings Updated!
+              Changes saved!
             </span>
           )}
           <button
@@ -101,7 +104,7 @@ export default function AdminSiteSettingsPage() {
             className="px-5 py-2.5 bg-brand hover:bg-brand-dark text-white font-bold text-xs rounded-xl flex items-center gap-1.5 transition-all shadow-sm disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
-            <span>{saving ? 'Saving...' : 'Save Settings'}</span>
+            <span>{saving ? 'Saving...' : 'Save Changes'}</span>
           </button>
         </div>
       </div>

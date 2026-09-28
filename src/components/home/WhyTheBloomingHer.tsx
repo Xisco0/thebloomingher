@@ -27,7 +27,7 @@ export function WhyTheBloomingHer() {
 
   return (
     <section className="py-14 sm:py-20 bg-surface border-y border-border/80">
-      <div className="w-[85%] max-w-[85%] mx-auto">
+      <div className="w-[94%] sm:w-[90%] md:w-[85%] max-w-[85%] mx-auto">
         <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14" data-aos="fade-up">
           <span className="text-xs uppercase tracking-wider text-brand font-bold block mb-1">
             Our Care Promise

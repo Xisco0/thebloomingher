@@ -53,18 +53,37 @@ export default function CartPage() {
     recommendationService.getCartUpsells([]).then(setUpsells);
   }, []);
 
-  const handleApplyPromo = (e: React.FormEvent) => {
+  const [isCheckingPromo, setIsCheckingPromo] = useState(false);
+
+  const handleApplyPromo = async (e: React.FormEvent) => {
     e.preventDefault();
     setPromoError('');
     const code = promoCode.trim().toUpperCase();
 
     if (!code) return;
 
-    if (code === 'WELCOME10') {
-      const discount = Math.round(subtotal * 0.1);
-      setAppliedDiscount({ code, amount: discount });
-    } else {
-      setPromoError('Invalid coupon code. Try WELCOME10 for 10% off.');
+    setIsCheckingPromo(true);
+    try {
+      const res = await fetch('/api/discounts/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, subtotal }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success && data.discount) {
+        setAppliedDiscount({
+          code: data.discount.code,
+          amount: data.discount.amount,
+        });
+        setPromoError('');
+      } else {
+        setPromoError(data.message || 'Invalid or expired discount code.');
+      }
+    } catch (err: any) {
+      setPromoError('Unable to validate discount code. Please try again.');
+    } finally {
+      setIsCheckingPromo(false);
     }
   };
 
@@ -132,7 +151,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className="w-[85%] max-w-[85%] mx-auto py-8 sm:py-12">
+    <div className="w-[94%] sm:w-[90%] md:w-[85%] max-w-[85%] mx-auto py-8 sm:py-12">
       {/* Page Title */}
       <div className="mb-8">
         <h1 className="font-display font-bold text-2xl sm:text-4xl text-text-main">
@@ -395,14 +414,15 @@ export default function CartPage() {
                       type="text"
                       value={promoCode}
                       onChange={e => setPromoCode(e.target.value)}
-                      placeholder="Discount code (e.g. WELCOME10)"
-                      className="flex-1 px-3.5 py-2 rounded-xl bg-surface-muted border border-border text-xs text-text-main focus:outline-none focus:border-brand uppercase"
+                      placeholder="Discount code"
+                      className="flex-1 px-3.5 py-2.5 rounded-xl bg-surface-muted border border-border text-xs text-text-main focus:outline-none focus:border-brand uppercase placeholder:normal-case min-w-0"
                     />
                     <button
                       type="submit"
-                      className="px-4 py-2 bg-surface-muted hover:bg-brand hover:text-white text-text-main font-semibold text-xs rounded-xl border border-border transition-colors"
+                      disabled={isCheckingPromo || !promoCode.trim()}
+                      className="px-4 py-2.5 bg-surface-muted hover:bg-brand hover:text-white text-text-main font-semibold text-xs rounded-xl border border-border transition-colors disabled:opacity-50 flex-shrink-0"
                     >
-                      Apply
+                      {isCheckingPromo ? 'Checking...' : 'Apply'}
                     </button>
                   </div>
                   {promoError && (

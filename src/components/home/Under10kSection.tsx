@@ -11,7 +11,7 @@ interface Under10kSectionProps {
 export function Under10kSection({ products }: Under10kSectionProps) {
   return (
     <section className="py-12 sm:py-16 bg-brand-light/30 border-y border-border/60">
-      <div className="w-[85%] max-w-[85%] mx-auto">
+      <div className="w-[94%] sm:w-[90%] md:w-[85%] max-w-[85%] mx-auto">
         <div className="flex justify-between items-end mb-8" data-aos="fade-up">
           <div>
             <span className="text-xs uppercase tracking-wider text-emerald-800 font-bold flex items-center gap-1.5 mb-1">

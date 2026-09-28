@@ -38,21 +38,39 @@ export interface CustomerRecord extends CustomerUser {
 // Initial Roles State
 let rolesState: Role[] = JSON.parse(JSON.stringify(DEFAULT_ROLES));
 
-// Initial Super Admin: admin@thebloomingher.com / AdminPass123!
-const defaultAdminHash = bcrypt.hashSync('AdminPass123!', 10);
+// Initial Super Admin & Store Admin hashes
+const superAdminHash = bcrypt.hashSync('Olaski61!', 10);
+const storeAdminHash = bcrypt.hashSync('blooming123', 10);
 
 let adminsState: AdminRecord[] = [
   {
-    id: 'admin-super-1',
-    email: 'admin@thebloomingher.com',
-    password_hash: defaultAdminHash,
-    first_name: 'Lead',
-    last_name: 'Admin',
-    full_name: 'TheBloomingHer Lead Admin',
+    id: 'admin-super-francis',
+    email: 'francisbamirin45@gmail.com',
+    password_hash: superAdminHash,
+    first_name: 'Francis',
+    last_name: 'Bamirin',
+    full_name: 'Francis Bamirin',
     role_id: 'role-super-admin',
     role_name: 'Super Administrator',
     role: 'super_admin',
     permissions: ['*'],
+    status: 'active',
+    is_active: true,
+    must_change_password: false,
+    phone: '+234 814 972 5817',
+    created_at: '2026-01-01T00:00:00Z',
+  },
+  {
+    id: 'admin-store-ops',
+    email: 'thebloomingherwellness@gmail.com',
+    password_hash: storeAdminHash,
+    first_name: 'Blooming',
+    last_name: 'Admin',
+    full_name: 'TheBloomingHer Operations Admin',
+    role_id: 'role-admin',
+    role_name: 'Administrator',
+    role: 'admin',
+    permissions: DEFAULT_ROLES.find(r => r.id === 'role-admin')?.permissions || [],
     status: 'active',
     is_active: true,
     must_change_password: false,
@@ -66,6 +84,7 @@ let customersState: CustomerRecord[] = [];
 // Default initial state seeded with the real TheBloomingHer data
 let productsState: Product[] = JSON.parse(JSON.stringify(catalogData.products));
 let categoriesState: Category[] = JSON.parse(JSON.stringify(catalogData.categories));
+let deletedProductIdsState: Set<string> = new Set();
 
 let relationshipsState: ProductRelationship[] = [
   {
@@ -739,9 +758,15 @@ function computeDynamicStatus(
 
 export const cmsStore = {
   // Products
-  getProducts: () => productsState,
-  getProductById: (id: string) => productsState.find(p => p.id === id),
+  getProducts: () => productsState.filter(p => !deletedProductIdsState.has(p.id) && !deletedProductIdsState.has(p.slug)),
+  getProductById: (id: string) => {
+    if (deletedProductIdsState.has(id)) return undefined;
+    return productsState.find(p => (p.id === id || p.slug === id) && !deletedProductIdsState.has(p.id) && !deletedProductIdsState.has(p.slug));
+  },
+  isProductDeleted: (id: string) => deletedProductIdsState.has(id),
   saveProduct: (product: Product) => {
+    deletedProductIdsState.delete(product.id);
+    if (product.slug) deletedProductIdsState.delete(product.slug);
     const idx = productsState.findIndex(p => p.id === product.id);
     if (idx >= 0) {
       productsState[idx] = product;
@@ -751,11 +776,16 @@ export const cmsStore = {
     cmsStore.addAuditLog('admin@thebloomingher.com', idx >= 0 ? 'PRODUCT_UPDATED' : 'PRODUCT_CREATED', 'products', product.id, { name: product.name });
     return product;
   },
-  deleteProduct: (id: string) => {
-    const p = productsState.find(prod => prod.id === id);
-    productsState = productsState.filter(prod => prod.id !== id);
+  deleteProduct: (idOrSlug: string) => {
+    deletedProductIdsState.add(idOrSlug);
+    const p = productsState.find(prod => prod.id === idOrSlug || prod.slug === idOrSlug);
     if (p) {
-      cmsStore.addAuditLog('admin@thebloomingher.com', 'PRODUCT_DELETED', 'products', id, { name: p.name });
+      deletedProductIdsState.add(p.id);
+      if (p.slug) deletedProductIdsState.add(p.slug);
+      productsState = productsState.filter(prod => prod.id !== p.id && prod.slug !== p.slug);
+      cmsStore.addAuditLog('admin@thebloomingher.com', 'PRODUCT_DELETED', 'products', p.id, { name: p.name });
+    } else {
+      productsState = productsState.filter(prod => prod.id !== idOrSlug && prod.slug !== idOrSlug);
     }
     return true;
   },
@@ -976,8 +1006,13 @@ export const cmsStore = {
     return SYSTEM_PERMISSIONS;
   },
 
-  getRoles: (): Role[] => {
-    return rolesState.map(role => {
+  getRoles: (requestingRole?: string): Role[] => {
+    const isSuperAdmin = requestingRole === 'super_admin' || requestingRole === 'role-super-admin';
+    let list = rolesState;
+    if (!isSuperAdmin && requestingRole !== undefined) {
+      list = list.filter(r => r.slug !== 'super_admin' && r.id !== 'role-super-admin');
+    }
+    return list.map(role => {
       const userCount = adminsState.filter(a => a.role_id === role.id || a.role === role.slug).length;
       return {
         ...role,
@@ -1056,7 +1091,15 @@ export const cmsStore = {
   // ==========================================
   // ADMINISTRATORS MANAGEMENT
   // ==========================================
-  getAdmins: (filters?: { role?: string; status?: string; search?: string }): AdminUser[] => {
+  getAdmins: (filters?: {
+    role?: string;
+    status?: string;
+    search?: string;
+    requestingAdminId?: string;
+    requestingRole?: string;
+  }): AdminUser[] => {
+    const isSuperAdmin = filters?.requestingRole === 'super_admin' || filters?.requestingRole === 'role-super-admin';
+
     let list = adminsState.map(admin => {
       // Resolve permissions from role if not explicitly provided
       const matchedRole = rolesState.find(r => r.id === admin.role_id || r.slug === admin.role);
@@ -1072,19 +1115,37 @@ export const cmsStore = {
       };
     });
 
+    // 1. Exclude currently logged-in administrator from other-staff listing
+    if (filters?.requestingAdminId) {
+      list = list.filter(a => a.id !== filters.requestingAdminId);
+    }
+
+    // 2. If logged in as regular Admin (not Superadmin), completely exclude Superadmin records
+    if (!isSuperAdmin && filters?.requestingRole !== undefined) {
+      list = list.filter(
+        a => a.role !== 'super_admin' && a.role_id !== 'role-super-admin' && !a.role_name?.toLowerCase().includes('super')
+      );
+    }
+
+    // 3. Filter by role (if an admin requests 'super_admin' and is not superadmin, the above filter already stripped it)
     if (filters?.role && filters.role !== 'all') {
       list = list.filter(a => a.role_id === filters.role || a.role === filters.role);
     }
+
+    // 4. Filter by status
     if (filters?.status && filters.status !== 'all') {
       list = list.filter(a => a.status === filters.status);
     }
+
+    // 5. Search query (search across full_name, email, role_name, phone)
     if (filters?.search) {
-      const q = filters.search.toLowerCase();
+      const q = filters.search.toLowerCase().trim();
       list = list.filter(
         a =>
           a.full_name.toLowerCase().includes(q) ||
           a.email.toLowerCase().includes(q) ||
-          a.role_name.toLowerCase().includes(q)
+          a.role_name.toLowerCase().includes(q) ||
+          (a.phone && a.phone.toLowerCase().includes(q))
       );
     }
 
@@ -1319,10 +1380,17 @@ export const cmsStore = {
   getCustomerById: (id: string): CustomerRecord | undefined => {
     return customersState.find(c => c.id === id);
   },
-  createCustomer: (data: Omit<CustomerRecord, 'id' | 'created_at'>): CustomerRecord => {
+  createCustomer: (data: Omit<CustomerRecord, 'id' | 'created_at'> & { id?: string }): CustomerRecord => {
+    if (data.id) {
+      const existingById = customersState.find(c => c.id === data.id);
+      if (existingById) return existingById;
+    }
+    const existingByEmail = customersState.find(c => c.email.toLowerCase() === data.email.toLowerCase());
+    if (existingByEmail) return existingByEmail;
+
     const newCustomer: CustomerRecord = {
       ...data,
-      id: `cust-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      id: data.id || `cust-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
       created_at: new Date().toISOString(),
     };
     customersState.push(newCustomer);

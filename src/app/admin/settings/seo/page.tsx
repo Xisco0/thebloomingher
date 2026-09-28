@@ -10,6 +10,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { SiteSettings } from '@/types/cms.types';
+import { SettingsSubNav } from '@/components/admin/subnav/SettingsSubNav';
 
 export default function AdminSeoSettingsPage() {
   const [settings, setSettings] = useState<SiteSettings | null>(null);
@@ -69,14 +70,16 @@ export default function AdminSeoSettingsPage() {
 
   return (
     <form onSubmit={handleSave} className="space-y-6 max-w-4xl">
+      <SettingsSubNav />
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-display font-bold text-2xl sm:text-3xl text-text-main">
-            Search Engine Optimization (SEO)
+            SEO
           </h1>
           <p className="text-xs sm:text-sm text-text-muted mt-1">
-            Configure metadata, OpenGraph social sharing cards, and search indexing for Google Nigeria.
+            Set up how your store appears when searched on Google or shared on social media.
           </p>
         </div>
 
@@ -84,7 +87,7 @@ export default function AdminSeoSettingsPage() {
           {savedSuccess && (
             <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200">
               <CheckCircle2 className="w-3.5 h-3.5" />
-              SEO Settings Saved!
+              Changes saved!
             </span>
           )}
           <button
@@ -93,7 +96,7 @@ export default function AdminSeoSettingsPage() {
             className="px-5 py-2.5 bg-brand hover:bg-brand-dark text-white font-bold text-xs rounded-xl flex items-center gap-1.5 transition-all shadow-sm disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
-            <span>{saving ? 'Saving...' : 'Save Metadata'}</span>
+            <span>{saving ? 'Saving...' : 'Save Changes'}</span>
           </button>
         </div>
       </div>

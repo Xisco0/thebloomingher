@@ -74,9 +74,9 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
   });
 
   return (
-    <div className="w-[85%] max-w-[85%] mx-auto py-8 sm:py-12">
+    <div className="w-[94%] sm:w-[90%] md:w-[85%] max-w-[85%] mx-auto py-8 sm:py-12">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-1.5 text-xs text-text-muted mb-6">
+      <nav className="flex items-center gap-1.5 text-xs text-text-muted mb-6 overflow-x-auto whitespace-nowrap">
         <Link href="/" className="hover:text-brand transition-colors">
           Home
         </Link>
@@ -85,7 +85,7 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
           Collections
         </Link>
         <ChevronRight className="w-3.5 h-3.5 flex-shrink-0" />
-        <span className="text-text-main font-semibold">{title}</span>
+        <span className="text-text-main font-semibold truncate max-w-[200px]">{title}</span>
       </nav>
 
       {/* Collection Header Banner */}
@@ -95,7 +95,7 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
         <span className="text-xs uppercase tracking-wider font-bold block mb-1 text-brand">
           Featured Collection
         </span>
-        <h1 className="font-display font-bold text-3xl sm:text-4xl text-text-main">
+        <h1 className="font-display font-bold text-2xl sm:text-4xl text-text-main">
           {title}
         </h1>
         <p className="text-sm text-text-body/80 mt-2 max-w-2xl leading-relaxed">
@@ -104,7 +104,7 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
       </div>
 
       {/* Products Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-6">
         {productsRes.data.map(prod => (
           <ProductCard key={prod.id} product={prod} />
         ))}

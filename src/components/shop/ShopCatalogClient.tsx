@@ -147,17 +147,21 @@ export function ShopCatalogClient({
     (filters.under10k ? 1 : 0);
 
   return (
-    <div className="w-[85%] max-w-[85%] mx-auto py-8 sm:py-12">
+    <div className="w-[94%] sm:w-[90%] md:w-[85%] max-w-[85%] mx-auto py-8 sm:py-12">
       {/* Header & Category Navigation Bar */}
       <div className="mb-8 space-y-4">
-        <div className="max-w-3xl">
-          <h1 className="font-display font-bold text-2xl sm:text-4xl text-text-main">
-            {pageTitle}
-          </h1>
-          <p className="text-sm text-text-muted mt-2 leading-relaxed">
-            {pageDescription}
-          </p>
-        </div>
+        {pageTitle && (
+          <div className="max-w-3xl">
+            <h1 className="font-display font-bold text-2xl sm:text-4xl text-text-main">
+              {pageTitle}
+            </h1>
+            {pageDescription && (
+              <p className="text-sm text-text-muted mt-2 leading-relaxed">
+                {pageDescription}
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Category Horizontal Quick Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none pt-2">
@@ -188,9 +192,9 @@ export function ShopCatalogClient({
       </div>
 
       {/* Control Bar: Search, Filters Trigger, Count, and Sort */}
-      <div className="bg-surface rounded-2xl p-4 border border-border/80 shadow-subtle mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="bg-surface rounded-2xl p-3.5 sm:p-4 border border-border/80 shadow-subtle mb-8 flex flex-col md:flex-row items-center justify-between gap-3.5 sm:gap-4">
         {/* Search input */}
-        <div className="relative w-full md:w-80">
+        <div className="relative w-full md:w-80 min-w-0">
           <Search className="w-4 h-4 text-text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
@@ -207,11 +211,11 @@ export function ShopCatalogClient({
         </div>
 
         {/* Count & Actions */}
-        <div className="flex items-center justify-between w-full md:w-auto gap-3">
+        <div className="flex flex-wrap items-center justify-between w-full md:w-auto gap-2.5 sm:gap-3">
           {/* Mobile Filter Drawer Button */}
           <button
             onClick={() => setIsDrawerOpen(true)}
-            className="lg:hidden flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-surface text-xs font-semibold text-text-main hover:bg-surface-muted transition-colors relative"
+            className="lg:hidden flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-full border border-border bg-surface text-xs font-semibold text-text-main hover:bg-surface-muted transition-colors relative"
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
             <span>Filters</span>
@@ -248,7 +252,7 @@ export function ShopCatalogClient({
       </div>
 
       {/* Main Content Layout: Sidebar 25% + Grid 75% */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8 items-start">
         {/* Desktop Sidebar (hidden on mobile) */}
         <div className="hidden lg:block lg:col-span-1">
           <ShopFilterSidebar
@@ -263,7 +267,7 @@ export function ShopCatalogClient({
         {/* Product Grid Area */}
         <div className="lg:col-span-3 space-y-8">
           {displayedProducts.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5 sm:gap-6">
               {displayedProducts.map(product => (
                 <ProductCard key={product.id} product={product} />
               ))}

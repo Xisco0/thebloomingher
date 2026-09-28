@@ -1,16 +1,42 @@
 import { NextResponse } from 'next/server';
 import { orderRepository } from '@/repositories';
 import { CustomerProfile } from '@/types/cms.types';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
     const orders = await orderRepository.getAllOrders();
-
-    // Group orders by customer email or phone
     const customerMap = new Map<string, CustomerProfile>();
 
+    // 1. Fetch registered customer accounts from Supabase
+    try {
+      const { data: dbCustomers, error } = await supabaseAdmin
+        .from('customers')
+        .select('*');
+
+      if (!error && dbCustomers) {
+        dbCustomers.forEach((c: any) => {
+          const email = (c.email || '').toLowerCase().trim();
+          if (email) {
+            customerMap.set(email, {
+              id: c.id,
+              fullName: `${c.first_name || ''} ${c.last_name || ''}`.trim() || 'Registered Customer',
+              email: c.email,
+              phone: c.phone || '',
+              ordersCount: 0,
+              totalSpent: 0,
+              createdAt: c.created_at || new Date().toISOString(),
+            });
+          }
+        });
+      }
+    } catch (dbErr) {
+      console.warn('[Admin Customers GET] Supabase customers fetch error:', dbErr);
+    }
+
+    // 2. Aggregate from orders
     orders.forEach(order => {
       const email = order.customer_email.toLowerCase().trim();
       const existing = customerMap.get(email);
@@ -25,7 +51,7 @@ export async function GET() {
         }
       } else {
         customerMap.set(email, {
-          id: `cust-${Math.random().toString(36).substring(2, 9)}`,
+          id: order.customer_id || `cust-${Math.random().toString(36).substring(2, 9)}`,
           fullName: order.customer_name,
           email: order.customer_email,
           phone: order.customer_phone,
@@ -44,3 +70,4 @@ export async function GET() {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
+

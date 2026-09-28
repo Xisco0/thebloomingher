@@ -6,8 +6,8 @@ import { MapPin, Phone, Mail, MessageCircle, ShieldCheck, Heart } from 'lucide-r
 export function Footer() {
   return (
     <footer className="bg-brand-dark text-white pt-16 pb-12 border-t border-brand/40">
-      <div className="w-[85%] max-w-[85%] mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8 pb-12 border-b border-white/10">
+      <div className="w-[94%] sm:w-[90%] md:w-[85%] max-w-[85%] mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-8 pb-12 border-b border-white/10">
           {/* Column 1: Brand Story */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
@@ -28,12 +28,12 @@ export function Footer() {
               </div>
             </div>
 
-            <p className="text-sm text-gray-300 leading-relaxed pr-6">
+            <p className="text-sm text-gray-300 leading-relaxed pr-0 sm:pr-6">
               A feminine wellness and lifestyle brand created to support women through every phase of their journey — from cycle care and menstrual relief to everyday comfort and natural self-care.
             </p>
 
             <div className="flex items-center gap-3 text-xs text-brand-light font-medium pt-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0" />
               <span>100% Quality-Tested & Authentic Products</span>
             </div>
           </div>
@@ -147,7 +147,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-brand-accent flex-shrink-0" />
-                <a href="mailto:thebloomingherwellness@gmail.com" className="text-xs hover:text-white transition-colors">
+                <a href="mailto:thebloomingherwellness@gmail.com" className="text-xs hover:text-white transition-colors break-all">
                   thebloomingherwellness@gmail.com
                 </a>
               </li>
@@ -156,9 +156,9 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar: Copyright & Payment Security */}
-        <div className="pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-400">
+        <div className="pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-400 text-center sm:text-left">
           <p>© {new Date().getFullYear()} TheBloomingHer Care & Wellness. All rights reserved.</p>
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-center justify-center sm:justify-end gap-3 sm:gap-6">
             <span>Developed by <span className="font-medium text-white">xisco</span></span>
             <span>•</span>
             <span className="flex items-center gap-1">

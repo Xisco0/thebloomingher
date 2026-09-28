@@ -12,12 +12,16 @@ export async function GET(req: NextRequest) {
     const token = req.cookies.get(CUSTOMER_COOKIE_NAME)?.value;
 
     let customerId: string | null = null;
+    let customerEmail: string | null = null;
+    let customerName: string | null = null;
     let fallbackToken: string | null = null;
 
     if (token) {
       const session = await verifySessionToken(token);
       if (session && session.role === 'customer') {
         customerId = session.userId;
+        customerEmail = session.email;
+        customerName = session.name;
       }
     }
 
@@ -37,6 +41,8 @@ export async function GET(req: NextRequest) {
 
           if (authRes.success && authRes.customer) {
             customerId = authRes.customer.id;
+            customerEmail = authRes.customer.email;
+            customerName = `${authRes.customer.first_name} ${authRes.customer.last_name}`;
             fallbackToken = authRes.token || null;
           }
         }
@@ -45,13 +51,32 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    if (!customerId) {
+    if (!customerId && !customerEmail) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
-    const customer = cmsStore.getCustomerById(customerId);
+    let customer = customerId ? cmsStore.getCustomerById(customerId) : undefined;
+    if (!customer && customerEmail) {
+      customer = cmsStore.getCustomerByEmail(customerEmail);
+    }
+
+    // Auto-heal / restore in-memory customer if session is valid
+    if (!customer && customerEmail) {
+      const parts = (customerName || '').trim().split(' ');
+      const first = parts[0] || customerEmail.split('@')[0] || 'Customer';
+      const last = parts.slice(1).join(' ') || '';
+      customer = cmsStore.createCustomer({
+        id: customerId || undefined,
+        first_name: first,
+        last_name: last,
+        email: customerEmail,
+        password_hash: '',
+        is_active: true,
+      });
+    }
+
     if (!customer) {
-      return NextResponse.json({ success: false, error: 'Customer not found' }, { status: 404 });
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
     const { password_hash, ...safeCustomer } = customer;

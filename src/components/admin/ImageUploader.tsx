@@ -19,7 +19,7 @@ export function ImageUploader({
   folder = 'products',
   maxFiles = 6,
   label = 'Product Images',
-  description = 'Upload JPG, PNG, WebP or AVIF images up to 10MB each. Stored securely in Cloudflare R2.',
+  description = 'Upload JPG, PNG, WebP or AVIF images up to 10MB each.',
 }: ImageUploaderProps) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -158,7 +158,7 @@ export function ImageUploader({
               <>
                 <Loader2 className="w-8 h-8 text-brand animate-spin" />
                 <p className="text-xs font-medium text-text-main">
-                  Uploading to Cloudflare R2...
+                  Uploading...
                 </p>
               </>
             ) : (

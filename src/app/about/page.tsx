@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="w-[85%] max-w-[85%] mx-auto py-10 sm:py-16 space-y-16">
+    <div className="w-[94%] sm:w-[90%] md:w-[85%] max-w-[85%] mx-auto py-10 sm:py-16 space-y-16">
       {/* Hero Intro */}
       <div className="text-center max-w-3xl mx-auto space-y-4" data-aos="fade-up">
         <span className="text-xs uppercase tracking-wider text-brand font-bold block">

@@ -77,7 +77,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
 
-      <div className="w-[85%] max-w-[85%] mx-auto py-6 sm:py-10">
+      <div className="w-[94%] sm:w-[90%] md:w-[85%] max-w-[85%] mx-auto py-6 sm:py-10">
         {/* Breadcrumb Navigation */}
         <nav className="flex items-center gap-1.5 text-xs text-text-muted mb-6 overflow-x-auto whitespace-nowrap">
           <Link href="/" className="hover:text-brand transition-colors">

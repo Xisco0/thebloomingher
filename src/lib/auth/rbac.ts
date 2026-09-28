@@ -69,7 +69,7 @@ export const DEFAULT_ROLES: Role[] = [
     id: 'role-admin',
     name: 'Administrator',
     slug: 'admin',
-    description: 'Comprehensive store management across all products, orders, marketing, and customer operations.',
+    description: 'Comprehensive store management across all products, orders, marketing, team staff, settings, and customer operations.',
     permissions: [
       'analytics.view',
       'banners.view', 'banners.manage',
@@ -86,20 +86,20 @@ export const DEFAULT_ROLES: Role[] = [
       'reviews.view', 'reviews.manage',
       'orders.view', 'orders.manage',
       'customers.view', 'customers.manage',
-      'admins.view',
+      'admins.view', 'admins.manage',
       'roles.view',
       'settings.view', 'settings.manage',
       'audit_logs.view',
     ],
     is_system: true,
-    user_count: 0,
+    user_count: 1,
     created_at: '2026-01-01T00:00:00Z',
   },
   {
-    id: 'role-marketing-manager',
-    name: 'Marketing Manager',
-    slug: 'marketing_manager',
-    description: 'Controls marketing campaigns, banners, promotions, events, announcements, coupon codes, and media assets.',
+    id: 'role-staff',
+    name: 'Staff',
+    slug: 'staff',
+    description: 'Operational team access for catalog, inventory, orders, customer service, reviews, and marketing content.',
     permissions: [
       'analytics.view',
       'banners.view', 'banners.manage',
@@ -109,59 +109,13 @@ export const DEFAULT_ROLES: Role[] = [
       'announcements.view', 'announcements.manage',
       'coupons.view', 'coupons.manage',
       'media.view', 'media.manage',
-      'products.view',
-      'collections.view', 'collections.manage',
-      'reviews.view',
-    ],
-    is_system: true,
-    user_count: 0,
-    created_at: '2026-01-01T00:00:00Z',
-  },
-  {
-    id: 'role-product-manager',
-    name: 'Product Manager',
-    slug: 'product_manager',
-    description: 'Full authority over catalog products, categories, collections, inventory adjustments, and customer reviews.',
-    permissions: [
       'products.view', 'products.manage',
       'categories.view', 'categories.manage',
       'collections.view', 'collections.manage',
       'inventory.view', 'inventory.manage',
       'reviews.view', 'reviews.manage',
-      'media.view', 'media.manage',
-      'analytics.view',
-    ],
-    is_system: true,
-    user_count: 0,
-    created_at: '2026-01-01T00:00:00Z',
-  },
-  {
-    id: 'role-order-manager',
-    name: 'Order & Fulfillment Manager',
-    slug: 'order_manager',
-    description: 'Manages customer orders, shipment status, dispatch tracking, and customer contact records.',
-    permissions: [
       'orders.view', 'orders.manage',
       'customers.view', 'customers.manage',
-      'products.view',
-      'inventory.view',
-    ],
-    is_system: true,
-    user_count: 0,
-    created_at: '2026-01-01T00:00:00Z',
-  },
-  {
-    id: 'role-content-manager',
-    name: 'Content & Media Creator',
-    slug: 'content_manager',
-    description: 'Oversees visual banners, announcements, event listings, and media library assets.',
-    permissions: [
-      'banners.view', 'banners.manage',
-      'events.view', 'events.manage',
-      'announcements.view', 'announcements.manage',
-      'media.view', 'media.manage',
-      'promotions.view',
-      'reviews.view',
     ],
     is_system: true,
     user_count: 0,
@@ -253,7 +207,13 @@ export async function requireAdminPermission(
     };
   }
 
-  const isAllowed = hasPermission(session.permissions, requiredPermission);
+  // Dynamically resolve permissions including latest role definition for system roles
+  const matchedRole = DEFAULT_ROLES.find(r => r.id === session.roleId || r.slug === session.role || r.id === session.role);
+  const effectivePermissions = matchedRole
+    ? Array.from(new Set([...(session.permissions || []), ...matchedRole.permissions]))
+    : (session.permissions || []);
+
+  const isAllowed = session.role === 'super_admin' || hasPermission(effectivePermissions, requiredPermission);
   if (!isAllowed) {
     return {
       authorized: false,
@@ -270,6 +230,9 @@ export async function requireAdminPermission(
 
   return {
     authorized: true,
-    session,
+    session: {
+      ...session,
+      permissions: effectivePermissions,
+    },
   };
 }

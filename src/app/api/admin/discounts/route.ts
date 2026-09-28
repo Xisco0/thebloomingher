@@ -1,12 +1,52 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cmsStore } from '@/lib/cms-store';
 import { DiscountCoupon } from '@/types/cms.types';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const discounts = cmsStore.getDiscounts();
+    const memoryDiscounts = cmsStore.getDiscounts();
+    const discountsMap = new Map<string, DiscountCoupon>();
+
+    // 1. Fetch from Supabase
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('marketing_coupons')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (!error && data) {
+        data.forEach((c: any) => {
+          discountsMap.set(c.id, {
+            id: c.id,
+            code: c.code,
+            type: c.discount_type === 'fixed' || c.discount_type === 'fixed_amount' ? 'fixed_amount' : 'percentage',
+            value: Number(c.discount_value || 0),
+            min_spend: Number(c.minimum_spend || 0),
+            usage_count: Number(c.usage_count || 0),
+            is_active: c.status === 'active',
+            first_order_only: false,
+            created_at: c.created_at,
+          });
+        });
+      }
+    } catch (dbErr) {
+      console.warn('[Admin Discounts GET] Supabase fetch error:', dbErr);
+    }
+
+    // 2. Merge memory discounts
+    memoryDiscounts.forEach(d => {
+      if (!discountsMap.has(d.id)) {
+        discountsMap.set(d.id, d);
+      }
+    });
+
+    const discounts = Array.from(discountsMap.values()).sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+
     return NextResponse.json({ success: true, discounts });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
@@ -32,7 +72,27 @@ export async function POST(req: NextRequest) {
       created_at: body.created_at || new Date().toISOString(),
     };
 
+    // 1. Save to memory store
     const saved = cmsStore.saveDiscount(discount);
+
+    // 2. Upsert in Supabase
+    try {
+      await supabaseAdmin.from('marketing_coupons').upsert({
+        id: saved.id,
+        code: saved.code,
+        title: `${saved.code} Discount`,
+        description: saved.first_order_only ? 'First order discount' : 'Promo discount',
+        discount_type: saved.type,
+        discount_value: saved.value,
+        minimum_spend: saved.min_spend || 0,
+        status: saved.is_active ? 'active' : 'inactive',
+        created_at: saved.created_at,
+        updated_at: new Date().toISOString(),
+      });
+    } catch (dbErr) {
+      console.warn('[Admin Discounts POST] Supabase upsert error:', dbErr);
+    }
+
     return NextResponse.json({ success: true, discount: saved });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
@@ -47,9 +107,19 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Discount ID required' }, { status: 400 });
     }
 
+    // 1. Delete from memory store
     cmsStore.deleteDiscount(id);
+
+    // 2. Delete from Supabase
+    try {
+      await supabaseAdmin.from('marketing_coupons').delete().eq('id', id);
+    } catch (dbErr) {
+      console.warn('[Admin Discounts DELETE] Supabase delete error:', dbErr);
+    }
+
     return NextResponse.json({ success: true, message: 'Discount deleted' });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
+

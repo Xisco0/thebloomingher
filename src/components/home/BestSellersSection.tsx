@@ -12,7 +12,7 @@ export function BestSellersSection({ products }: BestSellersSectionProps) {
   const displayProducts = products.slice(0, 5);
 
   return (
-    <section className="py-12 sm:py-16 w-[85%] max-w-[85%] mx-auto">
+    <section className="py-12 sm:py-16 w-[94%] sm:w-[90%] md:w-[85%] max-w-[85%] mx-auto">
       <div className="flex justify-between items-end mb-8" data-aos="fade-up">
         <div>
           <span className="text-xs uppercase tracking-wider text-brand font-bold flex items-center gap-1.5 mb-1.5">
@@ -33,7 +33,7 @@ export function BestSellersSection({ products }: BestSellersSectionProps) {
       </div>
 
       {/* 5-Column spacious grid for wider product cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-6">
         {displayProducts.map((product, index) => (
           <div key={product.id} data-aos="fade-up" data-aos-delay={index * 80}>
             <ProductCard product={product} />

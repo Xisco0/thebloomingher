@@ -24,6 +24,7 @@ import {
   RecommendationMetrics,
   Product,
 } from '@/types';
+import { ProductSubNav } from '@/components/admin/subnav/ProductSubNav';
 
 export default function AdminRecommendationsPage() {
   const [relationships, setRelationships] = useState<ProductRelationship[]>([]);
@@ -114,7 +115,9 @@ export default function AdminRecommendationsPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      <ProductSubNav />
+
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>

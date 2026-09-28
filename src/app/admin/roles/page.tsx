@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   ShieldCheck,
   Plus,
@@ -20,12 +21,18 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { Role, PermissionDefinition } from '@/types/auth.types';
+import { TeamSubNav } from '@/components/admin/subnav/TeamSubNav';
 
 export default function RolesManagementPage() {
+  const [mounted, setMounted] = useState(false);
   const [roles, setRoles] = useState<Role[]>([]);
   const [permissions, setPermissions] = useState<PermissionDefinition[]>([]);
   const [groupedPermissions, setGroupedPermissions] = useState<Record<string, PermissionDefinition[]>>({});
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Modals
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -199,18 +206,20 @@ export default function RolesManagementPage() {
 
   return (
     <div className="space-y-6">
+      <TeamSubNav />
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-surface p-6 rounded-3xl border border-border shadow-xs">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand-light text-brand rounded-full text-xs font-bold mb-2">
             <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Access Control Policies</span>
+            <span>Staff Permissions</span>
           </div>
           <h1 className="font-display font-bold text-2xl text-text-main">
-            Roles & Permissions
+            Team Access
           </h1>
           <p className="text-xs text-text-muted mt-1 max-w-2xl">
-            Configure system and custom administrative roles, assign modular permissions, and define least-privilege security boundaries.
+            Choose what different staff members are allowed to view and edit in your store.
           </p>
         </div>
 
@@ -219,7 +228,7 @@ export default function RolesManagementPage() {
           className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-brand hover:bg-brand-hover text-white rounded-2xl text-xs font-bold shadow-md hover:shadow-lg transition-all flex-shrink-0"
         >
           <Plus className="w-4 h-4" />
-          <span>Create Custom Role</span>
+          <span>Create Role</span>
         </button>
       </div>
 
@@ -344,9 +353,9 @@ export default function RolesManagementPage() {
       {/* ========================================================================= */}
       {/* CREATE / EDIT ROLE MODAL */}
       {/* ========================================================================= */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-surface border border-border rounded-3xl p-6 sm:p-8 w-full max-w-3xl shadow-elevated animate-in fade-in zoom-in-95 max-h-[90vh] flex flex-col">
+      {mounted && isModalOpen && createPortal(
+        <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs overflow-y-auto p-3 sm:p-6 flex flex-col items-center justify-start sm:justify-center">
+          <div className="bg-surface border border-border rounded-3xl p-5 sm:p-7 w-full max-w-3xl my-auto max-h-[calc(100dvh-2.5rem)] sm:max-h-[calc(100dvh-4rem)] flex flex-col shadow-elevated animate-in fade-in zoom-in-95 flex-shrink-0">
             {/* Modal Header */}
             <div className="flex items-center justify-between pb-4 border-b border-border flex-shrink-0">
               <div className="flex items-center gap-2.5">
@@ -371,7 +380,7 @@ export default function RolesManagementPage() {
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto py-5 space-y-6">
+            <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto py-4 space-y-5 flex flex-col">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-text-main mb-1">Role Name *</label>
@@ -397,7 +406,7 @@ export default function RolesManagementPage() {
               </div>
 
               {/* Permissions Checkbox Matrix */}
-              <div>
+              <div className="flex-1">
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <h4 className="font-display font-bold text-sm text-text-main">Module Permissions</h4>
@@ -486,15 +495,16 @@ export default function RolesManagementPage() {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ========================================================================= */}
       {/* DELETE ROLE MODAL */}
       {/* ========================================================================= */}
-      {isDeleteModalOpen && selectedRole && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-surface border border-border rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-elevated animate-in fade-in zoom-in-95">
+      {mounted && isDeleteModalOpen && selectedRole && createPortal(
+        <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs overflow-y-auto p-4 sm:p-6 flex flex-col items-center justify-center">
+          <div className="bg-surface border border-border rounded-3xl p-6 sm:p-8 w-full max-w-md my-auto max-h-[calc(100dvh-3rem)] overflow-y-auto shadow-elevated animate-in fade-in zoom-in-95">
             <div className="p-3 bg-rose-50 text-rose-600 rounded-2xl w-fit mb-4">
               <Trash2 className="w-6 h-6" />
             </div>
@@ -521,7 +531,8 @@ export default function RolesManagementPage() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
