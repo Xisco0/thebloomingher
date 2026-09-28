@@ -1152,12 +1152,7 @@ export const cmsStore = {
       };
     });
 
-    // 1. Exclude currently logged-in administrator from other-staff listing
-    if (filters?.requestingAdminId) {
-      list = list.filter(a => a.id !== filters.requestingAdminId);
-    }
-
-    // 2. If logged in as regular Admin (not Superadmin), completely exclude Superadmin records
+    // 1. If logged in as regular Admin (not Superadmin), completely exclude Superadmin records
     if (!isSuperAdmin && filters?.requestingRole !== undefined) {
       list = list.filter(
         a => a.role !== 'super_admin' && a.role_id !== 'role-super-admin' && !a.role_name?.toLowerCase().includes('super')
