@@ -207,7 +207,18 @@ export async function requireAdminPermission(
     };
   }
 
-  const isAllowed = hasPermission(session.permissions, requiredPermission);
+  // Resolve effective permissions (merging session permissions with latest role permissions from DEFAULT_ROLES)
+  let effectivePermissions: string[] = session.permissions || [];
+  if (session.role === 'super_admin' || session.roleId === 'role-super-admin') {
+    effectivePermissions = ['*'];
+  } else {
+    const matchedRole = DEFAULT_ROLES.find(r => r.id === session.roleId || r.slug === session.role);
+    if (matchedRole) {
+      effectivePermissions = Array.from(new Set([...effectivePermissions, ...matchedRole.permissions]));
+    }
+  }
+
+  const isAllowed = hasPermission(effectivePermissions, requiredPermission);
   if (!isAllowed) {
     return {
       authorized: false,

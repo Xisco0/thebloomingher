@@ -1187,22 +1187,22 @@ export const cmsStore = {
   getAdminById: (id: string): AdminRecord | undefined => {
     const admin = adminsState.find(a => a.id === id);
     if (!admin) return undefined;
-    const matchedRole = rolesState.find(r => r.id === admin.role_id || r.slug === admin.role);
+    const matchedRole = DEFAULT_ROLES.find(r => r.id === admin.role_id || r.slug === admin.role) || rolesState.find(r => r.id === admin.role_id || r.slug === admin.role);
     return {
       ...admin,
       role_name: matchedRole ? matchedRole.name : admin.role_name,
-      permissions: admin.permissions || (matchedRole ? matchedRole.permissions : []),
+      permissions: matchedRole ? matchedRole.permissions : (admin.permissions || []),
     };
   },
 
   getAdminByEmail: (email: string): AdminRecord | undefined => {
     const admin = adminsState.find(a => a.email.toLowerCase() === email.toLowerCase());
     if (!admin) return undefined;
-    const matchedRole = rolesState.find(r => r.id === admin.role_id || r.slug === admin.role);
+    const matchedRole = DEFAULT_ROLES.find(r => r.id === admin.role_id || r.slug === admin.role) || rolesState.find(r => r.id === admin.role_id || r.slug === admin.role);
     return {
       ...admin,
       role_name: matchedRole ? matchedRole.name : admin.role_name,
-      permissions: admin.permissions || (matchedRole ? matchedRole.permissions : []),
+      permissions: matchedRole ? matchedRole.permissions : (admin.permissions || []),
     };
   },
 
