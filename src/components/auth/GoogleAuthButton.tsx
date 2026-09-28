@@ -34,7 +34,7 @@ export function GoogleAuthButton({
 
       const supabase = createClient();
       const origin = typeof window !== 'undefined' ? window.location.origin : '';
-      const callbackUrl = `${origin}/auth/callback?redirect=${encodeURIComponent(redirectUrl)}`;
+      const callbackUrl = `${origin}/auth/callback`;
 
       // 2. Trigger Supabase Google OAuth
       const { data, error } = await supabase.auth.signInWithOAuth({
