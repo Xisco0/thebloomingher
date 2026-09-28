@@ -86,6 +86,8 @@ export const DEFAULT_ROLES: Role[] = [
       'reviews.view', 'reviews.manage',
       'orders.view', 'orders.manage',
       'customers.view', 'customers.manage',
+      'admins.view', 'admins.manage',
+      'roles.view',
       'settings.view', 'settings.manage',
       'audit_logs.view',
     ],
