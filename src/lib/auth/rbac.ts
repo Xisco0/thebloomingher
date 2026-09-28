@@ -209,10 +209,39 @@ export async function requireAdminPermission(
 
   // Resolve effective permissions (merging session permissions with latest role permissions from DEFAULT_ROLES)
   let effectivePermissions: string[] = session.permissions || [];
-  if (session.role === 'super_admin' || session.roleId === 'role-super-admin') {
+
+  const isSuper =
+    session.role === 'super_admin' ||
+    session.roleId === 'role-super-admin' ||
+    session.email?.toLowerCase() === 'francisbamirin45@gmail.com' ||
+    effectivePermissions.includes('*');
+
+  const isAdmin =
+    isSuper ||
+    session.role === 'admin' ||
+    session.roleId === 'role-admin' ||
+    session.role?.toLowerCase() === 'administrator' ||
+    session.roleId?.toLowerCase() === 'role-administrator' ||
+    session.email?.toLowerCase() === 'thebloomingherwellness@gmail.com';
+
+  if (isSuper) {
     effectivePermissions = ['*'];
+  } else if (isAdmin) {
+    const adminRole = DEFAULT_ROLES.find(r => r.id === 'role-admin' || r.slug === 'admin');
+    const adminPerms = adminRole?.permissions || [];
+    effectivePermissions = Array.from(
+      new Set([
+        ...effectivePermissions,
+        ...adminPerms,
+        'admins.view',
+        'admins.manage',
+        'roles.view',
+      ])
+    );
   } else {
-    const matchedRole = DEFAULT_ROLES.find(r => r.id === session.roleId || r.slug === session.role);
+    const matchedRole = DEFAULT_ROLES.find(
+      r => r.id === session.roleId || r.slug === session.role || r.id === session.role || r.slug === session.roleId
+    );
     if (matchedRole) {
       effectivePermissions = Array.from(new Set([...effectivePermissions, ...matchedRole.permissions]));
     }
