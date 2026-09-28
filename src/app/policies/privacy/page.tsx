@@ -26,14 +26,14 @@ export default function PrivacyPolicyPage() {
           <ul className="list-disc list-inside space-y-1 text-text-muted pl-2">
             <li><strong>Customer Details:</strong> Name, email address, and phone number for delivery updates.</li>
             <li><strong>Delivery Address:</strong> Street address, city, and state for accurate shipping.</li>
-            <li><strong>Transactional Data:</strong> Payment confirmation and order reference IDs processed securely via Paystack.</li>
+            <li><strong>Transactional Data:</strong> Payment confirmation and order reference IDs processed securely via Flutterwave.</li>
           </ul>
         </section>
 
         <section className="space-y-2">
           <h2 className="font-display font-semibold text-lg text-text-main">2. Payment Security</h2>
           <p>
-            We <strong>never store or have access to your credit/debit card numbers, CVVs, or bank PINs</strong>. All financial transactions are processed securely through PCI-DSS Level 1 certified payment gateway <strong>Paystack</strong>.
+            We <strong>never store or have access to your credit/debit card numbers, CVVs, or bank PINs</strong>. All financial transactions are processed securely through PCI-DSS Level 1 certified payment gateway <strong>Flutterwave</strong>.
           </p>
         </section>
 

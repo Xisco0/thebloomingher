@@ -42,7 +42,7 @@ export default function ReturnsPolicyPage() {
         <section className="space-y-2">
           <h2 className="font-display font-semibold text-lg text-text-main">4. Refund Processing Timeline</h2>
           <p>
-            Approved refunds are processed within <strong>3 to 5 business days</strong> back to your original payment method via Paystack.
+            Approved refunds are processed within <strong>3 to 5 business days</strong> back to your original payment method via Flutterwave.
           </p>
         </section>
       </div>

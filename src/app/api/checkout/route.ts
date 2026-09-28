@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 2. Authoritative server-side price, inventory calculation & Paystack initialization
+    // 2. Authoritative server-side price, inventory calculation & Flutterwave/Payment initialization
     const result = await checkoutService.processCheckout(parseResult.data, origin);
 
     if (!result.success || !result.order) {
@@ -40,6 +40,7 @@ export async function POST(req: NextRequest) {
       authorizationUrl: result.authorizationUrl,
       accessCode: result.accessCode,
       reference: result.reference,
+      publicKey: process.env.NEXT_PUBLIC_FLW_PUBLIC_KEY || '',
     });
   } catch (error: any) {
     console.error('Unhandled checkout error:', error);

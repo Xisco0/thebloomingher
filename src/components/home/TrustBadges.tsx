@@ -16,7 +16,7 @@ export function TrustBadges() {
     {
       icon: CreditCard,
       title: 'Secure Payments',
-      subtitle: 'Powered by Paystack',
+      subtitle: 'Powered by Flutterwave',
     },
     {
       icon: RefreshCw,

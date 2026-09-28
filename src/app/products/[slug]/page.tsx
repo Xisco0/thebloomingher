@@ -183,7 +183,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-brand flex-shrink-0" />
                 <span>
-                  <strong>Secure Checkout:</strong> Paystack (Debit Cards, Direct Bank Transfer, USSD).
+                  <strong>Secure Checkout:</strong> Flutterwave (Debit Cards, Bank Transfer, USSD, Apple Pay).
                 </span>
               </div>
             </div>

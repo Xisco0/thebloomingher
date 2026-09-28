@@ -37,13 +37,16 @@ export interface IOrderRepository {
   createOrder(orderData: CreateOrderDTO, orderNumber: string): Promise<Order>;
   getOrderById(id: string): Promise<Order | null>;
   getOrderByNumber(orderNumber: string): Promise<Order | null>;
+  getOrderByReference(reference: string): Promise<Order | null>;
   getOrderByPaystackReference(reference: string): Promise<Order | null>;
   updatePaymentStatus(
     orderId: string,
     status: PaymentStatus,
     reference?: string,
     channel?: string,
-    paidAt?: string
+    paidAt?: string,
+    paymentProvider?: string,
+    transactionId?: string
   ): Promise<Order>;
   updateOrderStatus(orderId: string, status: OrderStatus): Promise<Order>;
   getAllOrders(): Promise<Order[]>;

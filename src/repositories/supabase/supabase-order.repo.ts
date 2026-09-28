@@ -7,6 +7,16 @@ export class SupabaseOrderRepository implements IOrderRepository {
   private paymentsStore: Map<string, PaymentRecord> = new Map();
 
   private mapDbOrderToModel(dbOrder: any, dbItems: any[] = []): Order {
+    const paymentRef =
+      dbOrder.payment_reference ||
+      dbOrder.flutterwave_reference ||
+      dbOrder.paystack_reference ||
+      null;
+
+    const provider =
+      dbOrder.payment_provider ||
+      (paymentRef?.startsWith('TBH-FLW') ? 'flutterwave' : dbOrder.paystack_reference ? 'paystack' : 'flutterwave');
+
     return {
       id: dbOrder.id,
       order_number: dbOrder.order_number,
@@ -25,11 +35,18 @@ export class SupabaseOrderRepository implements IOrderRepository {
       discount_amount: Number(dbOrder.discount_amount ?? 0),
       total_amount: Number(dbOrder.total_amount ?? 0),
       currency: dbOrder.currency || 'NGN',
+      payment_provider: provider,
       payment_status: dbOrder.payment_status === 'unpaid' ? 'payment_pending' : dbOrder.payment_status,
       order_status: dbOrder.status || dbOrder.order_status || 'pending',
+      payment_reference: paymentRef,
+      flutterwave_reference: dbOrder.flutterwave_reference || paymentRef,
+      flutterwave_transaction_id: dbOrder.flutterwave_transaction_id || null,
+      flutterwave_authorization_url: dbOrder.flutterwave_authorization_url || null,
       paystack_reference: dbOrder.paystack_reference || null,
       paystack_access_code: dbOrder.paystack_access_code || null,
       paystack_authorization_url: dbOrder.paystack_authorization_url || null,
+      payment_channel: dbOrder.payment_channel || null,
+      paid_at: dbOrder.paid_at || null,
       notes: dbOrder.notes || null,
       items: (dbItems || []).map((it: any) => ({
         id: it.id,
@@ -51,11 +68,14 @@ export class SupabaseOrderRepository implements IOrderRepository {
   async createOrder(orderData: CreateOrderDTO, orderNumber: string): Promise<Order> {
     const subtotal = orderData.items.reduce((acc, item) => acc + item.unitPrice * item.quantity, 0);
     const total = Math.max(0, subtotal + orderData.deliveryFee - (orderData.discountAmount || 0));
+    const provider = orderData.paymentProvider || (orderData.flutterwaveReference ? 'flutterwave' : 'paystack');
+    const primaryReference = orderData.paymentReference || orderData.flutterwaveReference || orderData.paystackReference || null;
 
     const newOrder: Order = {
-      id: `ord_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `ord_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
       order_number: orderNumber,
       secure_token: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+      customer_id: orderData.customerId || null,
       customer_name: orderData.customerName,
       customer_email: orderData.customerEmail,
       customer_phone: orderData.customerPhone,
@@ -66,14 +86,18 @@ export class SupabaseOrderRepository implements IOrderRepository {
       discount_amount: orderData.discountAmount || 0,
       total_amount: total,
       currency: 'NGN',
+      payment_provider: provider,
       payment_status: 'payment_pending',
       order_status: 'pending',
-      paystack_reference: orderData.paystackReference || null,
+      payment_reference: primaryReference,
+      flutterwave_reference: orderData.flutterwaveReference || primaryReference,
+      flutterwave_authorization_url: orderData.flutterwaveAuthorizationUrl || null,
+      paystack_reference: orderData.paystackReference || (provider === 'paystack' ? primaryReference : null),
       paystack_access_code: orderData.paystackAccessCode || null,
       paystack_authorization_url: orderData.paystackAuthorizationUrl || null,
       notes: orderData.notes,
       items: orderData.items.map((it, idx) => ({
-        id: `item_${idx}_${Date.now()}`,
+        id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `item_${idx}_${Date.now()}`,
         product_id: it.productId,
         variant_id: it.variantId,
         product_name: it.productName,
@@ -90,13 +114,13 @@ export class SupabaseOrderRepository implements IOrderRepository {
     // 1. Cache in memory
     this.ordersStore.set(newOrder.id, newOrder);
     this.ordersStore.set(orderNumber, newOrder);
-    if (newOrder.paystack_reference) {
-      this.ordersStore.set(newOrder.paystack_reference, newOrder);
+    if (primaryReference) {
+      this.ordersStore.set(primaryReference, newOrder);
     }
 
-    // 2. Persist to Supabase
+    // 2. Resilient Persistence to Supabase
     try {
-      const { error: orderError } = await supabaseAdmin.from('orders').insert({
+      const basePayload: any = {
         id: newOrder.id,
         order_number: newOrder.order_number,
         customer_name: newOrder.customer_name,
@@ -109,17 +133,38 @@ export class SupabaseOrderRepository implements IOrderRepository {
         currency: newOrder.currency,
         status: 'pending',
         payment_status: 'unpaid',
-        payment_method: 'paystack',
-        paystack_reference: newOrder.paystack_reference,
+        payment_method: provider,
+        paystack_reference: primaryReference, // Stored to guarantee compatibility with existing tables
         shipping_address: newOrder.shipping_address,
         notes: newOrder.notes,
         created_at: newOrder.created_at,
         updated_at: newOrder.updated_at,
-      });
+      };
+
+      const extendedPayload: any = {
+        ...basePayload,
+        payment_provider: provider,
+        payment_reference: primaryReference,
+        flutterwave_reference: newOrder.flutterwave_reference || primaryReference,
+        flutterwave_authorization_url: newOrder.flutterwave_authorization_url,
+      };
+
+      // Try inserting with extended schema columns
+      let { error: orderError } = await supabaseAdmin.from('orders').insert(extendedPayload);
+
+      // Fallback if extended columns are not yet in Supabase schema cache
+      if (orderError) {
+        const { error: fallbackError } = await supabaseAdmin.from('orders').insert(basePayload);
+        if (!fallbackError) {
+          orderError = null;
+        } else {
+          console.warn('[SupabaseOrderRepository] Order insert fallback error:', fallbackError);
+        }
+      }
 
       if (!orderError && newOrder.items.length > 0) {
         const orderItemsPayload = newOrder.items.map(it => ({
-          id: it.id || `item_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          id: it.id || (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `item_${Date.now()}`),
           order_id: newOrder.id,
           product_id: it.product_id,
           product_name: it.product_name,
@@ -188,28 +233,47 @@ export class SupabaseOrderRepository implements IOrderRepository {
     return null;
   }
 
-  async getOrderByPaystackReference(reference: string): Promise<Order | null> {
-    const found = this.ordersStore.get(reference);
+  async getOrderByReference(reference: string): Promise<Order | null> {
+    const cleanRef = reference.trim();
+    const found = this.ordersStore.get(cleanRef);
     if (found) return found;
 
     for (const order of this.ordersStore.values()) {
-      if (order.paystack_reference === reference) {
+      if (
+        order.payment_reference === cleanRef ||
+        order.flutterwave_reference === cleanRef ||
+        order.paystack_reference === cleanRef ||
+        order.order_number === cleanRef
+      ) {
         return order;
       }
     }
 
     try {
-      const { data, error } = await supabaseAdmin
+      // 1. Try querying across all possible reference columns
+      let { data, error } = await supabaseAdmin
         .from('orders')
         .select('*, order_items(*)')
-        .eq('paystack_reference', reference)
+        .or(
+          `paystack_reference.eq.${cleanRef},order_number.eq.${cleanRef},payment_reference.eq.${cleanRef},flutterwave_reference.eq.${cleanRef}`
+        )
         .maybeSingle();
 
-      if (!error && data) {
+      // 2. Resilient fallback if newer columns don't exist in Supabase schema yet
+      if (error) {
+        const fallback = await supabaseAdmin
+          .from('orders')
+          .select('*, order_items(*)')
+          .or(`paystack_reference.eq.${cleanRef},order_number.eq.${cleanRef}`)
+          .maybeSingle();
+        data = fallback.data;
+      }
+
+      if (data) {
         const order = this.mapDbOrderToModel(data, data.order_items);
         this.ordersStore.set(order.id, order);
         this.ordersStore.set(order.order_number, order);
-        if (reference) this.ordersStore.set(reference, order);
+        this.ordersStore.set(cleanRef, order);
         return order;
       }
     } catch (err) {
@@ -219,16 +283,25 @@ export class SupabaseOrderRepository implements IOrderRepository {
     return null;
   }
 
+  async getOrderByPaystackReference(reference: string): Promise<Order | null> {
+    return this.getOrderByReference(reference);
+  }
+
   async updatePaymentStatus(
     orderId: string,
     status: PaymentStatus,
     reference?: string,
     channel?: string,
-    paidAt?: string
+    paidAt?: string,
+    paymentProvider?: string,
+    transactionId?: string
   ): Promise<Order> {
     let order = await this.getOrderById(orderId);
     if (!order) {
       order = await this.getOrderByNumber(orderId);
+    }
+    if (!order && reference) {
+      order = await this.getOrderByReference(reference);
     }
     if (!order) {
       throw new Error(`Order with ID ${orderId} not found`);
@@ -243,11 +316,20 @@ export class SupabaseOrderRepository implements IOrderRepository {
     }
 
     if (reference) {
+      order.payment_reference = reference;
+      order.flutterwave_reference = reference;
       order.paystack_reference = reference;
       this.ordersStore.set(reference, order);
     }
+
+    if (paymentProvider) {
+      order.payment_provider = paymentProvider;
+    }
     if (channel) {
       order.payment_channel = channel;
+    }
+    if (transactionId) {
+      order.flutterwave_transaction_id = transactionId;
     }
 
     order.updated_at = new Date().toISOString();
@@ -259,15 +341,34 @@ export class SupabaseOrderRepository implements IOrderRepository {
       const dbPaymentStatus = status === 'payment_pending' ? 'unpaid' : status === 'paid' ? 'paid' : status === 'payment_failed' ? 'failed' : 'unpaid';
       const dbOrderStatus = status === 'paid' ? 'processing' : 'pending';
 
-      await supabaseAdmin
+      const baseUpdate: Record<string, any> = {
+        payment_status: dbPaymentStatus,
+        status: dbOrderStatus,
+        paystack_reference: order.payment_reference || reference,
+        updated_at: order.updated_at,
+      };
+
+      const extendedUpdate: Record<string, any> = {
+        ...baseUpdate,
+        payment_reference: order.payment_reference || reference,
+        flutterwave_reference: order.flutterwave_reference || reference,
+        payment_provider: order.payment_provider || paymentProvider,
+        payment_channel: order.payment_channel || channel,
+        paid_at: order.paid_at,
+        flutterwave_transaction_id: order.flutterwave_transaction_id || transactionId,
+      };
+
+      const { error: updateError } = await supabaseAdmin
         .from('orders')
-        .update({
-          payment_status: dbPaymentStatus,
-          status: dbOrderStatus,
-          paystack_reference: order.paystack_reference,
-          updated_at: order.updated_at,
-        })
+        .update(extendedUpdate)
         .eq('id', order.id);
+
+      if (updateError) {
+        await supabaseAdmin
+          .from('orders')
+          .update(baseUpdate)
+          .eq('id', order.id);
+      }
     } catch (dbErr) {
       console.warn('[SupabaseOrderRepository] Error updating payment status in Supabase:', dbErr);
     }
@@ -344,11 +445,56 @@ export class SupabaseOrderRepository implements IOrderRepository {
 
   async savePayment(payment: PaymentRecord): Promise<PaymentRecord> {
     this.paymentsStore.set(payment.reference, payment);
+    try {
+      await supabaseAdmin.from('payments').insert({
+        id: payment.id,
+        order_id: payment.order_id,
+        reference: payment.reference,
+        amount: payment.amount,
+        currency: payment.currency,
+        status: payment.status,
+        gateway: payment.gateway,
+        gateway_response: payment.gateway_response,
+        channel: payment.channel,
+        paid_at: payment.paid_at,
+        created_at: payment.created_at,
+        updated_at: payment.updated_at,
+      });
+    } catch (e) {
+      console.warn('[SupabaseOrderRepository] Error persisting payment record:', e);
+    }
     return payment;
   }
 
   async getPaymentByReference(reference: string): Promise<PaymentRecord | null> {
-    return this.paymentsStore.get(reference) || null;
+    const found = this.paymentsStore.get(reference);
+    if (found) return found;
+
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('payments')
+        .select('*')
+        .eq('reference', reference)
+        .maybeSingle();
+
+      if (!error && data) {
+        return {
+          id: data.id,
+          order_id: data.order_id,
+          reference: data.reference,
+          amount: Number(data.amount),
+          currency: data.currency,
+          status: data.status,
+          gateway: data.gateway,
+          gateway_response: data.gateway_response,
+          channel: data.channel,
+          paid_at: data.paid_at,
+          created_at: data.created_at,
+          updated_at: data.updated_at,
+        };
+      }
+    } catch (e) {}
+
+    return null;
   }
 }
-

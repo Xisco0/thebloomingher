@@ -447,7 +447,7 @@ export default function CustomerAccountDashboard() {
                         <span className="font-bold text-text-main">{formatNaira(order.total_amount)}</span>
                       </div>
                       <Link
-                        href={`/order-confirmation/${order.id}`}
+                        href={`/order-confirmation/${order.order_number || order.id}`}
                         className="text-brand font-bold hover:underline flex items-center gap-1 text-xs"
                       >
                         View Order Details <ChevronRight className="w-3.5 h-3.5" />

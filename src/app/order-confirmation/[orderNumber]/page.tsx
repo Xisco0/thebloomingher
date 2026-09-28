@@ -12,7 +12,6 @@ import {
   MessageCircle,
   ShoppingBag,
   CreditCard,
-  Building2,
   AlertTriangle,
   ArrowRight,
 } from 'lucide-react';
@@ -49,7 +48,13 @@ export default async function OrderConfirmationPage({
   params,
   searchParams,
 }: OrderConfirmationPageProps) {
-  const order = await orderService.getOrderByNumber(params.orderNumber);
+  let order = await orderService.getOrderByNumber(params.orderNumber);
+  if (!order) {
+    order = await orderService.getOrderById(params.orderNumber);
+  }
+  if (!order) {
+    order = await orderService.getOrderByReference(params.orderNumber);
+  }
 
   if (!order) {
     notFound();
@@ -58,9 +63,64 @@ export default async function OrderConfirmationPage({
   const isPaid = order.payment_status === 'paid' || searchParams?.status === 'paid';
   const isFailed = order.payment_status === 'payment_failed';
   const isPickup = order.delivery_type === 'pickup';
+  const orderStatus = (order.order_status || 'pending').toLowerCase();
+  const paymentProviderName = order.payment_provider === 'paystack' ? 'Paystack' : 'Flutterwave';
+
+  // Dynamic status details matching exact backend fulfillment state
+  let headerTitle = `Order Placed: #${order.order_number}`;
+  let headerSubtitle = 'Order Received';
+  let badgeText = 'Awaiting Payment / Bank Transfer Verification';
+  let badgeColor = 'bg-amber-50 border-amber-200 text-amber-900';
+  let IconComponent = Clock;
+  let iconBgColor = 'bg-amber-100 text-amber-700';
+
+  if (isFailed) {
+    headerTitle = 'Payment Could Not Be Completed';
+    headerSubtitle = 'Payment Failed';
+    badgeText = 'Payment Unsuccessful • Order not charged';
+    badgeColor = 'bg-red-50 border-red-200 text-red-800';
+    IconComponent = AlertTriangle;
+    iconBgColor = 'bg-red-100 text-red-600';
+  } else if (orderStatus === 'delivered') {
+    headerTitle = isPickup
+      ? `Order Picked Up, ${order.customer_name.split(' ')[0]}!`
+      : `Order Delivered, ${order.customer_name.split(' ')[0]}!`;
+    headerSubtitle = isPickup ? 'Order Picked Up at Store' : 'Order Delivered Successfully';
+    badgeText = isPickup
+      ? `Picked Up at Store • Payment Verified via ${paymentProviderName}`
+      : `Delivered to Destination • Payment Verified via ${paymentProviderName}`;
+    badgeColor = 'bg-emerald-50 border-emerald-200 text-emerald-800';
+    IconComponent = CheckCircle2;
+    iconBgColor = 'bg-emerald-100 text-emerald-700';
+  } else if (orderStatus === 'shipped') {
+    headerTitle = isPickup
+      ? `Order Ready for Pickup, ${order.customer_name.split(' ')[0]}!`
+      : `Order Dispatched, ${order.customer_name.split(' ')[0]}!`;
+    headerSubtitle = isPickup ? 'Ready for Store Pickup' : 'Dispatched / Out for Delivery';
+    badgeText = isPickup
+      ? `Ready for Store Pickup • Payment Verified via ${paymentProviderName}`
+      : `Dispatched / In Transit • Payment Verified via ${paymentProviderName}`;
+    badgeColor = 'bg-blue-50 border-blue-200 text-blue-800';
+    IconComponent = Truck;
+    iconBgColor = 'bg-blue-100 text-blue-700';
+  } else if (orderStatus === 'processing' || isPaid) {
+    headerTitle = `Thank you for your order, ${order.customer_name.split(' ')[0]}!`;
+    headerSubtitle = 'Payment Confirmed & Verified';
+    badgeText = `Payment Verified via ${paymentProviderName} • Packaging & Processing Order`;
+    badgeColor = 'bg-emerald-50 border-emerald-200 text-emerald-800';
+    IconComponent = CheckCircle2;
+    iconBgColor = 'bg-emerald-100 text-emerald-700';
+  } else if (orderStatus === 'cancelled') {
+    headerTitle = `Order Cancelled: #${order.order_number}`;
+    headerSubtitle = 'Order Cancelled';
+    badgeText = 'Order Cancelled';
+    badgeColor = 'bg-rose-50 border-rose-200 text-rose-800';
+    IconComponent = AlertTriangle;
+    iconBgColor = 'bg-rose-100 text-rose-600';
+  }
 
   const whatsappUrl = generateWhatsAppOrderLink(
-    `Order #${order.order_number} (${order.customer_name}) - ${isPaid ? 'Payment Verified' : 'Confirm Payment'}`,
+    `Order #${order.order_number} (${order.customer_name}) - Status: ${order.order_status?.toUpperCase() || 'PENDING'}`,
     order.total_amount
   );
 
@@ -68,30 +128,16 @@ export default async function OrderConfirmationPage({
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
       {/* Header Status Card */}
       <div className="bg-surface rounded-3xl p-6 sm:p-10 border border-border/80 shadow-subtle text-center space-y-4 mb-8">
-        {isPaid ? (
-          <div className="w-20 h-20 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto shadow-xs">
-            <CheckCircle2 className="w-10 h-10" />
-          </div>
-        ) : isFailed ? (
-          <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto shadow-xs">
-            <AlertTriangle className="w-10 h-10" />
-          </div>
-        ) : (
-          <div className="w-20 h-20 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center mx-auto shadow-xs">
-            <Clock className="w-10 h-10" />
-          </div>
-        )}
+        <div className={`w-20 h-20 ${iconBgColor} rounded-full flex items-center justify-center mx-auto shadow-xs`}>
+          <IconComponent className="w-10 h-10" />
+        </div>
 
         <div>
           <span className="text-xs uppercase tracking-wider text-brand font-bold block mb-1">
-            {isPaid ? 'Payment Confirmed & Verified' : isFailed ? 'Payment Failed' : 'Order Received'}
+            {headerSubtitle}
           </span>
           <h1 className="font-display font-bold text-2xl sm:text-3xl text-text-main">
-            {isPaid
-              ? `Thank you for your order, ${order.customer_name.split(' ')[0]}!`
-              : isFailed
-              ? 'Payment Could Not Be Completed'
-              : `Order Placed: #${order.order_number}`}
+            {headerTitle}
           </h1>
           <p className="text-xs sm:text-sm text-text-muted mt-1.5 max-w-md mx-auto">
             Order Reference:{' '}
@@ -103,57 +149,106 @@ export default async function OrderConfirmationPage({
 
         {/* Dynamic Status Badge */}
         <div className="pt-1">
-          {isPaid ? (
-            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-              <span>Payment Verified via Paystack • Fulfilment in Progress</span>
-            </span>
-          ) : isFailed ? (
-            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-red-50 border border-red-200 text-red-800 text-xs font-semibold">
-              <AlertTriangle className="w-4 h-4 text-red-600" />
-              <span>Payment Unsuccessful • Order not charged</span>
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold">
-              <Clock className="w-4 h-4 text-amber-600" />
-              <span>Awaiting Payment / Bank Transfer Verification</span>
-            </span>
-          )}
+          <span className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full border text-xs font-semibold ${badgeColor}`}>
+            <IconComponent className="w-4 h-4" />
+            <span>{badgeText}</span>
+          </span>
         </div>
+
+        {/* Fulfillment Stage Progress Bar (for active orders) */}
+        {orderStatus !== 'cancelled' && !isFailed && (
+          <div className="pt-6 border-t border-border/60 max-w-2xl mx-auto">
+            <div className="grid grid-cols-4 gap-2 text-center">
+              {/* Step 1: Placed */}
+              <div className="space-y-1.5">
+                <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto text-xs font-bold shadow-xs">
+                  <CheckCircle2 className="w-4 h-4" />
+                </div>
+                <p className="text-[11px] font-semibold text-text-main">Order Placed</p>
+              </div>
+
+              {/* Step 2: Payment */}
+              <div className="space-y-1.5">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center mx-auto text-xs font-bold shadow-xs ${
+                  isPaid ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+                }`}>
+                  {isPaid ? <CheckCircle2 className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
+                </div>
+                <p className={`text-[11px] font-semibold ${isPaid ? 'text-text-main' : 'text-text-muted'}`}>
+                  {isPaid ? 'Payment Confirmed' : 'Payment Pending'}
+                </p>
+              </div>
+
+              {/* Step 3: Packing / Processing */}
+              <div className="space-y-1.5">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center mx-auto text-xs font-bold shadow-xs ${
+                  orderStatus === 'delivered' || orderStatus === 'shipped'
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : orderStatus === 'processing' || isPaid
+                    ? 'bg-blue-100 text-blue-700 animate-pulse'
+                    : 'bg-surface-muted text-text-muted border border-border'
+                }`}>
+                  {orderStatus === 'delivered' || orderStatus === 'shipped' ? (
+                    <CheckCircle2 className="w-4 h-4" />
+                  ) : (
+                    <Package className="w-4 h-4" />
+                  )}
+                </div>
+                <p className={`text-[11px] font-semibold ${
+                  orderStatus === 'processing' || orderStatus === 'shipped' || orderStatus === 'delivered' || isPaid
+                    ? 'text-text-main'
+                    : 'text-text-muted'
+                }`}>
+                  {isPickup ? 'Store Preparing' : 'Packaging'}
+                </p>
+              </div>
+
+              {/* Step 4: Dispatched / Delivered */}
+              <div className="space-y-1.5">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center mx-auto text-xs font-bold shadow-xs ${
+                  orderStatus === 'delivered'
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : orderStatus === 'shipped'
+                    ? 'bg-blue-100 text-blue-700 animate-pulse'
+                    : 'bg-surface-muted text-text-muted border border-border'
+                }`}>
+                  {orderStatus === 'delivered' ? (
+                    <CheckCircle2 className="w-4 h-4" />
+                  ) : isPickup ? (
+                    <MapPin className="w-4 h-4" />
+                  ) : (
+                    <Truck className="w-4 h-4" />
+                  )}
+                </div>
+                <p className={`text-[11px] font-semibold ${
+                  orderStatus === 'delivered'
+                    ? 'text-emerald-700 font-bold'
+                    : orderStatus === 'shipped'
+                    ? 'text-blue-700 font-bold'
+                    : 'text-text-muted'
+                }`}>
+                  {orderStatus === 'delivered'
+                    ? isPickup ? 'Picked Up' : 'Delivered'
+                    : orderStatus === 'shipped'
+                    ? isPickup ? 'Ready for Pickup' : 'Dispatched'
+                    : isPickup ? 'Pickup' : 'Delivery'}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Direct Bank Transfer Instructions (If payment pending) */}
+      {/* Pending Payment Notice (If payment pending) */}
       {!isPaid && !isFailed && (
-        <div className="bg-brand-light/50 rounded-3xl p-6 sm:p-8 border border-brand/20 space-y-4 mb-8">
-          <div className="flex items-center gap-2 font-bold text-base text-brand">
-            <Building2 className="w-5 h-5 text-brand" />
-            <span>Direct Bank Transfer Payment Instructions</span>
+        <div className="bg-amber-50/80 rounded-3xl p-6 sm:p-8 border border-amber-200/80 space-y-3 mb-8 text-center">
+          <div className="flex items-center justify-center gap-2 font-bold text-base text-amber-900">
+            <Clock className="w-5 h-5 text-amber-600" />
+            <span>Awaiting Payment Confirmation</span>
           </div>
-          <p className="text-xs sm:text-sm text-text-body leading-relaxed">
-            Please transfer exactly{' '}
-            <strong className="text-brand text-sm sm:text-base font-sans font-bold">
-              {formatNaira(order.total_amount)}
-            </strong>{' '}
-            to our verified account below and send proof of payment on WhatsApp:
+          <p className="text-xs sm:text-sm text-amber-800 max-w-lg mx-auto leading-relaxed">
+            Your order has been recorded. If you just initiated payment through Flutterwave, our system will automatically confirm it within a few moments.
           </p>
-          <div className="bg-surface rounded-2xl p-4 border border-border space-y-1.5 text-xs sm:text-sm font-mono">
-            <div className="flex justify-between">
-              <span className="text-text-muted">Bank Name:</span>
-              <span className="font-bold text-text-main">Zenith Bank / GTBank</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-text-muted">Account Name:</span>
-              <span className="font-bold text-text-main">TheBloomingHer Care & Wellness</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-text-muted">Account Number:</span>
-              <span className="font-bold text-brand text-base">1018273948</span>
-            </div>
-            <div className="flex justify-between pt-1 border-t border-border">
-              <span className="text-text-muted">Reference / Narration:</span>
-              <span className="font-bold text-brand">{order.order_number}</span>
-            </div>
-          </div>
         </div>
       )}
 

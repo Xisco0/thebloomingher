@@ -1,12 +1,14 @@
 import { catalogService } from './catalog.service';
 import { orderService } from './order.service';
+import { flutterwaveService } from './flutterwave.service';
 import { paystackService } from './paystack.service';
 import { CheckoutFormData } from '@/lib/validation/checkout.schema';
 import { calculateDeliveryFee } from '@/lib/utils/nigeria-data';
+import { generateFlutterwaveReference } from '@/lib/utils/flutterwave';
 import { generatePaystackReference } from '@/lib/utils/paystack';
 import { cmsStore } from '@/lib/cms-store';
 import { supabaseAdmin } from '@/lib/supabase/admin';
-import { Order, CreateOrderDTO } from '@/types';
+import { Order, CreateOrderDTO, PaymentProvider } from '@/types';
 
 export interface CheckoutValidationResult {
   isValid: boolean;
@@ -180,7 +182,7 @@ export class CheckoutService {
   }
 
   /**
-   * Validates checkout data, creates the pending order record, and initializes Paystack payment transaction.
+   * Validates checkout data, creates the pending order record, and initializes online payment transaction.
    */
   async processCheckout(
     data: CheckoutFormData,
@@ -195,18 +197,48 @@ export class CheckoutService {
       };
     }
 
-    const paystackReference = generatePaystackReference('tbh');
+    const paymentMethod: PaymentProvider = data.paymentMethod as PaymentProvider;
+    let paymentReference: string;
     let authorizationUrl: string | undefined;
     let accessCode: string | undefined;
 
-    // If customer selected Paystack online payment, initialize transaction
-    if (data.paymentMethod === 'paystack') {
+    // 1. Flutterwave Payment Initialization (Default Online Gateway)
+    if (paymentMethod === 'flutterwave') {
+      paymentReference = generateFlutterwaveReference('TBH-FLW');
+      const callbackUrl = `${originUrl}/api/flutterwave/verify`;
+
+      const flwInit = await flutterwaveService.initializePayment({
+        email: data.customerEmail,
+        amountInNaira: validation.totalAmount,
+        reference: paymentReference,
+        callbackUrl,
+        customerName: data.customerName,
+        customerPhone: data.customerPhone,
+        metadata: {
+          customerName: data.customerName,
+          customerPhone: data.customerPhone,
+          deliveryType: data.deliveryType,
+          itemCount: validation.validatedItems.length,
+        },
+      });
+
+      if (!flwInit.success) {
+        return {
+          success: false,
+          errors: [flwInit.error || 'Could not initialize Flutterwave payment. Please try again.'],
+        };
+      }
+
+      authorizationUrl = flwInit.authorizationUrl;
+    } else if (paymentMethod === 'paystack') {
+      // 2. Paystack Payment Initialization (Legacy/Alternative Gateway)
+      paymentReference = generatePaystackReference('tbh');
       const callbackUrl = `${originUrl}/api/paystack/verify`;
 
       const paystackInit = await paystackService.initializeTransaction({
         email: data.customerEmail,
         amountInNaira: validation.totalAmount,
-        reference: paystackReference,
+        reference: paymentReference,
         callbackUrl,
         metadata: {
           customerName: data.customerName,
@@ -225,6 +257,9 @@ export class CheckoutService {
 
       authorizationUrl = paystackInit.authorizationUrl;
       accessCode = paystackInit.accessCode;
+    } else {
+      // 3. Direct Bank Transfer (Manual verification)
+      paymentReference = `TBH-BT-${Date.now()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
     }
 
     const orderPayload: CreateOrderDTO = {
@@ -237,9 +272,13 @@ export class CheckoutService {
       deliveryFee: validation.deliveryFee,
       discountAmount: validation.discountAmount,
       notes: data.notes || data.shippingAddress.deliveryInstructions,
-      paystackReference,
+      paymentProvider: paymentMethod,
+      paymentReference,
+      flutterwaveReference: paymentMethod === 'flutterwave' ? paymentReference : undefined,
+      flutterwaveAuthorizationUrl: paymentMethod === 'flutterwave' ? authorizationUrl : undefined,
+      paystackReference: paymentMethod === 'paystack' ? paymentReference : undefined,
       paystackAccessCode: accessCode,
-      paystackAuthorizationUrl: authorizationUrl,
+      paystackAuthorizationUrl: paymentMethod === 'paystack' ? authorizationUrl : undefined,
     };
 
     const order = await orderService.createOrder(orderPayload);
@@ -249,7 +288,7 @@ export class CheckoutService {
       order,
       authorizationUrl,
       accessCode,
-      reference: paystackReference,
+      reference: paymentReference,
     };
   }
 }

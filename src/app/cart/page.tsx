@@ -453,7 +453,7 @@ export default function CartPage() {
             <div className="pt-4 border-t border-border/60 space-y-2 text-[11px] text-text-muted">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-brand flex-shrink-0" />
-                <span>Secure Paystack payments & Bank Transfer supported</span>
+                <span>Secure Flutterwave payments & Bank Transfer supported</span>
               </div>
               <div className="flex items-center gap-2">
                 <Truck className="w-4 h-4 text-brand flex-shrink-0" />

@@ -18,6 +18,8 @@ export type OrderStatus =
 
 export type DeliveryType = 'shipping' | 'pickup';
 
+export type PaymentProvider = 'flutterwave' | 'paystack' | 'bank_transfer';
+
 export interface ShippingAddress {
   fullName: string;
   phone: string;
@@ -60,8 +62,13 @@ export interface Order {
   discount_amount: number;
   total_amount: number;
   currency: string;
+  payment_provider?: PaymentProvider | string;
   payment_status: PaymentStatus;
   order_status: OrderStatus;
+  payment_reference?: string | null;
+  flutterwave_reference?: string | null;
+  flutterwave_transaction_id?: string | null;
+  flutterwave_authorization_url?: string | null;
   paystack_reference?: string | null;
   paystack_access_code?: string | null;
   paystack_authorization_url?: string | null;
@@ -80,7 +87,7 @@ export interface PaymentRecord {
   amount: number;
   currency: string;
   status: 'pending' | 'success' | 'failed' | 'abandoned';
-  gateway: string;
+  gateway: 'flutterwave' | 'paystack' | 'bank_transfer' | string;
   gateway_response?: string | null;
   channel?: string | null;
   paid_at?: string | null;
@@ -89,6 +96,7 @@ export interface PaymentRecord {
 }
 
 export interface CreateOrderDTO {
+  customerId?: string | null;
   customerName: string;
   customerEmail: string;
   customerPhone: string;
@@ -106,6 +114,10 @@ export interface CreateOrderDTO {
   deliveryFee: number;
   discountAmount?: number;
   notes?: string;
+  paymentProvider?: PaymentProvider;
+  paymentReference?: string;
+  flutterwaveReference?: string;
+  flutterwaveAuthorizationUrl?: string;
   paystackReference?: string;
   paystackAccessCode?: string;
   paystackAuthorizationUrl?: string;
@@ -123,7 +135,97 @@ export interface CartItem {
   maxStock: number;
 }
 
-// Paystack API Types
+// Flutterwave API Types
+export interface FlutterwaveInitializePayload {
+  tx_ref: string;
+  amount: number;
+  currency: string;
+  redirect_url: string;
+  customer: {
+    email: string;
+    phonenumber?: string;
+    name: string;
+  };
+  customizations?: {
+    title?: string;
+    description?: string;
+    logo?: string;
+  };
+  meta?: Record<string, any>;
+  payment_options?: string;
+}
+
+export interface FlutterwaveInitializeResponse {
+  status: 'success' | 'error' | string;
+  message: string;
+  data?: {
+    link: string;
+  };
+}
+
+export interface FlutterwaveVerifyResponse {
+  status: 'success' | 'error' | string;
+  message: string;
+  data?: {
+    id: number;
+    tx_ref: string;
+    flw_ref: string;
+    device_fingerprint?: string;
+    amount: number;
+    currency: string;
+    charged_amount: number;
+    app_fee?: number;
+    merchant_fee?: number;
+    processor_response: string;
+    auth_model?: string;
+    ip?: string;
+    narration?: string;
+    status: 'successful' | 'failed' | 'pending' | string;
+    payment_type: string;
+    created_at: string;
+    account_id?: number;
+    customer: {
+      id?: number;
+      name: string;
+      phone_number?: string;
+      email: string;
+      created_at?: string;
+    };
+    card?: {
+      first_6digits?: string;
+      last_4digits?: string;
+      issuer?: string;
+      country?: string;
+      type?: string;
+      expiry?: string;
+    };
+    meta?: Record<string, any>;
+  };
+}
+
+export interface FlutterwaveWebhookEvent {
+  event?: string;
+  'event.type'?: string;
+  data: {
+    id: number;
+    tx_ref: string;
+    flw_ref: string;
+    amount: number;
+    currency: string;
+    status: 'successful' | 'failed' | 'pending' | string;
+    payment_type?: string;
+    created_at?: string;
+    customer?: {
+      id?: number;
+      name?: string;
+      phone_number?: string;
+      email?: string;
+    };
+    [key: string]: any;
+  };
+}
+
+// Paystack API Types (Legacy / Fallback support)
 export interface PaystackInitializePayload {
   email: string;
   amount: number; // in kobo
@@ -167,20 +269,6 @@ export interface PaystackVerifyResponse {
       email: string;
       customer_code: string;
       phone: string | null;
-    };
-    authorization?: {
-      authorization_code: string;
-      card_type: string;
-      last4: string;
-      exp_month: string;
-      exp_year: string;
-      bin: string;
-      bank: string;
-      channel: string;
-      signature: string;
-      reusable: boolean;
-      country_code: string;
-      account_name: string | null;
     };
   };
 }

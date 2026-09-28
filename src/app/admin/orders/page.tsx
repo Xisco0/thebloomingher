@@ -89,6 +89,8 @@ export default function AdminOrdersPage() {
       order.order_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.customer_phone.includes(searchTerm) ||
+      (order.payment_reference && order.payment_reference.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (order.flutterwave_reference && order.flutterwave_reference.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (order.paystack_reference && order.paystack_reference.toLowerCase().includes(searchTerm.toLowerCase()));
 
     if (statusFilter === 'all') return matchesSearch;
@@ -437,10 +439,15 @@ export default function AdminOrdersPage() {
                 <span className="text-text-main font-mono">{selectedOrder.customer_phone}</span>
               </div>
               <div>
-                <span className="text-text-muted block">Payment Reference</span>
-                <span className="font-mono font-bold text-brand block truncate">
-                  {selectedOrder.paystack_reference || 'N/A (Direct Transfer)'}
-                </span>
+                <span className="text-text-muted block">Payment Provider & Reference</span>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="px-2 py-0.5 rounded-md bg-brand-light text-brand font-semibold text-[10px] uppercase">
+                    {selectedOrder.payment_provider || (selectedOrder.flutterwave_reference ? 'flutterwave' : selectedOrder.paystack_reference ? 'paystack' : 'bank transfer')}
+                  </span>
+                  <span className="font-mono font-bold text-brand block truncate">
+                    {selectedOrder.payment_reference || selectedOrder.flutterwave_reference || selectedOrder.paystack_reference || 'N/A (Direct Transfer)'}
+                  </span>
+                </div>
                 <span className="text-text-muted block mt-2">Delivery Type & Address</span>
                 <span className="text-text-main block break-words">
                   {selectedOrder.delivery_type === 'pickup'

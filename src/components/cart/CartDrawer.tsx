@@ -271,7 +271,7 @@ export function CartDrawer() {
               </div>
 
               <p className="text-[11px] text-center text-text-muted">
-                🔒 Guaranteed safe checkout powered by Paystack (Card, Transfer, USSD)
+                🔒 Guaranteed safe checkout powered by Flutterwave (Card, Bank Transfer, USSD)
               </p>
             </div>
           )}

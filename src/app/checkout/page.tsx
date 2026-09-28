@@ -4,6 +4,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+import Script from 'next/script';
 import {
   ShieldCheck,
   Truck,
@@ -15,7 +16,6 @@ import {
   Lock,
   Tag,
   CreditCard,
-  Building2,
   RefreshCw,
   Edit3,
   User,
@@ -46,6 +46,47 @@ interface AuthenticatedCustomer {
   };
 }
 
+/**
+ * Ensures the official Flutterwave v3 Inline checkout script is loaded dynamically.
+ */
+function loadFlutterwaveScript(): Promise<boolean> {
+  return new Promise(resolve => {
+    if (typeof window !== 'undefined' && typeof (window as any).FlutterwaveCheckout === 'function') {
+      resolve(true);
+      return;
+    }
+
+    if (typeof document === 'undefined') {
+      resolve(false);
+      return;
+    }
+
+    const existing = document.querySelector('script[src="https://checkout.flutterwave.com/v3.js"]');
+    if (existing) {
+      if (typeof (window as any).FlutterwaveCheckout === 'function') {
+        resolve(true);
+        return;
+      }
+      existing.addEventListener('load', () => {
+        resolve(typeof (window as any).FlutterwaveCheckout === 'function');
+      });
+      setTimeout(() => {
+        resolve(typeof (window as any).FlutterwaveCheckout === 'function');
+      }, 1000);
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://checkout.flutterwave.com/v3.js';
+    script.async = true;
+    script.onload = () => {
+      resolve(typeof (window as any).FlutterwaveCheckout === 'function');
+    };
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+}
+
 function CheckoutContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -68,7 +109,7 @@ function CheckoutContent() {
     lga: 'Ikeja',
     country: 'Nigeria',
     deliveryInstructions: '',
-    paymentMethod: 'paystack' as 'paystack' | 'bank_transfer',
+    paymentMethod: 'flutterwave' as 'flutterwave' | 'paystack',
     discountCode: '',
   });
 
@@ -252,16 +293,119 @@ function CheckoutContent() {
         itemCount: items.length,
       });
 
-      // Clear cart
-      clearCart();
+      // 1. Flutterwave Modal Overlay Checkout
+      if (formData.paymentMethod === 'flutterwave') {
+        const scriptReady = await loadFlutterwaveScript();
+        const hasFlutterwave = typeof window !== 'undefined' && typeof (window as any).FlutterwaveCheckout === 'function';
 
-      // If Paystack online payment with authorization URL, redirect to Paystack
+        if (hasFlutterwave && scriptReady) {
+          const flwPublicKey = data.publicKey || process.env.NEXT_PUBLIC_FLW_PUBLIC_KEY || '';
+
+          let flwModal: any = null;
+
+          const removeFlutterwaveOverlay = () => {
+            try {
+              if (flwModal && typeof flwModal.close === 'function') {
+                flwModal.close();
+              }
+            } catch (e) {
+              // ignore
+            }
+            try {
+              const elements = document.querySelectorAll(
+                'iframe[src*="flutterwave"], iframe[name="checkout"], [id*="flw"], .flwpugrid, [class*="flutterwave"], div[style*="position: fixed"][style*="z-index"]'
+              );
+              elements.forEach(el => {
+                // only remove if it belongs to flutterwave modal
+                if (el.tagName === 'IFRAME' || el.className.includes('flw') || el.id.includes('flw')) {
+                  el.remove();
+                }
+              });
+              document.body.style.overflow = '';
+            } catch (e) {
+              // ignore
+            }
+          };
+
+          flwModal = (window as any).FlutterwaveCheckout({
+            public_key: flwPublicKey,
+            tx_ref: data.reference || data.order.payment_reference,
+            amount: data.totalAmount || data.order.total_amount,
+            currency: data.order.currency || 'NGN',
+            payment_options: 'card,banktransfer,ussd,account,qr',
+            customer: {
+              email: data.order.customer_email || formData.email.trim(),
+              phone_number: data.order.customer_phone || cleanNumber,
+              name: data.order.customer_name || formData.fullName.trim(),
+            },
+            customizations: {
+              title: 'TheBloomingHer Care & Wellness',
+              description: `Payment for Order #${data.orderNumber}`,
+              logo: `${window.location.origin}/images/logo.jpg`,
+            },
+            meta: {
+              order_id: data.order.id,
+              order_number: data.orderNumber,
+              customer_id: customer?.id || '',
+            },
+            callback: async function (flwResponse: any) {
+              // Immediately close and remove the Flutterwave overlay
+              removeFlutterwaveOverlay();
+
+              // CRITICAL: Verify transaction with server backend!
+              try {
+                const verifyRes = await fetch('/api/flutterwave/verify', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    tx_ref: flwResponse.tx_ref || data.reference,
+                    transaction_id: flwResponse.transaction_id || flwResponse.id,
+                    status: flwResponse.status,
+                  }),
+                });
+
+                const verifyData = await verifyRes.json();
+
+                if (verifyData.success && verifyData.orderNumber) {
+                  clearCart();
+                  window.location.href = `/order-confirmation/${verifyData.orderNumber}?status=paid&token=${verifyData.secureToken || data.order.secure_token || ''}`;
+                } else {
+                  setServerErrors([
+                    verifyData.error || 'Payment verification could not be confirmed. Please check your order confirmation or contact customer care.',
+                  ]);
+                  setIsProcessing(false);
+                }
+              } catch (verifyErr) {
+                // Fallback to GET redirect verification
+                clearCart();
+                window.location.href = `/api/flutterwave/verify?tx_ref=${encodeURIComponent(data.reference)}&transaction_id=${encodeURIComponent(flwResponse.transaction_id || flwResponse.id || '')}&status=${encodeURIComponent(flwResponse.status || 'successful')}`;
+              }
+            },
+            onclose: function () {
+              removeFlutterwaveOverlay();
+              setIsProcessing(false);
+            },
+          });
+          return;
+        }
+
+        // Fallback to hosted checkout link if modal script unavailable
+        if (data.authorizationUrl) {
+          clearCart();
+          window.location.href = data.authorizationUrl;
+          return;
+        }
+      }
+
+      // 2. Paystack Gateway (Fallback / Legacy)
       if (formData.paymentMethod === 'paystack' && data.authorizationUrl) {
+        clearCart();
         window.location.href = data.authorizationUrl;
         return;
       }
 
-      // If direct bank transfer or pickup, forward to order confirmation
+      // 3. Direct Bank Transfer or Store Pickup
+      clearCart();
       router.push(`/order-confirmation/${data.orderNumber}?token=${data.order.secure_token || data.order.id}`);
     } catch (err: any) {
       setServerErrors([err.message || 'An unexpected error occurred. Please try again.']);
@@ -291,6 +435,7 @@ function CheckoutContent() {
 
   return (
     <div className="w-[94%] sm:w-[90%] md:w-[85%] max-w-[85%] mx-auto py-8 sm:py-12">
+      <Script src="https://checkout.flutterwave.com/v3.js" strategy="afterInteractive" />
       {/* Checkout Header */}
       <div className="max-w-2xl mx-auto text-center mb-8">
         <span className="text-xs uppercase tracking-wider text-brand font-bold block mb-1">
@@ -382,31 +527,27 @@ function CheckoutContent() {
                     </button>
                   </div>
 
-                  {/* Phone number confirmation / input if missing */}
-                  {!formData.phone ? (
-                    <div className="pt-2 border-t border-brand/10">
-                      <label className="block text-xs font-semibold text-text-main mb-1">
-                        Nigerian Delivery / WhatsApp Phone * <span className="text-text-muted font-normal">(Required for dispatch rider)</span>
-                      </label>
-                      <input
-                        type="tel"
-                        name="phone"
-                        required
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        placeholder="0810 364 1002"
-                        className="w-full px-4 py-2.5 bg-surface rounded-xl border border-border text-xs text-text-main focus:outline-none focus:border-brand"
-                      />
-                      {phoneError && (
-                        <p className="text-[11px] text-red-600 mt-1 font-medium">{phoneError}</p>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="text-xs text-text-body/90 flex items-center gap-1.5 pt-1 border-t border-brand/10">
-                      <span className="text-text-muted font-medium">Delivery WhatsApp / Phone:</span>
-                      <span className="font-semibold text-text-main">{formData.phone}</span>
-                    </div>
-                  )}
+                  {/* Phone number input for delivery updates */}
+                  <div className="pt-3 border-t border-brand/10">
+                    <label className="block text-xs font-semibold text-text-main mb-1.5">
+                      Nigerian Delivery / WhatsApp Phone *{' '}
+                      <span className="text-text-muted font-normal">
+                        (Required for dispatch rider & delivery updates)
+                      </span>
+                    </label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      required
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      placeholder="0810 364 1002"
+                      className="w-full px-4 py-2.5 bg-surface rounded-xl border border-border text-xs text-text-main focus:outline-none focus:border-brand shadow-xs"
+                    />
+                    {phoneError && (
+                      <p className="text-[11px] text-red-600 mt-1.5 font-medium">{phoneError}</p>
+                    )}
+                  </div>
                 </div>
               ) : (
                 /* Guest Checkout Form or Expanded Edit Mode */
@@ -662,63 +803,22 @@ function CheckoutContent() {
               </div>
 
               <div className="space-y-3 text-xs sm:text-sm">
-                <label
-                  className={`p-4 rounded-2xl border-2 flex items-start gap-3 cursor-pointer transition-all ${
-                    formData.paymentMethod === 'paystack'
-                      ? 'border-brand bg-brand-light/30'
-                      : 'border-border bg-surface'
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="paystack"
-                    checked={formData.paymentMethod === 'paystack'}
-                    onChange={() => setFormData(prev => ({ ...prev, paymentMethod: 'paystack' }))}
-                    className="w-4 h-4 text-brand accent-brand mt-1"
-                  />
+                <div className="p-4 rounded-2xl border-2 border-brand bg-brand-light/30 flex items-start gap-3 transition-all">
+                  <div className="w-5 h-5 rounded-full bg-brand text-white flex items-center justify-center shrink-0 mt-0.5">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                  </div>
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <CreditCard className="w-4 h-4 text-brand" />
                       <span className="font-bold text-text-main">
-                        Pay Online with Paystack (Cards, Bank Transfer, USSD)
+                        Flutterwave Secure Checkout (Cards, Bank Transfer, USSD, Apple Pay)
                       </span>
                     </div>
                     <p className="text-xs text-text-muted">
-                      Supports Nigerian Debit Cards (Mastercard, Visa, Verve), instant Bank Transfer, and Apple Pay.
+                      Pay instantly using Debit/Credit Cards (Mastercard, Visa, Verve), instant Bank Transfer, USSD, or Apple Pay.
                     </p>
                   </div>
-                </label>
-
-                <label
-                  className={`p-4 rounded-2xl border-2 flex items-start gap-3 cursor-pointer transition-all ${
-                    formData.paymentMethod === 'bank_transfer'
-                      ? 'border-brand bg-brand-light/30'
-                      : 'border-border bg-surface'
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="bank_transfer"
-                    checked={formData.paymentMethod === 'bank_transfer'}
-                    onChange={() =>
-                      setFormData(prev => ({ ...prev, paymentMethod: 'bank_transfer' }))
-                    }
-                    className="w-4 h-4 text-brand accent-brand mt-1"
-                  />
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <Building2 className="w-4 h-4 text-brand" />
-                      <span className="font-bold text-text-main">
-                        Direct Bank Transfer (Manual Verification)
-                      </span>
-                    </div>
-                    <p className="text-xs text-text-muted">
-                      Transfer directly to our Nigerian bank account and send receipt on WhatsApp.
-                    </p>
-                  </div>
-                </label>
+                </div>
               </div>
             </div>
 
@@ -731,12 +831,16 @@ function CheckoutContent() {
               {isProcessing ? (
                 <span className="flex items-center gap-2">
                   <RefreshCw className="w-4 h-4 animate-spin" />
-                  <span>Redirecting to Paystack Secure Checkout...</span>
+                  <span>Opening Flutterwave Secure Checkout...</span>
                 </span>
               ) : (
                 <>
                   <Lock className="w-4 h-4" />
-                  <span>Pay {formatNaira(grandTotal)} with Paystack</span>
+                  <span>
+                    {formData.paymentMethod === 'flutterwave'
+                      ? `Pay ${formatNaira(grandTotal)} with Flutterwave`
+                      : `Place Order • ${formatNaira(grandTotal)}`}
+                  </span>
                   <ArrowRight className="w-5 h-5 ml-1" />
                 </>
               )}
@@ -867,7 +971,7 @@ function CheckoutContent() {
               <span>100% Secure Checkout Guarantee</span>
             </div>
             <p className="leading-relaxed">
-              Your payment information is encrypted and processed safely through Paystack. Discreet packaging is guaranteed on all orders.
+              Your payment information is encrypted and processed safely through Flutterwave. Discreet packaging is guaranteed on all orders.
             </p>
           </div>
         </div>

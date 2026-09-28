@@ -25,7 +25,7 @@ export const CheckoutFormSchema = z.object({
   deliveryType: z.enum(['shipping', 'pickup']),
   shippingAddress: CheckoutAddressSchema,
   items: z.array(CheckoutItemSchema).min(1, 'Cart cannot be empty'),
-  paymentMethod: z.enum(['paystack', 'bank_transfer']).default('paystack'),
+  paymentMethod: z.enum(['flutterwave', 'paystack', 'bank_transfer']).default('flutterwave'),
   discountCode: z.string().optional().default(''),
   notes: z.string().optional().default(''),
 });

@@ -1,6 +1,6 @@
 # TheBloomingHer 🌿
 
-> **TheBloomingHer** is a modern, full-stack wellness and herbal care e-commerce platform and content management system (CMS) built with **Next.js 14 (App Router)**, **Supabase**, **Cloudflare R2**, and **Paystack**.
+> **TheBloomingHer** is a modern, full-stack wellness and herbal care e-commerce platform and content management system (CMS) built with **Next.js 14 (App Router)**, **Supabase**, **Cloudflare R2**, and **Flutterwave**.
 
 ---
 
@@ -9,7 +9,7 @@
 ### 🛍️ Customer Storefront
 * **Product Catalog & Discovery**: Fast filtering, searching, categorization, and detailed herbal product pages.
 * **Shopping Cart & Checkout**: Interactive client-side cart synchronized with real-time stock levels and discount code validation.
-* **Payment Integration**: Secure online payments powered by **Paystack** with instant webhook and callback verification.
+* **Payment Integration**: Secure multi-gateway online payments powered by **Flutterwave** (hosted checkout, cards, bank transfer, USSD) with cryptographic webhook and callback verification.
 * **Wellness Events & Workshops**: Community event calendar, ticket booking, and registration.
 * **Customer Accounts**: Full profile management, order history tracking, and saved delivery addresses.
 * **Social Authentication**: Google OAuth with PKCE flow via `@supabase/ssr` alongside traditional email/password credentials.
@@ -35,7 +35,7 @@
 | **Styling** | [Tailwind CSS](https://tailwindcss.com/) & Lucide Icons |
 | **Database & Auth** | [Supabase](https://supabase.com/) (PostgreSQL & Supabase Auth SSR) |
 | **Object Storage** | [Cloudflare R2](https://www.cloudflare.com/developer-platform/r2/) via AWS S3 SDK |
-| **Payments** | [Paystack](https://paystack.com/) |
+| **Payments** | [Flutterwave](https://flutterwave.com/) (Primary) & [Paystack](https://paystack.com/) (Fallback) |
 | **Security & Tokens** | `jose` (JWTs) & `bcryptjs` |
 
 ---
@@ -49,7 +49,7 @@ thebloomingher/
 │   │   ├── (public)/            # Public storefront pages (shop, products, categories, events, cart)
 │   │   ├── account/             # Customer authentication & account portal
 │   │   ├── admin/               # Admin dashboard and management views
-│   │   ├── api/                 # Backend REST endpoints (auth, products, orders, paystack, media)
+│   │   ├── api/                 # Backend REST endpoints (auth, products, orders, flutterwave, media)
 │   │   └── auth/callback/       # Supabase OAuth PKCE callback exchange route
 │   ├── components/              # Reusable UI components (layout, storefront, admin, auth)
 │   ├── lib/                     # Database clients, auth helpers, and utilities
@@ -57,7 +57,7 @@ thebloomingher/
 │   │   ├── supabase/            # Supabase SSR client, server, and admin instances
 │   │   └── r2.ts                # Cloudflare R2 bucket connection
 │   ├── repositories/            # Data access layer interfacing Supabase & local stores
-│   ├── services/                # Business logic layer (Auth, Orders, Products, Paystack, CMS)
+│   ├── services/                # Business logic layer (Auth, Orders, Products, Flutterwave, CMS)
 │   └── types/                   # TypeScript schemas and database interfaces
 ├── supabase/                    # Database migrations and seed scripts
 └── public/                      # Static assets and media
@@ -73,7 +73,13 @@ Create a `.env.local` file in the project root based on `.env.example`:
 # Public Site URL
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
-# Paystack Payment Gateway Keys
+# Flutterwave Payment Gateway Keys (Primary)
+NEXT_PUBLIC_FLW_PUBLIC_KEY=FLWPUBK_TEST-xxxxxxxxxxxxxxxxxxxxxxxx-X
+FLW_SECRET_KEY=FLWSECK_TEST-xxxxxxxxxxxxxxxxxxxxxxxx-X
+FLW_ENCRYPTION_KEY=FLWSECK_TESTxxxxxxxx
+FLW_SECRET_HASH=your_webhook_secret_hash_here
+
+# Paystack Payment Gateway Keys (Alternative / Fallback)
 NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY=pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 PAYSTACK_SECRET_KEY=sk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 

@@ -24,12 +24,30 @@ export class OrderService {
     return orderRepository.getOrderByNumber(orderNumber);
   }
 
+  async getOrderByReference(reference: string): Promise<Order | null> {
+    return orderRepository.getOrderByReference(reference);
+  }
+
   async getOrderByPaystackReference(reference: string): Promise<Order | null> {
     return orderRepository.getOrderByPaystackReference(reference);
   }
 
-  async completePayment(orderId: string, reference: string): Promise<Order> {
-    return orderRepository.updatePaymentStatus(orderId, 'paid', reference);
+  async completePayment(
+    orderId: string,
+    reference: string,
+    provider = 'flutterwave',
+    channel?: string,
+    transactionId?: string
+  ): Promise<Order> {
+    return orderRepository.updatePaymentStatus(
+      orderId,
+      'paid',
+      reference,
+      channel,
+      new Date().toISOString(),
+      provider,
+      transactionId
+    );
   }
 }
 
