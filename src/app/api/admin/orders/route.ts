@@ -10,6 +10,13 @@ export async function GET(req: NextRequest) {
   if (!auth.authorized) return auth.errorResponse!;
 
   try {
+    // Opportunistically mark orders older than 30 minutes as abandoned
+    try {
+      await orderRepository.markAbandonedOrders(30);
+    } catch (e) {
+      console.warn('[Admin Orders GET] Background abandonment sweep notice:', e);
+    }
+
     const [orders, payments] = await Promise.all([
       orderRepository.getAllOrders(),
       orderRepository.getPayments(),
