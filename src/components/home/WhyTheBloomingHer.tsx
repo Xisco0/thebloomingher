@@ -15,13 +15,13 @@ export function WhyTheBloomingHer() {
     },
     {
       icon: Truck,
-      title: 'Fast & Reliable Delivery',
-      description: '24–48 hour dispatch across Lagos with Free Delivery on orders above ₦40,000, plus nationwide shipping.',
+      title: 'Same-Day & Fast Delivery',
+      description: 'Same-day delivery in Lagos for orders placed before 12pm. Other orders dispatched within 24-48 hours. Nationwide shipping available.',
     },
     {
       icon: HeartHandshake,
       title: 'Hassle-Free Support',
-      description: 'Dedicated WhatsApp concierge with Hannah for prompt, personal assistance with every order.',
+      description: 'Dedicated WhatsApp concierge for prompt, personal assistance with every order.',
     },
   ];
 

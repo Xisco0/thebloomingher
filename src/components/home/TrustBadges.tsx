@@ -10,8 +10,8 @@ export function TrustBadges() {
     },
     {
       icon: Truck,
-      title: 'Fast Lagos Delivery',
-      subtitle: 'Across Lagos & Nationwide',
+      title: 'Same-Day Lagos Delivery',
+      subtitle: 'For orders before 12pm & Nationwide',
     },
     {
       icon: CreditCard,

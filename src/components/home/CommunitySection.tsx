@@ -67,7 +67,7 @@ export function CommunitySection() {
               className="text-emerald-700 font-semibold hover:underline inline-flex items-center gap-1"
             >
               <MessageCircle className="w-3.5 h-3.5 inline" />
-              <span>Chat directly with Hannah on WhatsApp</span>
+              <span>Chat on WhatsApp</span>
             </a>
           </p>
         </div>

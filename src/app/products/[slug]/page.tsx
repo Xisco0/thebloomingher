@@ -171,7 +171,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
               <div className="flex items-center gap-2">
                 <Truck className="w-4 h-4 text-brand flex-shrink-0" />
                 <span>
-                  <strong>Lagos Delivery:</strong> 24–48 Hours. Free on orders above ₦40,000.
+                  <strong>Delivery:</strong> Same-day in Lagos for orders placed before 12pm (24–48 hrs other orders). Nationwide shipping available. Free Lagos delivery over ₦40,000.
                 </span>
               </div>
               <div className="flex items-center gap-2">

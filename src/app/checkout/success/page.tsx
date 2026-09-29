@@ -73,7 +73,7 @@ function SuccessContent() {
             ) : (
               <>
                 <Truck className="w-3.5 h-3.5 text-brand" />
-                <span>Home Delivery (24-48 hrs)</span>
+                <span>Home Delivery (Same-day before 12pm / 24–48 hrs)</span>
               </>
             )}
           </span>
