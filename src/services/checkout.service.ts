@@ -186,7 +186,7 @@ export class CheckoutService {
    */
   async processCheckout(
     data: CheckoutFormData,
-    originUrl = 'https://thebloomingher.com'
+    originUrl = 'https://www.thebloomingher.com'
   ): Promise<ProcessCheckoutResult> {
     const validation = await this.validateCheckout(data);
 

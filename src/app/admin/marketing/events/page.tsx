@@ -312,7 +312,7 @@ export default function EventsManagementPage() {
                   />
                 </div>
                 <p className="text-[10px] text-text-muted mt-1">
-                  Preview: <span className="font-mono text-text-body">https://thebloomingher.com/events/{editingEvent.slug || slugify(editingEvent.name || 'event-title')}</span>
+                  Preview: <span className="font-mono text-text-body">https://www.thebloomingher.com/events/{editingEvent.slug || slugify(editingEvent.name || 'event-title')}</span>
                 </p>
               </div>
 

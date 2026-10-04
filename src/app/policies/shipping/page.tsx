@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: 'Shipping & Delivery Policy | TheBloomingHer Care & Wellness',
   description: 'Same-day delivery in Lagos for orders placed before 12pm. Other orders dispatched within 24-48 hours. Nationwide shipping available across Nigeria.',
   alternates: {
-    canonical: 'https://thebloomingher.com/policies/shipping',
+    canonical: '/policies/shipping',
   },
 };
 

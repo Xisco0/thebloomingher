@@ -12,27 +12,30 @@ import { TestimonialsSection } from '@/components/home/TestimonialsSection';
 import { CommunitySection } from '@/components/home/CommunitySection';
 import { RecommendedProductsGrid } from '@/components/recommendation/RecommendedProductsGrid';
 import { RecentlyViewedSection } from '@/components/recommendation/RecentlyViewedSection';
+import { FaqSection } from '@/components/home/FaqSection';
+import { EverydayEssentialsSection } from '@/components/home/EverydayEssentialsSection';
 
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'TheBloomingHer Care & Wellness | Feminine Care & Wellness Products Nigeria',
+  title: 'Feminine Care & Wellness Products in Nigeria | TheBloomingHer',
   description:
-    'Thoughtfully curated feminine care, menstrual comfort kits, wellness supplements, and everyday essentials in Lagos, Nigeria. Fast delivery & local pickup.',
+    'Discover authentic feminine care, period care kits, menstrual heating belts, intimate hygiene products, everyday lifestyle essentials, and women self-care products in Lagos, Nigeria. Enjoy fast Lagos delivery and nationwide shipping.',
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: 'TheBloomingHer Care & Wellness | Feminine Care & Wellness Products Nigeria',
+    title: 'Feminine Care & Wellness Products in Nigeria | TheBloomingHer',
     description:
-      'Thoughtfully curated feminine care, menstrual comfort kits, wellness supplements, and everyday essentials in Lagos, Nigeria.',
+      'Shop authentic feminine care, menstrual comfort kits, intimate hygiene essentials, everyday lifestyle items, and self-care products in Lagos, Nigeria.',
+    url: '/',
     images: [
       {
         url: '/images/og-default.jpg',
         width: 1200,
         height: 630,
         type: 'image/jpeg',
-        alt: 'TheBloomingHer Care & Wellness',
+        alt: 'TheBloomingHer Care & Wellness Nigeria',
       },
     ],
   },
@@ -42,13 +45,15 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default async function HomePage() {
-  const [categories, bestSellers, under10k, cmsConfig, heroBanners, activeEvents] = await Promise.all([
+  const [categories, bestSellers, under10k, everydayEssentials, cmsConfig, heroBanners, activeEvents, faqs] = await Promise.all([
     catalogService.getCategories(),
     catalogService.getBestSellers(5),
     catalogService.getUnder10k(8),
+    catalogService.getProducts({ categorySlug: 'everyday-essentials', pageSize: 4 }),
     cmsService.getHomepageConfig(),
     cmsService.getActiveBanners('homepage_hero'),
     cmsService.getActiveEvents(),
+    cmsService.getPublicFaqs(),
   ]);
 
   return (
@@ -67,6 +72,9 @@ export default async function HomePage() {
 
       {/* 5. Best Sellers Section */}
       <BestSellersSection products={bestSellers} />
+
+      {/* 5b. Everyday Essentials Showcase */}
+      <EverydayEssentialsSection products={everydayEssentials.data} />
 
       {/* 6. Community & Wellness Events Showcase */}
       <EventsSection events={activeEvents} />
@@ -94,7 +102,10 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {/* 11. Newsletter & WhatsApp VIP Concierge */}
+      {/* 11. Interactive FAQ Section (Database-Driven) */}
+      <FaqSection initialFaqs={faqs} />
+
+      {/* 12. Newsletter & WhatsApp VIP Concierge */}
       <CommunitySection />
     </div>
   );

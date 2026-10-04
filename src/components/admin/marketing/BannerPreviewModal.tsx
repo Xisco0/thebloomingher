@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { X, Monitor, Tablet, Smartphone, Eye, ArrowRight } from 'lucide-react';
 import { MarketingBanner, PreviewDevice } from '@/types/marketing-cms.types';
@@ -13,8 +14,13 @@ interface BannerPreviewModalProps {
 
 export function BannerPreviewModal({ banner, isOpen, onClose }: BannerPreviewModalProps) {
   const [device, setDevice] = useState<PreviewDevice>('desktop');
+  const [mounted, setMounted] = useState(false);
 
-  if (!isOpen || !banner) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!isOpen || !banner || !mounted) return null;
 
   const currentImage =
     device === 'mobile' && banner.mobile_image_url
@@ -23,7 +29,7 @@ export function BannerPreviewModal({ banner, isOpen, onClose }: BannerPreviewMod
       ? banner.tablet_image_url
       : banner.desktop_image_url;
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm overflow-y-auto p-3 sm:p-6 flex flex-col items-center justify-start sm:justify-center">
       <div className="bg-surface rounded-2xl border border-border shadow-2xl w-full max-w-6xl max-h-[calc(100dvh-2.5rem)] sm:max-h-[calc(100dvh-4rem)] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200 my-auto flex-shrink-0">
         {/* Top Header & Device Switcher */}
@@ -115,7 +121,7 @@ export function BannerPreviewModal({ banner, isOpen, onClose }: BannerPreviewMod
                   <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
                 </div>
                 <div className="flex-1 max-w-sm mx-auto bg-white rounded-md px-3 py-0.5 text-[11px] text-text-muted text-center truncate border border-border/60">
-                  https://thebloomingher.com
+                  https://www.thebloomingher.com
                 </div>
               </div>
             )}
@@ -184,6 +190,7 @@ export function BannerPreviewModal({ banner, isOpen, onClose }: BannerPreviewMod
           Active creative resolution: <span className="font-semibold text-text-main">{device === 'mobile' ? 'Dedicated Mobile Asset (4:5 / Square)' : 'Desktop High-Res Asset (16:9 / 4:3)'}</span> • Status: <span className="font-semibold uppercase text-brand">{banner.status}</span>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

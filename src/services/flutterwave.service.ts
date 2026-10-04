@@ -55,7 +55,7 @@ export class FlutterwaveService {
           customizations: {
             title: 'TheBloomingHer Care & Wellness',
             description: `Payment for Order #${params.orderNumber || params.reference}`,
-            logo: 'https://thebloomingher.com/images/logo.jpg',
+            logo: 'https://www.thebloomingher.com/images/logo.jpg',
           },
           meta: {
             orderNumber: params.orderNumber || '',

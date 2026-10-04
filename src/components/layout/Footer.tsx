@@ -84,6 +84,16 @@ export function Footer() {
             </h4>
             <ul className="space-y-2 text-sm text-gray-300">
               <li>
+                <Link href="/faq" className="hover:text-brand-accent transition-colors">
+                  Frequently Asked Questions (FAQ)
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog" className="hover:text-brand-accent transition-colors text-brand-accent font-medium">
+                  Care & Wellness Blog 📚
+                </Link>
+              </li>
+              <li>
                 <Link href="/about" className="hover:text-brand-accent transition-colors">
                   About Our Brand
                 </Link>

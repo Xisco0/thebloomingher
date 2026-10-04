@@ -10,6 +10,7 @@ import {
   BannerFilterOptions,
 } from '@/types/marketing-cms.types';
 import { HomepageConfig } from '@/types/cms.types';
+import { FAQ, FAQCategory } from '@/types/faq.types';
 
 export class CMSService {
   async getHomepageConfig(): Promise<HomepageConfig> {
@@ -344,6 +345,82 @@ export class CMSService {
 
   async getMediaUsage(url: string) {
     return cmsStore.getMediaUsage(url);
+  }
+
+  // FAQs
+  async getFaqs(options?: { publicOnly?: boolean; category?: string; search?: string }): Promise<FAQ[]> {
+    try {
+      let query = supabaseAdmin.from('faqs').select('*');
+
+      if (options?.publicOnly) {
+        query = query.eq('is_active', true).eq('is_published', true);
+      }
+
+      if (options?.category && options.category !== 'all') {
+        query = query.eq('category', options.category);
+      }
+
+      const { data, error } = await query.order('sort_order', { ascending: true });
+
+      if (!error && Array.isArray(data)) {
+        let results: FAQ[] = data.map((f: any) => ({
+          id: f.id,
+          question: f.question,
+          answer: f.answer,
+          category: f.category || 'general',
+          is_active: Boolean(f.is_active),
+          is_published: Boolean(f.is_published),
+          sort_order: Number(f.sort_order || 0),
+          created_at: f.created_at,
+          updated_at: f.updated_at,
+        }));
+
+        if (options?.search) {
+          const s = options.search.toLowerCase();
+          results = results.filter(
+            f => f.question.toLowerCase().includes(s) || f.answer.toLowerCase().includes(s)
+          );
+        }
+
+        return results;
+      }
+    } catch (err) {
+      console.warn('Supabase getFaqs error, using fallback:', err);
+    }
+
+    return cmsStore.getFaqs(options);
+  }
+
+  async getPublicFaqs(category?: string): Promise<FAQ[]> {
+    return this.getFaqs({ publicOnly: true, category });
+  }
+
+  async getFaqById(id: string): Promise<FAQ | undefined> {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('faqs')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+
+      if (!error && data) {
+        return {
+          id: data.id,
+          question: data.question,
+          answer: data.answer,
+          category: data.category || 'general',
+          is_active: Boolean(data.is_active),
+          is_published: Boolean(data.is_published),
+          sort_order: Number(data.sort_order || 0),
+          created_at: data.created_at,
+          updated_at: data.updated_at,
+        };
+      }
+    } catch (err) {
+      console.warn('Supabase getFaqById error, using fallback:', err);
+    }
+
+    return cmsStore.getFaqById(id);
   }
 }
 

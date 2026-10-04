@@ -1,4 +1,4 @@
-export const SITE_URL = 'https://thebloomingher.com';
+export const SITE_URL = 'https://www.thebloomingher.com';
 
 export function getSiteUrl(): string {
   let url = process.env.NEXT_PUBLIC_SITE_URL?.trim();
@@ -6,13 +6,12 @@ export function getSiteUrl(): string {
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
       url = `https://${url}`;
     }
-    return url.replace(/\/$/, '');
-  }
-  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
-  }
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
+    url = url.replace(/\/$/, '');
+    if (url === 'https://thebloomingher.com') {
+      return SITE_URL;
+    }
+    return url;
   }
   return SITE_URL;
 }
+

@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: 'Privacy Policy | TheBloomingHer Care & Wellness',
   description: 'How TheBloomingHer Care & Wellness collects, protects, and handles your personal information and orders in compliance with NDPR and global data privacy standards.',
   alternates: {
-    canonical: 'https://thebloomingher.com/policies/privacy',
+    canonical: '/policies/privacy',
   },
 };
 

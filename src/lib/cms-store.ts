@@ -26,6 +26,7 @@ import {
 } from '@/types/recommendation.types';
 import { AdminUser, CustomerUser, Role, PermissionDefinition, AdminStatus } from '@/types/auth.types';
 import { DEFAULT_ROLES, SYSTEM_PERMISSIONS } from '@/lib/auth/rbac';
+import { FAQ, FAQCategory } from '@/types/faq.types';
 
 export interface AdminRecord extends AdminUser {
   password_hash: string;
@@ -255,6 +256,119 @@ let promotionsState: PromotionCampaign[] = [
     is_active: true,
     placement: 'global',
     created_at: '2026-01-01T00:00:00Z',
+  },
+];
+
+let faqsState: FAQ[] = [
+  {
+    id: 'faq-lagos-delivery',
+    question: 'How fast is delivery in Lagos? Do you offer same-day delivery?',
+    answer: 'Yes! Orders placed and confirmed before 12:00 PM (WAT) Monday through Saturday qualify for Same-Day Doorstep Delivery across Lagos. Orders placed after 12:00 PM are dispatched for delivery within 24 to 48 hours.',
+    category: 'delivery',
+    is_active: true,
+    is_published: true,
+    sort_order: 1,
+    created_at: '2026-09-01T10:00:00Z',
+    updated_at: '2026-09-01T10:00:00Z',
+  },
+  {
+    id: 'faq-free-shipping',
+    question: 'How much is delivery, and how do I qualify for free shipping?',
+    answer: 'Standard flat-rate delivery in Lagos is ₦2,500. However, all orders with a subtotal of ₦40,000 or above automatically qualify for 100% Free Doorstep Delivery anywhere in Lagos State.',
+    category: 'delivery',
+    is_active: true,
+    is_published: true,
+    sort_order: 2,
+    created_at: '2026-09-01T10:00:00Z',
+    updated_at: '2026-09-01T10:00:00Z',
+  },
+  {
+    id: 'faq-nationwide',
+    question: 'Do you ship outside Lagos to other states in Nigeria?',
+    answer: 'Yes, we ship nationwide to all states across Nigeria (including Abuja FCT, Port Harcourt, Ibadan, Kano, Enugu, Benin City, etc.). Nationwide deliveries typically arrive within 2 to 5 business days with SMS/WhatsApp tracking updates.',
+    category: 'delivery',
+    is_active: true,
+    is_published: true,
+    sort_order: 3,
+    created_at: '2026-09-01T10:00:00Z',
+    updated_at: '2026-09-01T10:00:00Z',
+  },
+  {
+    id: 'faq-store-pickup',
+    question: 'Can I pick up my order physically in Lagos for free?',
+    answer: 'Yes! You can select "Free Store Pickup" during checkout. Pickup is available Monday through Saturday from 8:00 AM to 6:00 PM at our facility: 30 Clem Rd, Ifako-Ijaiye, Lagos 101232, Lagos, Nigeria.',
+    category: 'delivery',
+    is_active: true,
+    is_published: true,
+    sort_order: 4,
+    created_at: '2026-09-01T10:00:00Z',
+    updated_at: '2026-09-01T10:00:00Z',
+  },
+  {
+    id: 'faq-discreet-packaging',
+    question: 'Are your period care and intimate wellness items discreetly packaged?',
+    answer: '100% yes! We deeply respect your personal privacy. All intimate care items, period boxes, and cramp relief belts are delivered in plain, unbranded exterior parcel packaging. There is zero mention of intimate health on the exterior shipping label.',
+    category: 'products',
+    is_active: true,
+    is_published: true,
+    sort_order: 5,
+    created_at: '2026-09-01T10:00:00Z',
+    updated_at: '2026-09-01T10:00:00Z',
+  },
+  {
+    id: 'faq-sensitive-skin',
+    question: 'Are the sanitary pads and wellness products safe for sensitive skin?',
+    answer: 'Yes. We carefully curate organic cotton, hypoallergenic, dye-free, and dermatologist-tested pads, liners, and body balms specifically formulated to prevent rashes, friction, and skin irritation.',
+    category: 'products',
+    is_active: true,
+    is_published: true,
+    sort_order: 6,
+    created_at: '2026-09-01T10:00:00Z',
+    updated_at: '2026-09-01T10:00:00Z',
+  },
+  {
+    id: 'faq-payment-methods',
+    question: 'What payment methods do you accept at checkout?',
+    answer: 'We accept all major debit cards (Mastercard, Visa, Verve), direct bank transfers, USSD code payments, and Apple Pay. All transactions are securely processed via PCI-DSS certified gateway Flutterwave.',
+    category: 'orders',
+    is_active: true,
+    is_published: true,
+    sort_order: 7,
+    created_at: '2026-09-01T10:00:00Z',
+    updated_at: '2026-09-01T10:00:00Z',
+  },
+  {
+    id: 'faq-order-modification',
+    question: 'Can I modify or cancel my order after payment?',
+    answer: 'Because we process orders rapidly for fast dispatch, please contact us immediately on WhatsApp at +234 810 364 1002 or call customer care with your order reference if you need to adjust delivery details.',
+    category: 'orders',
+    is_active: true,
+    is_published: true,
+    sort_order: 8,
+    created_at: '2026-09-01T10:00:00Z',
+    updated_at: '2026-09-01T10:00:00Z',
+  },
+  {
+    id: 'faq-return-policy',
+    question: 'What is your return & exchange policy?',
+    answer: 'For strict health, hygiene, and sanitary safety, opened intimate care products cannot be returned. However, unopened items in original intact packaging may be considered for return within 3 days.',
+    category: 'returns',
+    is_active: true,
+    is_published: true,
+    sort_order: 9,
+    created_at: '2026-09-01T10:00:00Z',
+    updated_at: '2026-09-01T10:00:00Z',
+  },
+  {
+    id: 'faq-damaged-order',
+    question: 'What should I do if my package arrives damaged or incorrect?',
+    answer: 'Please notify us within 48 hours of delivery via WhatsApp (+234 810 364 1002) or email (thebloomingherwellness@gmail.com) with your order number and photos/video of the package. We will immediately dispatch a replacement or issue a full refund.',
+    category: 'returns',
+    is_active: true,
+    is_published: true,
+    sort_order: 10,
+    created_at: '2026-09-01T10:00:00Z',
+    updated_at: '2026-09-01T10:00:00Z',
   },
 ];
 
@@ -488,7 +602,7 @@ let marketingEventsState: MarketingEvent[] = [
     end_time: '4:00 PM WAT',
     location: 'Radisson Blu Hotel, Victoria Island, Lagos & Virtual Livestream',
     is_online: false,
-    registration_url: 'https://thebloomingher.com/events/bloomingher-wellness-day-2026',
+    registration_url: 'https://www.thebloomingher.com/events/bloomingher-wellness-day-2026',
     cta_text: 'Reserve Your Seat',
     is_featured: true,
     status: 'upcoming',
@@ -510,7 +624,7 @@ let marketingEventsState: MarketingEvent[] = [
     end_time: '8:00 PM WAT',
     location: 'Live on Zoom (Interactive Q&A)',
     is_online: true,
-    registration_url: 'https://thebloomingher.com/events/cycle-care-masterclass',
+    registration_url: 'https://www.thebloomingher.com/events/cycle-care-masterclass',
     cta_text: 'Join Free Workshop',
     is_featured: false,
     status: 'upcoming',
@@ -1934,6 +2048,100 @@ export const cmsStore = {
       }
     });
     return usedIn;
+  },
+
+  // ==========================================
+  // FAQ MANAGEMENT
+  // ==========================================
+  getFaqs: (options?: { publicOnly?: boolean; category?: string; search?: string }): FAQ[] => {
+    let list = [...faqsState];
+
+    if (options?.publicOnly) {
+      list = list.filter(f => f.is_active && f.is_published);
+    }
+    if (options?.category && options.category !== 'all') {
+      list = list.filter(f => f.category === options.category);
+    }
+    if (options?.search) {
+      const q = options.search.toLowerCase();
+      list = list.filter(f => f.question.toLowerCase().includes(q) || f.answer.toLowerCase().includes(q));
+    }
+
+    return list.sort((a, b) => a.sort_order - b.sort_order);
+  },
+
+  getFaqById: (id: string): FAQ | undefined => {
+    return faqsState.find(f => f.id === id);
+  },
+
+  saveFaq: (data: Partial<FAQ> & { question: string; answer: string }): FAQ => {
+    const isNew = !data.id;
+    const id = data.id || `faq-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+    const now = new Date().toISOString();
+
+    const faq: FAQ = {
+      id,
+      question: data.question.trim(),
+      answer: data.answer.trim(),
+      category: data.category || 'general',
+      is_active: data.is_active !== undefined ? data.is_active : true,
+      is_published: data.is_published !== undefined ? data.is_published : true,
+      sort_order: data.sort_order !== undefined ? Number(data.sort_order) : faqsState.length + 1,
+      created_at: data.created_at || now,
+      updated_at: now,
+    };
+
+    const idx = faqsState.findIndex(f => f.id === id);
+    if (idx >= 0) {
+      faqsState[idx] = faq;
+    } else {
+      faqsState.push(faq);
+    }
+
+    cmsStore.addAuditLog('admin@thebloomingher.com', isNew ? 'FAQ_CREATED' : 'FAQ_UPDATED', 'faqs', faq.id, { question: faq.question });
+    return faq;
+  },
+
+  deleteFaq: (id: string): boolean => {
+    const target = faqsState.find(f => f.id === id);
+    faqsState = faqsState.filter(f => f.id !== id);
+    if (target) {
+      cmsStore.addAuditLog('admin@thebloomingher.com', 'FAQ_DELETED', 'faqs', id, { question: target.question });
+    }
+    return true;
+  },
+
+  toggleFaqActive: (id: string): FAQ | undefined => {
+    const idx = faqsState.findIndex(f => f.id === id);
+    if (idx >= 0) {
+      faqsState[idx].is_active = !faqsState[idx].is_active;
+      faqsState[idx].updated_at = new Date().toISOString();
+      cmsStore.addAuditLog('admin@thebloomingher.com', 'FAQ_ACTIVE_TOGGLED', 'faqs', id, { is_active: faqsState[idx].is_active });
+      return faqsState[idx];
+    }
+    return undefined;
+  },
+
+  toggleFaqPublished: (id: string): FAQ | undefined => {
+    const idx = faqsState.findIndex(f => f.id === id);
+    if (idx >= 0) {
+      faqsState[idx].is_published = !faqsState[idx].is_published;
+      faqsState[idx].updated_at = new Date().toISOString();
+      cmsStore.addAuditLog('admin@thebloomingher.com', 'FAQ_PUBLISHED_TOGGLED', 'faqs', id, { is_published: faqsState[idx].is_published });
+      return faqsState[idx];
+    }
+    return undefined;
+  },
+
+  reorderFaqs: (faqIds: string[]): boolean => {
+    faqIds.forEach((id, index) => {
+      const idx = faqsState.findIndex(f => f.id === id);
+      if (idx >= 0) {
+        faqsState[idx].sort_order = index + 1;
+        faqsState[idx].updated_at = new Date().toISOString();
+      }
+    });
+    return true;
   },
 };
 

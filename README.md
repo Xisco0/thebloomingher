@@ -104,13 +104,13 @@ NEXT_PUBLIC_WHATSAPP_NUMBER=+2348103641002
 ## 🔑 Supabase & Google OAuth Setup
 
 1. In the **Supabase Dashboard** under `Authentication` → `URL Configuration`:
-   - Set **Site URL** to `https://thebloomingher.com` (or `http://localhost:3000` in dev).
+   - Set **Site URL** to `https://www.thebloomingher.com` (or `http://localhost:3000` in dev).
    - Add the following to **Redirect URLs**:
      ```text
      http://localhost:3000/**
      http://localhost:3000/auth/callback
-     https://thebloomingher.com/**
-     https://thebloomingher.com/auth/callback
+     https://www.thebloomingher.com/**
+     https://www.thebloomingher.com/auth/callback
      https://*.vercel.app/**
      https://*.vercel.app/auth/callback
      ```

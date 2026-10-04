@@ -41,6 +41,10 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
     low_stock_threshold: initialProduct?.low_stock_threshold ?? 10,
     category_id: initialProduct?.category_id || catalogData.categories[0]?.id || 'cat-18130',
     category_name: initialProduct?.category_name || catalogData.categories[0]?.name || 'Feminine Care',
+    subcategory: initialProduct?.subcategory || '',
+    status: initialProduct?.status || 'active',
+    seo_title: initialProduct?.seo_title || '',
+    seo_description: initialProduct?.seo_description || '',
     images: initialProduct?.images && initialProduct.images.length > 0
       ? initialProduct.images.map((img: any) => (typeof img === 'string' ? img : img.url))
       : ['/images/logo.jpg'],
@@ -229,6 +233,42 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
               </select>
             </div>
 
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold text-text-body mb-1">
+                  Subcategory (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={formData.subcategory}
+                  onChange={e => setFormData({ ...formData, subcategory: e.target.value })}
+                  placeholder="e.g. Drinkware, Bags, Accessories, Gift Ideas"
+                  className="w-full px-3.5 py-2.5 bg-surface-muted/40 border border-border rounded-xl text-xs font-sans text-text-main focus:outline-brand"
+                />
+                <span className="text-[11px] text-text-muted mt-1 block">
+                  e.g. Drinkware, Electronics Accessories, Bags, Stationery, Personal Accessories
+                </span>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-text-body mb-1">
+                  Product Visibility Status *
+                </label>
+                <select
+                  value={formData.status}
+                  onChange={e => setFormData({ ...formData, status: e.target.value as any })}
+                  className="w-full px-3.5 py-2.5 bg-surface-muted/40 border border-border rounded-xl text-xs font-sans text-text-main focus:outline-brand"
+                >
+                  <option value="active">Active (Visible on public store)</option>
+                  <option value="draft">Draft (Hidden from public store)</option>
+                  <option value="archived">Archived (Discontinued)</option>
+                </select>
+                <span className="text-[11px] text-text-muted mt-1 block">
+                  Draft products remain in database but disappear from shop.
+                </span>
+              </div>
+            </div>
+
             <div>
               <label className="block text-xs font-bold text-text-body mb-1">
                 Short Summary
@@ -413,7 +453,7 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
                 type="text"
                 value={formData.tags}
                 onChange={e => setFormData({ ...formData, tags: e.target.value })}
-                placeholder="cramp, period, heating belt, lagos"
+                placeholder="coffee mug, coffee mug Lagos, drinkware"
                 className="w-full px-3.5 py-2.5 bg-surface-muted/40 border border-border rounded-xl text-xs font-sans text-text-main focus:outline-brand"
               />
               <span className="text-[11px] text-text-muted mt-1 block">
@@ -421,6 +461,8 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
               </span>
             </div>
           </div>
+
+
 
           {/* Quick Helpful Tip */}
           <div className="bg-brand/5 border border-brand/20 rounded-2xl p-5 space-y-2">

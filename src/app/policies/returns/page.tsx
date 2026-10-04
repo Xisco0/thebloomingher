@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: 'Returns & Refunds Policy | TheBloomingHer Care & Wellness',
   description: 'Our hygiene-first return standards, 48-hour damaged order reporting window, and refund processing guidelines.',
   alternates: {
-    canonical: 'https://thebloomingher.com/policies/returns',
+    canonical: '/policies/returns',
   },
 };
 

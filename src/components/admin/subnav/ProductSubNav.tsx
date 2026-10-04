@@ -6,7 +6,8 @@ import { usePathname } from 'next/navigation';
 import { Package, FolderTree, Layers, Sparkles } from 'lucide-react';
 
 const TABS = [
-  { label: 'Products', href: '/admin/products', icon: Package, exact: true },
+  { label: 'All Products', href: '/admin/products', icon: Package, exact: true },
+  { label: 'Everyday Essentials', href: '/admin/products/everyday-essentials', icon: Sparkles },
   { label: 'Categories', href: '/admin/categories', icon: FolderTree },
   { label: 'Collections', href: '/admin/collections', icon: Layers },
   { label: 'Recommendations', href: '/admin/recommendations', icon: Sparkles },

@@ -3,7 +3,7 @@ import './globals.css';
 import { CartProvider } from '@/context/CartContext';
 import { AOSProvider } from '@/components/providers/AOSProvider';
 import { StorefrontShell } from '@/components/layout/StorefrontShell';
-import { generateLocalBusinessSchema, generateOrganizationSchema } from '@/lib/seo/schema';
+import { generateLocalBusinessSchema, generateOrganizationSchema, generateWebSiteSchema } from '@/lib/seo/schema';
 
 import { getSiteUrl } from '@/lib/site-url';
 
@@ -11,19 +11,20 @@ const siteUrl = getSiteUrl();
 
 export const metadata: Metadata = {
   title: {
-    default: 'TheBloomingHer Care & Wellness | Thoughtful Care for Women in Nigeria',
+    default: 'Feminine Care & Wellness Products in Nigeria | TheBloomingHer',
     template: '%s | TheBloomingHer Care & Wellness',
   },
   description:
-    'Thoughtfully curated feminine care, menstrual comfort kits, wellness supplements, and everyday essentials in Lagos, Nigeria. Fast delivery & local pickup.',
+    'Shop authentic feminine care, period care kits, menstrual heating belts, intimate hygiene essentials, and wellness products in Lagos, Nigeria. Same-day delivery & local pickup.',
   metadataBase: new URL(siteUrl),
   keywords: [
-    'feminine care Nigeria',
-    'period care box Lagos',
-    'menstrual heating belt',
-    'wellness products Lagos',
+    'feminine care products Nigeria',
+    'feminine care products Lagos',
+    'period care products Nigeria',
+    'menstrual heating belt Nigeria',
+    'feminine hygiene products Lagos',
+    'women self care products Nigeria',
     'TheBloomingHer Care & Wellness',
-    'self-care essentials Nigeria',
   ],
   authors: [{ name: 'TheBloomingHer Care & Wellness' }],
   openGraph: {
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
     locale: 'en_NG',
     url: siteUrl,
     siteName: 'TheBloomingHer Care & Wellness',
-    title: 'TheBloomingHer Care & Wellness | Thoughtful Care for Women',
+    title: 'Feminine Care & Wellness Products in Nigeria | TheBloomingHer',
     description: 'Thoughtfully curated feminine care, menstrual comfort kits, and everyday wellness essentials.',
     images: [
       {
@@ -62,6 +63,7 @@ export default function RootLayout({
 }) {
   const localBusinessSchema = generateLocalBusinessSchema();
   const organizationSchema = generateOrganizationSchema();
+  const webSiteSchema = generateWebSiteSchema();
 
   return (
     <html lang="en">
@@ -79,6 +81,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteSchema) }}
         />
       </head>
       <body className="min-h-screen flex flex-col font-sans bg-background text-text-body antialiased overflow-x-hidden w-full max-w-[100vw] relative">

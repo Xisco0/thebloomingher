@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: 'Terms of Service | TheBloomingHer Care & Wellness',
   description: 'Terms and conditions governing orders, deliveries, hygiene standards, and customer care at TheBloomingHer Care & Wellness Nigeria.',
   alternates: {
-    canonical: 'https://thebloomingher.com/policies/terms',
+    canonical: '/policies/terms',
   },
 };
 

@@ -51,9 +51,9 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   if (!category) notFound();
 
   const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: 'https://thebloomingher.com' },
-    { name: 'Shop', url: 'https://thebloomingher.com/shop' },
-    { name: category.name, url: `https://thebloomingher.com/categories/${category.slug}` },
+    { name: 'Home', url: 'https://www.thebloomingher.com' },
+    { name: 'Shop', url: 'https://www.thebloomingher.com/shop' },
+    { name: category.name, url: `https://www.thebloomingher.com/categories/${category.slug}` },
   ]);
 
   const collectionSchema = {
@@ -61,7 +61,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     '@type': 'CollectionPage',
     name: category.name,
     description: category.description,
-    url: `https://thebloomingher.com/categories/${category.slug}`,
+    url: `https://www.thebloomingher.com/categories/${category.slug}`,
   };
 
   return (

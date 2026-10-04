@@ -12,6 +12,7 @@ import {
   Megaphone,
   Ticket,
   ImageIcon,
+  HelpCircle,
 } from 'lucide-react';
 
 const TABS = [
@@ -21,6 +22,7 @@ const TABS = [
   { label: 'Promotions', href: '/admin/marketing/promotions', icon: Tags },
   { label: 'Events', href: '/admin/marketing/events', icon: Calendar },
   { label: 'Announcements', href: '/admin/marketing/announcements', icon: Megaphone },
+  { label: 'FAQs', href: '/admin/marketing/faqs', icon: HelpCircle },
   { label: 'Coupons', href: '/admin/marketing/coupons', icon: Ticket },
   { label: 'Media', href: '/admin/marketing/media', icon: ImageIcon },
 ];

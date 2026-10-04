@@ -64,9 +64,9 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
   const productSchema = generateProductSchema(product);
   const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: 'https://thebloomingher.com' },
-    { name: product.category_name || 'Shop', url: `https://thebloomingher.com/categories/${product.category_id}` },
-    { name: product.name, url: `https://thebloomingher.com/products/${product.slug}` },
+    { name: 'Home', url: 'https://www.thebloomingher.com' },
+    { name: product.category_name || 'Shop', url: `https://www.thebloomingher.com/categories/${product.category_id}` },
+    { name: product.name, url: `https://www.thebloomingher.com/products/${product.slug}` },
   ]);
 
   return (
