@@ -5,6 +5,7 @@ import {
   FlutterwaveVerifyResponse,
   Order,
   PaymentRecord,
+  RefundStatus,
 } from '@/types';
 import { formatFlutterwaveAmount } from '@/lib/utils/flutterwave';
 
@@ -215,10 +216,12 @@ export class FlutterwaveService {
     }
 
     // 3. Amount & Currency Validation
-    if (verificationData && verificationData.amount !== undefined && verificationData.amount > 0) {
-      const verifiedAmount = Number(verificationData.amount);
-      const expectedAmount = Number(order.total_amount);
+    const verifiedAmount = Number(
+      verificationData?.amount ?? verificationData?.charged_amount ?? order.total_amount
+    );
+    const expectedAmount = Number(order.total_amount);
 
+    if (verificationData && verificationData.amount !== undefined && verificationData.amount > 0) {
       // Verify that the paid amount is greater than or equal to the expected order total
       if (verifiedAmount < expectedAmount) {
         return {
@@ -241,6 +244,16 @@ export class FlutterwaveService {
     const gatewayResponse = verificationData?.processor_response || 'Successful';
     const flwTransactionId = transactionId || (verificationData?.id ? String(verificationData.id) : undefined);
 
+    // Overpayment Calculation (Excess = Math.max(0, verifiedAmount - expectedAmount))
+    const overpaymentAmount = Math.max(0, Math.round(verifiedAmount - expectedAmount));
+    const overpaymentDetails = {
+      amount_paid: verifiedAmount,
+      overpayment_amount: overpaymentAmount,
+      refund_amount_requested: overpaymentAmount > 0 ? overpaymentAmount : 0,
+      refund_amount_completed: 0,
+      refund_status: (overpaymentAmount > 0 ? 'PENDING_REVIEW' : 'NOT_REQUIRED') as RefundStatus,
+    };
+
     // 4. Update Order Status in Database & Store
     const updatedOrder = await orderRepository.updatePaymentStatus(
       order.id,
@@ -249,7 +262,8 @@ export class FlutterwaveService {
       channel,
       paidAt,
       'flutterwave',
-      flwTransactionId
+      flwTransactionId,
+      overpaymentDetails
     );
 
     // 5. Atomic Inventory Deduction
@@ -429,6 +443,96 @@ export class FlutterwaveService {
 
     const amount = refundAmount || order.total_amount;
     const updated = await orderRepository.recordRefund(order.id, amount, reason);
+    return { success: true, order: updated };
+  }
+
+  /**
+   * Reviews an overpayment record and updates its status (APPROVE or REJECT).
+   */
+  async reviewOverpayment(params: {
+    orderId: string;
+    action: 'approve' | 'reject';
+    notes?: string;
+    adminUser?: string;
+  }): Promise<{ success: boolean; order?: Order; error?: string }> {
+    const { orderId, action, notes, adminUser } = params;
+    const order = await orderRepository.getOrderById(orderId);
+    if (!order) {
+      return { success: false, error: 'Order not found.' };
+    }
+
+    const updated = await orderRepository.updateOverpaymentReview({
+      orderId: order.id,
+      action,
+      reviewNotes: notes || (action === 'approve' ? 'Approved by administrator' : 'Rejected by administrator'),
+      reviewedBy: adminUser || 'Admin',
+    });
+
+    return { success: true, order: updated };
+  }
+
+  /**
+   * Processes a refund for an overpayment excess.
+   * Validates requested refund amount against overpayment amount to prevent excessive or duplicate refunds.
+   */
+  async processOverpaymentRefund(params: {
+    orderId: string;
+    refundAmount?: number;
+    reason?: string;
+    adminUser?: string;
+  }): Promise<{ success: boolean; order?: Order; error?: string }> {
+    const { orderId, refundAmount, reason, adminUser } = params;
+    const order = await orderRepository.getOrderById(orderId);
+    if (!order) {
+      return { success: false, error: 'Order not found.' };
+    }
+
+    if (order.refund_status === 'REFUNDED') {
+      return { success: false, error: 'Overpayment refund has already been completed for this order.' };
+    }
+
+    const maxRefundable = order.overpayment_amount || order.refund_amount_requested || (order.amount_paid ? Math.max(0, order.amount_paid - order.total_amount) : 0);
+    const amountToRefund = refundAmount && refundAmount > 0 ? refundAmount : maxRefundable;
+
+    if (amountToRefund <= 0) {
+      return { success: false, error: 'No refundable overpayment amount available.' };
+    }
+
+    if (amountToRefund > maxRefundable) {
+      return { success: false, error: `Refund amount ₦${amountToRefund} exceeds available overpayment excess ₦${maxRefundable}.` };
+    }
+
+    // Call Flutterwave Refund API if transaction ID is present
+    let flwRefundRef: string | undefined = undefined;
+    const secretKey = this.getSecretKey();
+    if (order.flutterwave_transaction_id && secretKey) {
+      try {
+        const flwRes = await fetch(`https://api.flutterwave.com/v3/transactions/${order.flutterwave_transaction_id}/refund`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${secretKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ amount: amountToRefund }),
+        });
+        const flwData = await flwRes.json();
+        if (flwData?.status === 'success' && flwData?.data) {
+          flwRefundRef = String(flwData.data.id || flwData.data.flw_ref || '');
+        }
+      } catch (err) {
+        console.warn('[Flutterwave Overpayment Refund API Warning]:', err);
+      }
+    }
+
+    const updated = await orderRepository.updateOverpaymentReview({
+      orderId: order.id,
+      action: 'process_refund',
+      refundAmountCompleted: amountToRefund,
+      reviewNotes: reason || `Overpayment refund of ₦${amountToRefund} processed successfully.`,
+      reviewedBy: adminUser || 'Admin',
+      refundReference: flwRefundRef,
+    });
+
     return { success: true, order: updated };
   }
 

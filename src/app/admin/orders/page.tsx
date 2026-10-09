@@ -21,6 +21,7 @@ import {
   RotateCcw,
   Ban,
   FileText,
+  AlertTriangle,
 } from 'lucide-react';
 import { Order, OrderStatus, PaymentStatus, PaymentRecord } from '@/types';
 import { formatNaira } from '@/lib/utils/currency';
@@ -191,6 +192,42 @@ export default function AdminOrdersPage() {
     }
   };
 
+  const handleReviewOverpayment = async (
+    orderId: string,
+    action: 'approve_overpayment' | 'reject_overpayment' | 'process_overpayment_refund',
+    reason?: string
+  ) => {
+    setIsReconciling(true);
+    setRecError('');
+    setRecSuccess('');
+    try {
+      const res = await fetch('/api/admin/orders', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId,
+          action,
+          reason: reason || (action === 'approve_overpayment' ? 'Approved overpayment excess for refund' : action === 'reject_overpayment' ? 'Rejected overpayment refund' : 'Processed overpayment refund via gateway'),
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success && data.order) {
+        setOrders(prev => prev.map(o => (o.id === orderId ? data.order : o)));
+        if (selectedOrder?.id === orderId) {
+          setSelectedOrder(data.order);
+        }
+        setRecSuccess(data.message || 'Overpayment status updated successfully.');
+      } else {
+        setRecError(data.error || 'Failed to update overpayment review status.');
+      }
+    } catch (err: any) {
+      setRecError(err.message || 'Error communicating with server.');
+    } finally {
+      setIsReconciling(false);
+    }
+  };
+
   // Metrics Calculations
   const successfulOrders = orders.filter(
     o => o.payment_status === 'successful' || o.payment_status === 'paid'
@@ -203,6 +240,9 @@ export default function AdminOrdersPage() {
   const refundedOrders = orders.filter(o => o.payment_status === 'refunded');
   const failedOrders = orders.filter(
     o => o.payment_status === 'failed' || o.payment_status === 'payment_failed'
+  );
+  const overpaymentOrders = orders.filter(
+    o => (o.overpayment_amount && o.overpayment_amount > 0) || o.refund_status === 'PENDING_REVIEW' || o.refund_status === 'APPROVED'
   );
 
   // Filtered List
@@ -228,6 +268,8 @@ export default function AdminOrdersPage() {
     if (statusFilter === 'failed')
       return order.payment_status === 'failed' || order.payment_status === 'payment_failed';
     if (statusFilter === 'refunded') return order.payment_status === 'refunded';
+    if (statusFilter === 'overpayment')
+      return (order.overpayment_amount && order.overpayment_amount > 0) || order.refund_status === 'PENDING_REVIEW' || order.refund_status === 'APPROVED';
     if (statusFilter === 'processing') return order.order_status === 'processing';
     if (statusFilter === 'shipped') return order.order_status === 'shipped';
     if (statusFilter === 'delivered') return order.order_status === 'delivered';
@@ -726,6 +768,68 @@ export default function AdminOrdersPage() {
                 <span className="text-brand text-base">{formatNaira(selectedOrder.total_amount)}</span>
               </div>
             </div>
+
+            {/* Overpayment Warning & Refund Review Box */}
+            {selectedOrder.overpayment_amount && selectedOrder.overpayment_amount > 0 ? (
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl space-y-3">
+                <div className="flex items-center gap-2 text-amber-900 font-bold text-xs">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                  <span>Overpayment — Refund Review Required</span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs bg-white/70 p-2.5 rounded-xl border border-amber-200/60">
+                  <div>
+                    <span className="text-amber-800 text-[10px] block font-medium">Order Total</span>
+                    <span className="font-bold text-amber-950 block">{formatNaira(selectedOrder.total_amount)}</span>
+                  </div>
+                  <div>
+                    <span className="text-amber-800 text-[10px] block font-medium">Amount Received</span>
+                    <span className="font-bold text-amber-950 block">{formatNaira(selectedOrder.amount_paid || selectedOrder.total_amount)}</span>
+                  </div>
+                  <div>
+                    <span className="text-amber-800 text-[10px] block font-medium">Excess Amount</span>
+                    <span className="font-bold text-amber-700 block">{formatNaira(selectedOrder.overpayment_amount)}</span>
+                  </div>
+                  <div>
+                    <span className="text-amber-800 text-[10px] block font-medium">Refund Status</span>
+                    <span className="font-bold text-amber-900 block uppercase">{selectedOrder.refund_status || 'PENDING_REVIEW'}</span>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  {(selectedOrder.refund_status === 'PENDING_REVIEW' || !selectedOrder.refund_status) && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => handleReviewOverpayment(selectedOrder.id, 'approve_overpayment')}
+                        disabled={isReconciling}
+                        className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-all"
+                      >
+                        Approve Refund
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleReviewOverpayment(selectedOrder.id, 'reject_overpayment')}
+                        disabled={isReconciling}
+                        className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl transition-all"
+                      >
+                        Reject Request
+                      </button>
+                    </>
+                  )}
+
+                  {(selectedOrder.refund_status === 'APPROVED' || selectedOrder.refund_status === 'PENDING_REVIEW') && (
+                    <button
+                      type="button"
+                      onClick={() => handleReviewOverpayment(selectedOrder.id, 'process_overpayment_refund')}
+                      disabled={isReconciling}
+                      className="px-3 py-1.5 bg-brand hover:bg-brand-hover text-white font-bold text-xs rounded-xl transition-all"
+                    >
+                      Process Refund via Gateway ({formatNaira(selectedOrder.overpayment_amount)})
+                    </button>
+                  )}
+                </div>
+              </div>
+            ) : null}
 
             {/* Admin Refund Drawer (If order is successful and not yet refunded) */}
             {(selectedOrder.payment_status === 'successful' || selectedOrder.payment_status === 'paid') && (

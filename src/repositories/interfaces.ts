@@ -46,9 +46,18 @@ export interface IOrderRepository {
     channel?: string,
     paidAt?: string,
     paymentProvider?: string,
-    transactionId?: string
+    transactionId?: string,
+    overpaymentDetails?: any
   ): Promise<Order>;
   updateOrderStatus(orderId: string, status: OrderStatus): Promise<Order>;
+  updateOverpaymentReview(params: {
+    orderId: string;
+    action: 'approve' | 'reject' | 'process_refund';
+    refundAmountCompleted?: number;
+    reviewNotes?: string;
+    reviewedBy?: string;
+    refundReference?: string;
+  }): Promise<Order>;
   getAllOrders(): Promise<Order[]>;
   savePayment(payment: PaymentRecord): Promise<PaymentRecord>;
   getPaymentByReference(reference: string): Promise<PaymentRecord | null>;

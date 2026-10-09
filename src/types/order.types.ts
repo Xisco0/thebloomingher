@@ -51,6 +51,15 @@ export interface OrderItem {
   image_url?: string;
 }
 
+export type RefundStatus =
+  | 'NOT_REQUIRED'
+  | 'PENDING_REVIEW'
+  | 'APPROVED'
+  | 'PROCESSING'
+  | 'REFUNDED'
+  | 'FAILED'
+  | 'REJECTED';
+
 export interface Order {
   id: string;
   order_number: string;
@@ -82,6 +91,17 @@ export interface Order {
   refunded_at?: string | null;
   refund_amount?: number | null;
   refund_reason?: string | null;
+
+  // Overpayment & Refund Review Fields
+  amount_paid?: number | null;
+  overpayment_amount?: number | null;
+  refund_amount_requested?: number | null;
+  refund_amount_completed?: number | null;
+  refund_status?: RefundStatus | null;
+  review_notes?: string | null;
+  reviewed_by?: string | null;
+  reviewed_at?: string | null;
+
   notes?: string | null;
   items: OrderItem[];
   created_at: string;
@@ -105,6 +125,17 @@ export interface PaymentRecord {
   refunded_at?: string | null;
   refund_amount?: number | null;
   refund_reason?: string | null;
+
+  // Overpayment & Refund Review Fields
+  amount_paid?: number | null;
+  overpayment_amount?: number | null;
+  refund_amount_requested?: number | null;
+  refund_amount_completed?: number | null;
+  refund_status?: RefundStatus | null;
+  review_notes?: string | null;
+  reviewed_by?: string | null;
+  reviewed_at?: string | null;
+
   metadata?: Record<string, any>;
   created_at: string;
   updated_at: string;

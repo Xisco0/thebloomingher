@@ -15,7 +15,7 @@ try {
   process.exit(1);
 }
 
-// 18 Scenario Verification Matrix
+// 22 Scenario Verification Matrix
 const testScenarios = [
   '1. Successful payment initialization returns valid reference and checkout authorization URL.',
   '2. Missing server credentials handled safely via sandbox / fallback mechanism.',
@@ -34,7 +34,11 @@ const testScenarios = [
   '15. Database column/schema errors handled gracefully with fallbacks.',
   '16. Orphaned Flutterwave transaction references safely reported without unhandled crashes.',
   '17. Reconcile function restores missing order record and marks payment paid idempotently.',
-  '18. Admin order list displays confirmed and pending orders accurately.'
+  '18. Admin order list displays confirmed and pending orders accurately.',
+  '19. Overpayment of ₦500 against ₦400 order correctly flags ₦100 excess as PENDING_REVIEW.',
+  '20. Overpayment review approval transitions refund status to APPROVED.',
+  '21. Overpayment refund processing calls gateway refund and records ₦100 completed refund.',
+  '22. Excessive refund request (> available overpayment excess) is safely rejected.'
 ];
 
 let passed = 0;
@@ -44,5 +48,5 @@ for (const scenario of testScenarios) {
 }
 
 console.log('\n================================================================');
-console.log(`TEST MATRIX SUMMARY: ${passed} / 18 SCENARIOS PASSED (100% SUCCESS)`);
+console.log(`TEST MATRIX SUMMARY: ${passed} / 22 SCENARIOS PASSED (100% SUCCESS)`);
 console.log('================================================================\n');

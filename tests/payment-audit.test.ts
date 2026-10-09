@@ -212,5 +212,73 @@ export async function runAuditTests() {
   const orders = await orderRepo.getAllOrders();
   assert(Array.isArray(orders) && orders.length > 0, 'Scenario 18 failed');
 
-  console.log('✔ ALL 18 SCENARIOS EXECUTED AND PASSED 100% CLEANLY!');
+  // 19: Overpayment Detection (₦500 paid for ₦400 order)
+  const o19 = await orderRepo.createOrder({
+    customerName: 'Overpay Customer',
+    customerEmail: 'overpay@test.com',
+    customerPhone: '+2348000000000',
+    deliveryType: 'shipping',
+    shippingAddress: dummyAddress,
+    items: [{ productId: 'p1', productName: 'Item 1', unitPrice: 400, quantity: 1 }],
+    deliveryFee: 0,
+    paymentProvider: 'flutterwave',
+    paymentReference: 'TBH-OVERPAY-019',
+  }, 'TBH-ORD-019');
+
+  const res19 = await flwService.processSuccessfulPayment('TBH-OVERPAY-019', { amount: 500, currency: 'NGN' });
+  assert(
+    res19.success === true &&
+    res19.order?.payment_status === 'successful' &&
+    res19.order?.amount_paid === 500 &&
+    res19.order?.overpayment_amount === 100 &&
+    res19.order?.refund_status === 'PENDING_REVIEW',
+    'Scenario 19 failed: Overpayment calculation mismatch'
+  );
+
+  // 20: Overpayment Review Approval
+  const res20 = await flwService.reviewOverpayment({
+    orderId: o19.id,
+    action: 'approve',
+    notes: 'Approved excess ₦100 refund',
+    adminUser: 'admin@thebloomingher.com',
+  });
+  assert(
+    res20.success === true && res20.order?.refund_status === 'APPROVED',
+    'Scenario 20 failed: Overpayment approval review failed'
+  );
+
+  // 21: Overpayment Refund Processing
+  const res21 = await flwService.processOverpaymentRefund({
+    orderId: o19.id,
+    refundAmount: 100,
+    reason: 'Returned ₦100 overpayment excess to customer',
+    adminUser: 'admin@thebloomingher.com',
+  });
+  assert(
+    res21.success === true &&
+    res21.order?.refund_status === 'REFUNDED' &&
+    res21.order?.refund_amount_completed === 100,
+    'Scenario 21 failed: Overpayment refund processing failed'
+  );
+
+  // 22: Reject Excessive Refund Request (> Overpayment Amount)
+  const o22 = await orderRepo.createOrder({
+    customerName: 'Excessive Refund Test',
+    customerEmail: 'excessive@test.com',
+    customerPhone: '+2348000000000',
+    deliveryType: 'shipping',
+    shippingAddress: dummyAddress,
+    items: [{ productId: 'p1', productName: 'Item 1', unitPrice: 400, quantity: 1 }],
+    deliveryFee: 0,
+    paymentProvider: 'flutterwave',
+    paymentReference: 'TBH-OVERPAY-022',
+  }, 'TBH-ORD-022');
+  await flwService.processSuccessfulPayment('TBH-OVERPAY-022', { amount: 500, currency: 'NGN' });
+  const res22 = await flwService.processOverpaymentRefund({
+    orderId: o22.id,
+    refundAmount: 300, // Exceeds ₦100 overpayment
+  });
+  assert(res22.success === false, 'Scenario 22 failed: Excessive refund attempt should be rejected');
+
+  console.log('✔ ALL 22 SCENARIOS EXECUTED AND PASSED 100% CLEANLY!');
 }

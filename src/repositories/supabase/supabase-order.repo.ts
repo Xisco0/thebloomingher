@@ -31,6 +31,23 @@ export class SupabaseOrderRepository implements IOrderRepository {
     const paymentStatus = this.normalizePaymentStatus(dbOrder.payment_status);
     const orderStatus = dbOrder.order_status || dbOrder.status || (paymentStatus === 'successful' ? 'processing' : 'pending');
 
+    let overpaymentMeta: any = {};
+    if (typeof dbOrder.notes === 'string' && dbOrder.notes.trim().startsWith('{')) {
+      try {
+        overpaymentMeta = JSON.parse(dbOrder.notes);
+      } catch (e) {}
+    }
+
+    const overpaymentAmt = Number(
+      dbOrder.overpayment_amount ?? overpaymentMeta.overpayment_amount ?? 0
+    );
+
+    const refStatus = (
+      dbOrder.refund_status ||
+      overpaymentMeta.refund_status ||
+      (overpaymentAmt > 0 ? 'PENDING_REVIEW' : 'NOT_REQUIRED')
+    ) as any;
+
     return {
       id: dbOrder.id,
       order_number: dbOrder.order_number,
@@ -65,6 +82,17 @@ export class SupabaseOrderRepository implements IOrderRepository {
       refunded_at: dbOrder.refunded_at || null,
       refund_amount: dbOrder.refund_amount ? Number(dbOrder.refund_amount) : null,
       refund_reason: dbOrder.refund_reason || null,
+
+      // Overpayment & Refund Review Fields
+      amount_paid: Number(dbOrder.amount_paid ?? overpaymentMeta.amount_paid ?? dbOrder.total_amount ?? 0),
+      overpayment_amount: overpaymentAmt,
+      refund_amount_requested: Number(dbOrder.refund_amount_requested ?? overpaymentMeta.refund_amount_requested ?? (overpaymentAmt > 0 ? overpaymentAmt : 0)),
+      refund_amount_completed: Number(dbOrder.refund_amount_completed ?? dbOrder.refund_amount ?? overpaymentMeta.refund_amount_completed ?? 0),
+      refund_status: refStatus,
+      review_notes: dbOrder.review_notes || overpaymentMeta.review_notes || dbOrder.refund_reason || null,
+      reviewed_by: dbOrder.reviewed_by || overpaymentMeta.reviewed_by || null,
+      reviewed_at: dbOrder.reviewed_at || overpaymentMeta.reviewed_at || null,
+
       notes: dbOrder.notes || null,
       items: (dbItems || []).map((it: any) => ({
         id: it.id,
@@ -371,7 +399,17 @@ export class SupabaseOrderRepository implements IOrderRepository {
     channel?: string,
     paidAt?: string,
     paymentProvider?: string,
-    transactionId?: string
+    transactionId?: string,
+    overpaymentDetails?: {
+      amount_paid?: number;
+      overpayment_amount?: number;
+      refund_amount_requested?: number;
+      refund_amount_completed?: number;
+      refund_status?: any;
+      review_notes?: string;
+      reviewed_by?: string;
+      reviewed_at?: string;
+    }
   ): Promise<Order> {
     let order = await this.getOrderById(orderId);
     if (!order) {
@@ -420,6 +458,17 @@ export class SupabaseOrderRepository implements IOrderRepository {
       order.flutterwave_transaction_id = transactionId;
     }
 
+    if (overpaymentDetails) {
+      if (overpaymentDetails.amount_paid !== undefined) order.amount_paid = overpaymentDetails.amount_paid;
+      if (overpaymentDetails.overpayment_amount !== undefined) order.overpayment_amount = overpaymentDetails.overpayment_amount;
+      if (overpaymentDetails.refund_amount_requested !== undefined) order.refund_amount_requested = overpaymentDetails.refund_amount_requested;
+      if (overpaymentDetails.refund_amount_completed !== undefined) order.refund_amount_completed = overpaymentDetails.refund_amount_completed;
+      if (overpaymentDetails.refund_status !== undefined) order.refund_status = overpaymentDetails.refund_status;
+      if (overpaymentDetails.review_notes !== undefined) order.review_notes = overpaymentDetails.review_notes;
+      if (overpaymentDetails.reviewed_by !== undefined) order.reviewed_by = overpaymentDetails.reviewed_by;
+      if (overpaymentDetails.reviewed_at !== undefined) order.reviewed_at = overpaymentDetails.reviewed_at;
+    }
+
     order.updated_at = nowIso;
     this.ordersStore.set(order.id, order);
     this.ordersStore.set(order.order_number, order);
@@ -450,6 +499,21 @@ export class SupabaseOrderRepository implements IOrderRepository {
         updated_at: order.updated_at,
       };
 
+      if (order.overpayment_amount && order.overpayment_amount > 0) {
+        const metaObj = {
+          amount_paid: order.amount_paid,
+          overpayment_amount: order.overpayment_amount,
+          refund_amount_requested: order.refund_amount_requested,
+          refund_amount_completed: order.refund_amount_completed,
+          refund_status: order.refund_status,
+          review_notes: order.review_notes,
+          reviewed_by: order.reviewed_by,
+          reviewed_at: order.reviewed_at,
+        };
+        updatePayload.notes = JSON.stringify(metaObj);
+        updatePayload.refund_reason = `Overpayment (${order.refund_status}): Excess ₦${order.overpayment_amount}`;
+      }
+
       let { error: updateError } = await supabaseAdmin
         .from('orders')
         .update(updatePayload)
@@ -463,6 +527,88 @@ export class SupabaseOrderRepository implements IOrderRepository {
       }
     } catch (dbErr) {
       console.warn('[SupabaseOrderRepository] Error updating payment status in Supabase:', dbErr);
+    }
+
+    return order;
+  }
+
+  async updateOverpaymentReview(params: {
+    orderId: string;
+    action: 'approve' | 'reject' | 'process_refund';
+    refundAmountCompleted?: number;
+    reviewNotes?: string;
+    reviewedBy?: string;
+    refundReference?: string;
+  }): Promise<Order> {
+    let order = await this.getOrderById(params.orderId);
+    if (!order) {
+      order = await this.getOrderByNumber(params.orderId);
+    }
+    if (!order) {
+      throw new Error(`Order #${params.orderId} not found`);
+    }
+
+    const nowIso = new Date().toISOString();
+    order.reviewed_at = nowIso;
+    if (params.reviewedBy) order.reviewed_by = params.reviewedBy;
+    if (params.reviewNotes) order.review_notes = params.reviewNotes;
+
+    if (params.action === 'approve') {
+      order.refund_status = 'APPROVED';
+    } else if (params.action === 'reject') {
+      order.refund_status = 'REJECTED';
+    } else if (params.action === 'process_refund') {
+      order.refund_status = 'REFUNDED';
+      order.refund_amount_completed = params.refundAmountCompleted || order.refund_amount_requested || order.overpayment_amount || 0;
+      order.refunded_at = nowIso;
+      order.refund_amount = order.refund_amount_completed;
+      order.refund_reason = params.reviewNotes || `Overpayment refund processed: ₦${order.refund_amount_completed}`;
+    }
+
+    order.updated_at = nowIso;
+    this.ordersStore.set(order.id, order);
+    this.ordersStore.set(order.order_number, order);
+
+    const metaObj = {
+      amount_paid: order.amount_paid,
+      overpayment_amount: order.overpayment_amount,
+      refund_amount_requested: order.refund_amount_requested,
+      refund_amount_completed: order.refund_amount_completed,
+      refund_status: order.refund_status,
+      review_notes: order.review_notes,
+      reviewed_by: order.reviewed_by,
+      reviewed_at: order.reviewed_at,
+    };
+
+    try {
+      const updatePayload: Record<string, any> = {
+        notes: JSON.stringify(metaObj),
+        refund_reason: order.refund_reason || `Overpayment (${order.refund_status}): Excess ₦${order.overpayment_amount}`,
+        updated_at: nowIso,
+      };
+
+      if (params.action === 'process_refund') {
+        updatePayload.refunded_at = nowIso;
+        updatePayload.refund_amount = order.refund_amount_completed;
+      }
+
+      await supabaseAdmin
+        .from('orders')
+        .update(updatePayload)
+        .eq('id', order.id);
+
+      await supabaseAdmin
+        .from('payments')
+        .update({
+          refund_amount: order.refund_amount_completed || undefined,
+          refund_reason: order.refund_reason || undefined,
+          refunded_at: order.refunded_at || undefined,
+          metadata: metaObj,
+          updated_at: nowIso,
+        })
+        .eq('order_id', order.id);
+    } catch (e) {
+      console.warn('[SupabaseOrderRepository] Error updating overpayment review:', e);
     }
 
     return order;
