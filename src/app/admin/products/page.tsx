@@ -25,6 +25,7 @@ import { DeleteConfirmModal } from '@/components/admin/DeleteConfirmModal';
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<any[]>(catalogData.categories);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -47,8 +48,21 @@ export default function AdminProductsPage() {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch('/api/admin/categories');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.categories) && data.categories.length > 0) {
+        setCategories(data.categories);
+      }
+    } catch (err) {
+      console.error('Failed to load categories:', err);
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
+    fetchCategories();
   }, []);
 
   const confirmDelete = async () => {
@@ -169,7 +183,7 @@ export default function AdminProductsPage() {
             className="px-3 py-2.5 bg-surface border border-border rounded-xl text-xs text-text-main focus:outline-brand font-medium min-h-[44px] flex-1 xs:flex-initial"
           >
             <option value="all">All Categories ({products.length})</option>
-            {catalogData.categories.map(c => (
+            {categories.map((c: any) => (
               <option key={c.id} value={c.id}>
                 {c.name}
               </option>

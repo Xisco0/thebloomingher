@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -26,6 +26,22 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
   const [deleting, setDeleting] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [categories, setCategories] = useState<any[]>(catalogData.categories);
+
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const res = await fetch('/api/admin/categories');
+        const data = await res.json();
+        if (data.success && Array.isArray(data.categories) && data.categories.length > 0) {
+          setCategories(data.categories);
+        }
+      } catch (err) {
+        console.error('Failed to load dynamic categories:', err);
+      }
+    }
+    fetchCategories();
+  }, []);
 
   const [formData, setFormData] = useState({
     id: initialProduct?.id || '',
@@ -65,7 +81,7 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const catId = e.target.value;
-    const cat = catalogData.categories.find(c => c.id === catId);
+    const cat = categories.find((c: any) => c.id === catId);
     setFormData(prev => ({
       ...prev,
       category_id: catId,
@@ -225,7 +241,7 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
                 onChange={handleCategoryChange}
                 className="w-full px-3.5 py-2.5 bg-surface-muted/40 border border-border rounded-xl text-xs font-sans text-text-main focus:outline-brand"
               >
-                {catalogData.categories.map(c => (
+                {categories.map((c: any) => (
                   <option key={c.id} value={c.id}>
                     {c.name}
                   </option>

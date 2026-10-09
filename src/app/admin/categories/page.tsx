@@ -17,12 +17,15 @@ import { Category } from '@/types';
 import catalogData from '@/lib/data/catalog.json';
 import { ImageUploader } from '@/components/admin/ImageUploader';
 import { ProductSubNav } from '@/components/admin/subnav/ProductSubNav';
+import { DeleteConfirmModal } from '@/components/admin/DeleteConfirmModal';
 
 export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [isNew, setIsNew] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchCategories = async () => {
     setLoading(true);
@@ -79,6 +82,30 @@ export default function AdminCategoriesPage() {
       }
     } catch (err) {
       console.error('Failed to save category:', err);
+    }
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!categoryToDelete) return;
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/admin/categories?id=${categoryToDelete.id}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (data.success) {
+        setCategories(prev => prev.filter(c => c.id !== categoryToDelete.id));
+        if (editingCategory && editingCategory.id === categoryToDelete.id) {
+          setEditingCategory(null);
+        }
+        setCategoryToDelete(null);
+      } else {
+        alert(data.error || 'Failed to delete category.');
+      }
+    } catch (err) {
+      console.error('Failed to delete category:', err);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -174,24 +201,37 @@ export default function AdminCategoriesPage() {
               />
             </div>
 
-            <div className="sm:col-span-2 flex justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setEditingCategory(null);
-                  setIsNew(false);
-                }}
-                className="px-4 py-2 border border-border rounded-xl text-xs font-semibold text-text-body"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-5 py-2 bg-brand text-white font-bold text-xs rounded-xl hover:bg-brand-dark flex items-center gap-1.5"
-              >
-                <Save className="w-3.5 h-3.5" />
-                <span>Save Category</span>
-              </button>
+            <div className="sm:col-span-2 flex items-center justify-between pt-2">
+              {!isNew ? (
+                <button
+                  type="button"
+                  onClick={() => setCategoryToDelete(editingCategory)}
+                  className="px-3.5 py-2 border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold text-xs rounded-xl flex items-center gap-1.5 transition-colors"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Delete Category</span>
+                </button>
+              ) : <div />}
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingCategory(null);
+                    setIsNew(false);
+                  }}
+                  className="px-4 py-2 border border-border rounded-xl text-xs font-semibold text-text-body"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-brand text-white font-bold text-xs rounded-xl hover:bg-brand-dark flex items-center gap-1.5"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  <span>Save Category</span>
+                </button>
+              </div>
             </div>
           </form>
         </div>
@@ -236,20 +276,45 @@ export default function AdminCategoriesPage() {
                 <ExternalLink className="w-3 h-3" />
               </Link>
 
-              <button
-                onClick={() => {
-                  setEditingCategory(category);
-                  setIsNew(false);
-                }}
-                className="p-1.5 text-text-muted hover:text-brand hover:bg-surface-muted rounded-lg transition-colors flex items-center gap-1 text-xs font-semibold"
-              >
-                <Edit className="w-3.5 h-3.5" />
-                <span>Edit</span>
-              </button>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => {
+                    setEditingCategory(category);
+                    setIsNew(false);
+                  }}
+                  className="p-1.5 text-text-muted hover:text-brand hover:bg-surface-muted rounded-lg transition-colors flex items-center gap-1 text-xs font-semibold"
+                >
+                  <Edit className="w-3.5 h-3.5" />
+                  <span>Edit</span>
+                </button>
+                <button
+                  onClick={() => setCategoryToDelete(category)}
+                  className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors flex items-center gap-1 text-xs font-semibold"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Delete</span>
+                </button>
+              </div>
             </div>
           </div>
         ))}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={!!categoryToDelete}
+        onClose={() => {
+          if (!deleting) setCategoryToDelete(null);
+        }}
+        onConfirm={handleDeleteConfirm}
+        loading={deleting}
+        title="Delete Category?"
+        itemTitle={categoryToDelete?.name || ''}
+        itemSubtitle={categoryToDelete?.slug ? `/categories/${categoryToDelete.slug}` : undefined}
+        itemImage={categoryToDelete?.image_url || '/images/logo.jpg'}
+        message={`Are you sure you want to delete "${categoryToDelete?.name}"? It will be removed from your store and admin categories list.`}
+        confirmLabel="Yes, Delete Category"
+      />
     </div>
   );
 }
