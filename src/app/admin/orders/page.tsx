@@ -129,6 +129,12 @@ export default function AdminOrdersPage() {
   }, []);
 
   const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
+    const targetOrder = orders.find(o => o.id === orderId);
+    if (targetOrder && targetOrder.payment_status !== 'paid' && targetOrder.payment_status !== 'successful') {
+      alert('Fulfillment status cannot be updated until payment is confirmed.');
+      return;
+    }
+
     setUpdatingId(orderId);
     try {
       const res = await fetch('/api/admin/orders', {
@@ -485,21 +491,31 @@ export default function AdminOrdersPage() {
                       </td>
 
                       <td className="py-4 px-4">
-                        <select
-                          value={order.order_status}
-                          onChange={e =>
-                            handleStatusChange(order.id, e.target.value as OrderStatus)
-                          }
-                          disabled={updatingId === order.id}
-                          className="px-2.5 py-1 rounded-lg border border-border bg-surface text-text-main text-xs focus:outline-none focus:border-brand cursor-pointer"
-                        >
-                          <option value="pending">Pending</option>
-                          <option value="processing">Processing</option>
-                          <option value="shipped">Shipped</option>
-                          <option value="delivered">Delivered</option>
-                          <option value="cancelled">Cancelled</option>
-                          <option value="refunded">Refunded</option>
-                        </select>
+                        {(() => {
+                          const isPaid = order.payment_status === 'paid' || order.payment_status === 'successful';
+                          return (
+                            <select
+                              value={order.order_status}
+                              onChange={e =>
+                                handleStatusChange(order.id, e.target.value as OrderStatus)
+                              }
+                              disabled={updatingId === order.id || !isPaid}
+                              title={!isPaid ? 'Payment must be confirmed before updating fulfillment status' : 'Change order status'}
+                              className={`px-2.5 py-1 rounded-lg border text-xs focus:outline-none ${
+                                !isPaid
+                                  ? 'opacity-50 cursor-not-allowed bg-surface-muted text-text-muted border-border'
+                                  : 'bg-surface text-text-main border-border focus:border-brand cursor-pointer'
+                              }`}
+                            >
+                              <option value="pending">Pending</option>
+                              <option value="processing">Processing</option>
+                              <option value="shipped">Shipped</option>
+                              <option value="delivered">Delivered</option>
+                              <option value="cancelled">Cancelled</option>
+                              <option value="refunded">Refunded</option>
+                            </select>
+                          );
+                        })()}
                       </td>
 
                       <td className="py-4 px-4">

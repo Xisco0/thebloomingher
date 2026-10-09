@@ -70,6 +70,16 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
+    const targetOrder = await orderRepository.getOrderById(orderId);
+    if (targetOrder && targetOrder.payment_status !== 'paid' && targetOrder.payment_status !== 'successful') {
+      if (['processing', 'shipped', 'delivered'].includes(orderStatus)) {
+        return NextResponse.json(
+          { success: false, error: 'Fulfillment status cannot be updated until payment is confirmed.' },
+          { status: 400 }
+        );
+      }
+    }
+
     const validStatuses: OrderStatus[] = [
       'pending',
       'paid',
