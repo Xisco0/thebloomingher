@@ -233,7 +233,7 @@ export default function CustomerAccountDashboard() {
                 {customer.first_name} {customer.last_name}
               </h1>
               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-brand-light text-brand">
-                Member
+                Customer
               </span>
             </div>
             <p className="text-xs text-text-muted mt-0.5 flex items-center gap-1.5">

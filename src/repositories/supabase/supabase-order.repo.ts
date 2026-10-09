@@ -139,47 +139,88 @@ export class SupabaseOrderRepository implements IOrderRepository {
 
     // 2. Resilient Persistence to Supabase
     try {
-      const basePayload: any = {
+      // Validate customer_id to prevent foreign key constraint violations
+      let validCustomerId: string | null = null;
+      if (newOrder.customer_id) {
+        try {
+          const { data: custData } = await supabaseAdmin
+            .from('customers')
+            .select('id')
+            .or(`id.eq.${newOrder.customer_id},email.eq.${newOrder.customer_email}`)
+            .maybeSingle();
+          if (custData) {
+            validCustomerId = custData.id;
+          }
+        } catch (e) {}
+      } else if (newOrder.customer_email) {
+        try {
+          const { data: custData } = await supabaseAdmin
+            .from('customers')
+            .select('id')
+            .eq('email', newOrder.customer_email)
+            .maybeSingle();
+          if (custData) {
+            validCustomerId = custData.id;
+          }
+        } catch (e) {}
+      }
+
+      const formattedShippingAddress = typeof newOrder.shipping_address === 'string'
+        ? newOrder.shipping_address
+        : JSON.stringify(newOrder.shipping_address || {});
+
+      const dbPayload: any = {
         id: newOrder.id,
         order_number: newOrder.order_number,
-        customer_id: newOrder.customer_id,
+        customer_id: validCustomerId,
         customer_name: newOrder.customer_name,
         customer_email: newOrder.customer_email,
         customer_phone: newOrder.customer_phone,
+        shipping_address: formattedShippingAddress,
         subtotal: newOrder.subtotal_amount,
-        discount_amount: newOrder.discount_amount,
         shipping_fee: newOrder.delivery_fee,
+        discount_amount: newOrder.discount_amount,
         total_amount: newOrder.total_amount,
         currency: newOrder.currency,
         status: 'pending',
-        payment_status: 'pending',
+        order_status: 'pending',
+        payment_status: 'unpaid',
         payment_method: provider,
-        paystack_reference: primaryReference,
-        shipping_address: newOrder.shipping_address,
+        payment_provider: provider,
+        payment_reference: primaryReference,
+        flutterwave_reference: newOrder.flutterwave_reference || primaryReference,
+        flutterwave_authorization_url: newOrder.flutterwave_authorization_url,
+        paystack_reference: newOrder.paystack_reference || primaryReference,
+        paystack_access_code: newOrder.paystack_access_code,
+        paystack_authorization_url: newOrder.paystack_authorization_url,
         notes: newOrder.notes,
         created_at: newOrder.created_at,
         updated_at: newOrder.updated_at,
       };
 
-      const extendedPayload: any = {
-        ...basePayload,
-        payment_provider: provider,
-        payment_reference: primaryReference,
-        flutterwave_reference: newOrder.flutterwave_reference || primaryReference,
-        flutterwave_authorization_url: newOrder.flutterwave_authorization_url,
-      };
+      let { error: orderError } = await supabaseAdmin.from('orders').insert(dbPayload);
 
-      // Try inserting with extended schema columns
-      let { error: orderError } = await supabaseAdmin.from('orders').insert(extendedPayload);
-
-      // Fallback if extended columns are not yet in Supabase schema cache
+      // Fallback if any missing fields caused insert failure
       if (orderError) {
-        const { error: fallbackError } = await supabaseAdmin.from('orders').insert(basePayload);
-        if (!fallbackError) {
-          orderError = null;
-        } else {
-          console.warn('[SupabaseOrderRepository] Order insert fallback error:', fallbackError);
-        }
+        console.warn('[SupabaseOrderRepository] Primary insert error:', orderError);
+        const fallbackPayload: any = {
+          id: newOrder.id,
+          order_number: newOrder.order_number,
+          customer_name: newOrder.customer_name,
+          customer_email: newOrder.customer_email,
+          customer_phone: newOrder.customer_phone,
+          shipping_address: formattedShippingAddress,
+          subtotal: newOrder.subtotal_amount,
+          shipping_fee: newOrder.delivery_fee,
+          total_amount: newOrder.total_amount,
+          payment_status: 'unpaid',
+          order_status: 'pending',
+          paystack_reference: primaryReference,
+          created_at: newOrder.created_at,
+          updated_at: newOrder.updated_at,
+        };
+        const { error: fbErr } = await supabaseAdmin.from('orders').insert(fallbackPayload);
+        if (!fbErr) orderError = null;
       }
 
       // Insert order items
@@ -393,15 +434,11 @@ export class SupabaseOrderRepository implements IOrderRepository {
 
       const dbOrderStatus = order.order_status;
 
-      const baseUpdate: Record<string, any> = {
+      const updatePayload: Record<string, any> = {
         payment_status: dbPaymentStatus,
         status: dbOrderStatus,
+        order_status: dbOrderStatus,
         paystack_reference: order.payment_reference || reference,
-        updated_at: order.updated_at,
-      };
-
-      const extendedUpdate: Record<string, any> = {
-        ...baseUpdate,
         payment_reference: order.payment_reference || reference,
         flutterwave_reference: order.flutterwave_reference || reference,
         payment_provider: order.payment_provider || paymentProvider,
@@ -410,18 +447,19 @@ export class SupabaseOrderRepository implements IOrderRepository {
         abandoned_at: order.abandoned_at,
         refunded_at: order.refunded_at,
         flutterwave_transaction_id: order.flutterwave_transaction_id || transactionId,
+        updated_at: order.updated_at,
       };
 
-      const { error: updateError } = await supabaseAdmin
+      let { error: updateError } = await supabaseAdmin
         .from('orders')
-        .update(extendedUpdate)
+        .update(updatePayload)
         .eq('id', order.id);
 
-      if (updateError) {
+      if (updateError && order.order_number) {
         await supabaseAdmin
           .from('orders')
-          .update(baseUpdate)
-          .eq('id', order.id);
+          .update(updatePayload)
+          .eq('order_number', order.order_number);
       }
     } catch (dbErr) {
       console.warn('[SupabaseOrderRepository] Error updating payment status in Supabase:', dbErr);
@@ -440,23 +478,41 @@ export class SupabaseOrderRepository implements IOrderRepository {
     }
 
     order.order_status = status;
+    if (status === 'paid' || status === 'processing') {
+      order.payment_status = 'successful';
+      order.paid_at = order.paid_at || new Date().toISOString();
+    }
     order.updated_at = new Date().toISOString();
 
     this.ordersStore.set(order.id, order);
     this.ordersStore.set(order.order_number, order);
 
     try {
-      const allowedDbStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled', 'abandoned', 'refunded'];
+      const allowedDbStatuses = ['pending', 'paid', 'processing', 'shipped', 'delivered', 'cancelled', 'abandoned', 'refunded'];
       const dbStatus = allowedDbStatuses.includes(status) ? status : 'pending';
 
-      await supabaseAdmin
+      const updateData: Record<string, any> = {
+        status: dbStatus,
+        order_status: dbStatus,
+        updated_at: order.updated_at,
+      };
+
+      if (status === 'paid' || status === 'processing') {
+        updateData.payment_status = 'paid';
+        if (order.paid_at) updateData.paid_at = order.paid_at;
+      }
+
+      let { error: updateError } = await supabaseAdmin
         .from('orders')
-        .update({
-          status: dbStatus,
-          order_status: dbStatus,
-          updated_at: order.updated_at,
-        })
+        .update(updateData)
         .eq('id', order.id);
+
+      if (updateError && order.order_number) {
+        await supabaseAdmin
+          .from('orders')
+          .update(updateData)
+          .eq('order_number', order.order_number);
+      }
     } catch (dbErr) {
       console.warn('[SupabaseOrderRepository] Error updating order status in Supabase:', dbErr);
     }

@@ -19,6 +19,7 @@ import { orderService } from '@/services';
 import { formatNaira } from '@/lib/utils/currency';
 import { generateWhatsAppOrderLink } from '@/lib/utils/whatsapp';
 import { STORE_PICKUP_LOCATION } from '@/lib/utils/nigeria-data';
+import ClearCartHandler from '../ClearCartHandler';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -126,6 +127,7 @@ export default async function OrderConfirmationPage({
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
+      <ClearCartHandler />
       {/* Header Status Card */}
       <div className="bg-surface rounded-3xl p-6 sm:p-10 border border-border/80 shadow-subtle text-center space-y-4 mb-8">
         <div className={`w-20 h-20 ${iconBgColor} rounded-full flex items-center justify-center mx-auto shadow-xs`}>

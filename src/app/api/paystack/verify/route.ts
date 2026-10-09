@@ -1,5 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { paystackService, orderService } from '@/services';
+
+export const dynamic = 'force-dynamic';
+
+function triggerRevalidation(orderNumber?: string) {
+  try {
+    revalidatePath('/account');
+    revalidatePath('/admin/orders');
+    revalidatePath('/admin');
+    revalidatePath('/admin/inventory');
+    if (orderNumber) {
+      revalidatePath(`/order-confirmation/${orderNumber}`);
+    }
+  } catch (e) {
+    // Non-fatal if executed outside Next cache lifecycle
+  }
+}
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -28,6 +45,8 @@ export async function GET(req: NextRequest) {
         new URL(`/checkout?error=order_not_found&ref=${encodeURIComponent(reference)}`, req.url)
       );
     }
+
+    triggerRevalidation(result.order.order_number);
 
     // 3. Redirect customer to order confirmation page with secure verification token
     const confirmationUrl = new URL(`/order-confirmation/${result.order.order_number}`, req.url);

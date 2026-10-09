@@ -42,14 +42,74 @@ export default function AdminOrdersPage() {
   const [refundLoading, setRefundLoading] = useState(false);
   const [refundError, setRefundError] = useState('');
 
+  // Reconcile Transaction Modal State
+  const [isReconciling, setIsReconciling] = useState(false);
+  const [recRef, setRecRef] = useState('');
+  const [recFlwId, setRecFlwId] = useState('');
+  const [recAmount, setRecAmount] = useState('');
+  const [recName, setRecName] = useState('');
+  const [recEmail, setRecEmail] = useState('');
+  const [recPhone, setRecPhone] = useState('');
+  const [recNotes, setRecNotes] = useState('');
+  const [recLoading, setRecLoading] = useState(false);
+  const [recError, setRecError] = useState('');
+  const [recSuccess, setRecSuccess] = useState('');
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  const handleReconcilePayment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!recRef) return;
+    setRecLoading(true);
+    setRecError('');
+    setRecSuccess('');
+
+    try {
+      const res = await fetch('/api/admin/orders/reconcile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reference: recRef,
+          flwTransactionId: recFlwId || undefined,
+          amount: recAmount ? parseFloat(recAmount) : undefined,
+          customerName: recName || undefined,
+          customerEmail: recEmail || undefined,
+          customerPhone: recPhone || undefined,
+          notes: recNotes || undefined,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setRecSuccess(data.message || 'Transaction reconciled successfully!');
+        fetchOrders();
+        setTimeout(() => {
+          setIsReconciling(false);
+          setRecRef('');
+          setRecFlwId('');
+          setRecAmount('');
+          setRecName('');
+          setRecEmail('');
+          setRecPhone('');
+          setRecNotes('');
+          setRecSuccess('');
+        }, 1200);
+      } else {
+        setRecError(data.error || 'Failed to reconcile transaction.');
+      }
+    } catch (err: any) {
+      setRecError(err.message || 'Error executing reconciliation.');
+    } finally {
+      setRecLoading(false);
+    }
+  };
+
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/orders');
+      const res = await fetch('/api/admin/orders', { cache: 'no-store' });
       const data = await res.json();
       if (data.success && data.orders) {
         setOrders(data.orders);
@@ -238,13 +298,23 @@ export default function AdminOrdersPage() {
           </p>
         </div>
 
-        <button
-          onClick={fetchOrders}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-surface hover:bg-surface-muted border border-border rounded-full text-xs font-semibold text-text-main shadow-subtle transition-colors self-start sm:self-auto cursor-pointer"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-brand' : ''}`} />
-          <span>Refresh Records</span>
-        </button>
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <button
+            onClick={() => setIsReconciling(true)}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-brand text-white hover:bg-brand-hover rounded-full text-xs font-semibold shadow-subtle transition-colors cursor-pointer"
+          >
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>Reconcile Payment</span>
+          </button>
+
+          <button
+            onClick={fetchOrders}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-surface hover:bg-surface-muted border border-border rounded-full text-xs font-semibold text-text-main shadow-subtle transition-colors cursor-pointer"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-brand' : ''}`} />
+            <span>Refresh Records</span>
+          </button>
+        </div>
       </div>
 
       {/* Metrics Cards: Real-Time Payment Lifecycle Breakdown */}
@@ -705,6 +775,162 @@ export default function AdminOrdersPage() {
                 )}
               </div>
             )}
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Manual Transaction Reconciliation Modal */}
+      {mounted && isReconciling && createPortal(
+        <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs overflow-y-auto p-3 sm:p-6 flex flex-col items-center justify-start sm:justify-center">
+          <div className="bg-surface rounded-3xl p-5 sm:p-8 max-w-lg w-full border border-border shadow-2xl relative max-h-[calc(100dvh-2.5rem)] sm:max-h-[calc(100dvh-4rem)] overflow-y-auto my-auto space-y-5 animate-in fade-in zoom-in-95 duration-200 shrink-0">
+            <button
+              onClick={() => setIsReconciling(false)}
+              className="absolute top-4 right-4 p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center text-text-muted hover:text-text-main rounded-full hover:bg-surface-muted transition-colors cursor-pointer"
+              aria-label="Close modal"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-brand-light text-brand font-bold text-[11px] uppercase tracking-wider mb-1">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Payment Audit Tool</span>
+              </div>
+              <h3 className="font-display font-bold text-xl sm:text-2xl text-text-main">
+                Reconcile Flutterwave Payment
+              </h3>
+              <p className="text-xs text-text-muted mt-1">
+                Safely link, restore, or mark an unrecorded / orphaned Flutterwave transaction as paid without double-charging the customer.
+              </p>
+            </div>
+
+            {recError && (
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 font-medium">
+                {recError}
+              </div>
+            )}
+
+            {recSuccess && (
+              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 font-semibold flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <span>{recSuccess}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleReconcilePayment} className="space-y-3.5 text-xs">
+              <div>
+                <label className="block font-semibold text-text-main mb-1">
+                  Merchant Transaction Reference (tx_ref) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. TBH-FLW-1791540175781-4JWUEH"
+                  value={recRef}
+                  onChange={e => setRecRef(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-surface-muted rounded-xl border border-border text-xs font-mono font-bold text-brand focus:outline-none focus:border-brand min-h-[44px]"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-text-main mb-1">
+                  Flutterwave Transaction Reference / ID (Optional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. 100004261009100427173371744928"
+                  value={recFlwId}
+                  onChange={e => setRecFlwId(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-surface-muted rounded-xl border border-border text-xs font-mono text-text-main focus:outline-none focus:border-brand min-h-[44px]"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-text-main mb-1">
+                    Amount Paid (₦)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    placeholder="400.00"
+                    value={recAmount}
+                    onChange={e => setRecAmount(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-surface-muted rounded-xl border border-border text-xs text-text-main focus:outline-none focus:border-brand min-h-[44px]"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-text-main mb-1">
+                    Customer Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Customer Name"
+                    value={recName}
+                    onChange={e => setRecName(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-surface-muted rounded-xl border border-border text-xs text-text-main focus:outline-none focus:border-brand min-h-[44px]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-text-main mb-1">
+                    Customer Email
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="customer@email.com"
+                    value={recEmail}
+                    onChange={e => setRecEmail(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-surface-muted rounded-xl border border-border text-xs text-text-main focus:outline-none focus:border-brand min-h-[44px]"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-text-main mb-1">
+                    Customer Phone
+                  </label>
+                  <input
+                    type="tel"
+                    placeholder="+234..."
+                    value={recPhone}
+                    onChange={e => setRecPhone(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-surface-muted rounded-xl border border-border text-xs text-text-main focus:outline-none focus:border-brand min-h-[44px]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-text-main mb-1">
+                  Audit Notes / Remarks
+                </label>
+                <textarea
+                  rows={2}
+                  placeholder="e.g. Verified against Flutterwave Merchant Dashboard (Oct 9, 2026)"
+                  value={recNotes}
+                  onChange={e => setRecNotes(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-surface-muted rounded-xl border border-border text-xs text-text-main focus:outline-none focus:border-brand"
+                />
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsReconciling(false)}
+                  className="px-4 py-2.5 rounded-full border border-border text-xs font-semibold text-text-muted hover:bg-surface-muted transition-colors cursor-pointer min-h-[44px]"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={recLoading}
+                  className="px-6 py-2.5 rounded-full bg-brand hover:bg-brand-hover text-white text-xs font-bold shadow-sm transition-colors cursor-pointer min-h-[44px]"
+                >
+                  {recLoading ? 'Reconciling...' : 'Confirm Reconciliation'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>,
         document.body
