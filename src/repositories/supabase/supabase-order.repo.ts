@@ -28,8 +28,23 @@ export class SupabaseOrderRepository implements IOrderRepository {
       dbOrder.payment_provider ||
       (paymentRef?.startsWith('TBH-FLW') ? 'flutterwave' : dbOrder.paystack_reference ? 'paystack' : 'flutterwave');
 
-    const paymentStatus = this.normalizePaymentStatus(dbOrder.payment_status);
-    const orderStatus = dbOrder.order_status || dbOrder.status || (paymentStatus === 'successful' ? 'processing' : 'pending');
+    const isAbandoned = !!dbOrder.abandoned_at || dbOrder.order_status === 'abandoned' || dbOrder.status === 'abandoned' || dbOrder.payment_status === 'abandoned';
+    const rawPaymentStatus = dbOrder.payment_status?.toLowerCase();
+    const isPaid = rawPaymentStatus === 'paid' || rawPaymentStatus === 'successful' || rawPaymentStatus === 'success';
+
+    let paymentStatus: PaymentStatus;
+    let orderStatus: OrderStatus;
+
+    if (isPaid) {
+      paymentStatus = 'successful';
+      orderStatus = (dbOrder.order_status || dbOrder.status || 'processing') as OrderStatus;
+    } else if (isAbandoned) {
+      paymentStatus = 'abandoned';
+      orderStatus = 'abandoned';
+    } else {
+      paymentStatus = this.normalizePaymentStatus(dbOrder.payment_status);
+      orderStatus = (dbOrder.order_status || dbOrder.status || 'pending') as OrderStatus;
+    }
 
     let overpaymentMeta: any = {};
     if (typeof dbOrder.notes === 'string' && dbOrder.notes.trim().startsWith('{')) {
@@ -479,9 +494,13 @@ export class SupabaseOrderRepository implements IOrderRepository {
           ? 'paid'
           : normalizedStatus === 'failed'
           ? 'failed'
-          : normalizedStatus;
+          : normalizedStatus === 'abandoned'
+          ? 'unpaid'
+          : normalizedStatus === 'refunded'
+          ? 'refunded'
+          : 'unpaid';
 
-      const dbOrderStatus = order.order_status;
+      const dbOrderStatus = order.order_status === 'abandoned' ? 'cancelled' : order.order_status;
 
       const updatePayload: Record<string, any> = {
         payment_status: dbPaymentStatus,
@@ -828,35 +847,26 @@ export class SupabaseOrderRepository implements IOrderRepository {
     const abandonedIds: string[] = [];
 
     try {
-      // 1. First try calling the safe PostgreSQL stored procedure
-      const { data: rpcData, error: rpcError } = await supabaseAdmin.rpc('process_abandoned_orders', {
-        p_interval_minutes: minutesOld,
-      });
-
-      if (!rpcError && rpcData !== null) {
-        const count = typeof rpcData === 'number' ? rpcData : rpcData?.[0]?.abandoned_count || 0;
-        return { count, orderIds: [] };
-      }
-    } catch (e) {}
-
-    // 2. Fallback direct query sweep
-    try {
+      // Query eligible unpaid orders created before cutoffDate that haven't been paid
       const { data: eligibleOrders, error } = await supabaseAdmin
         .from('orders')
         .select('id, payment_reference')
-        .in('payment_status', ['pending', 'payment_pending', 'unpaid'])
+        .eq('payment_status', 'unpaid')
+        .is('paid_at', null)
+        .is('abandoned_at', null)
         .lt('created_at', cutoffDate);
 
       if (!error && eligibleOrders && eligibleOrders.length > 0) {
         const nowIso = new Date().toISOString();
         const ids = eligibleOrders.map(o => o.id);
 
+        // Update DB rows with valid Supabase DB enums + set abandoned_at timestamp
         await supabaseAdmin
           .from('orders')
           .update({
-            payment_status: 'abandoned',
-            status: 'abandoned',
-            order_status: 'abandoned',
+            status: 'cancelled',
+            order_status: 'cancelled',
+            payment_status: 'unpaid',
             abandoned_at: nowIso,
             updated_at: nowIso,
           })
@@ -865,12 +875,11 @@ export class SupabaseOrderRepository implements IOrderRepository {
         await supabaseAdmin
           .from('payments')
           .update({
-            status: 'abandoned',
+            status: 'failed',
             abandoned_at: nowIso,
             updated_at: nowIso,
           })
-          .in('order_id', ids)
-          .in('status', ['pending', 'payment_pending', 'unpaid']);
+          .in('order_id', ids);
 
         // Update in-memory stores
         for (const o of eligibleOrders) {
@@ -883,11 +892,11 @@ export class SupabaseOrderRepository implements IOrderRepository {
           }
         }
       }
+      return { count: abandonedIds.length, orderIds: abandonedIds };
     } catch (err) {
-      console.error('[SupabaseOrderRepository] Error sweeping abandoned orders:', err);
+      console.warn('[SupabaseOrderRepository] markAbandonedOrders error:', err);
+      return { count: 0, orderIds: [] };
     }
-
-    return { count: abandonedIds.length, orderIds: abandonedIds };
   }
 
   async recordRefund(orderId: string, refundAmount: number, reason?: string): Promise<Order> {
