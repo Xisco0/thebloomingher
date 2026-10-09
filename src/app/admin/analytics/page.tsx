@@ -73,7 +73,7 @@ export default function AdminAnalyticsPage() {
   // Filter orders according to payment status
   const baseOrders = useMemo(() => {
     if (statusFilter === 'paid') {
-      return orders.filter(o => o.payment_status === 'paid');
+      return orders.filter(o => o.payment_status === 'paid' || o.payment_status === 'successful');
     }
     return orders;
   }, [orders, statusFilter]);

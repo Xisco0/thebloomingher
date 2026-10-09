@@ -72,8 +72,10 @@ export default function AdminDashboardPage() {
   });
 
   // Calculate metrics
+  const isPaidOrder = (o: Order) => o.payment_status === 'paid' || o.payment_status === 'successful';
+
   const totalRevenue = filteredOrders
-    .filter(o => o.payment_status === 'paid')
+    .filter(isPaidOrder)
     .reduce((sum, o) => sum + o.total_amount, 0);
 
   const todayOrders = orders.filter(o => {
@@ -81,11 +83,11 @@ export default function AdminDashboardPage() {
     return (now.getTime() - d.getTime()) <= 24 * 3600 * 1000;
   });
   const todayRevenue = todayOrders
-    .filter(o => o.payment_status === 'paid')
+    .filter(isPaidOrder)
     .reduce((sum, o) => sum + o.total_amount, 0);
 
   const pendingFulfillmentOrders = orders.filter(
-    o => o.payment_status === 'paid' && (o.order_status === 'paid' || o.order_status === 'processing')
+    o => isPaidOrder(o) && (o.order_status === 'paid' || o.order_status === 'processing' || o.order_status === 'pending')
   );
 
   const uniqueCustomerEmails = new Set(orders.map(o => o.customer_email.toLowerCase())).size;

@@ -40,10 +40,11 @@ export async function GET() {
     orders.forEach(order => {
       const email = order.customer_email.toLowerCase().trim();
       const existing = customerMap.get(email);
+      const isPaid = order.payment_status === 'paid' || order.payment_status === 'successful';
 
       if (existing) {
         existing.ordersCount += 1;
-        if (order.payment_status === 'paid') {
+        if (isPaid) {
           existing.totalSpent += order.total_amount;
         }
         if (!existing.lastOrderDate || new Date(order.created_at) > new Date(existing.lastOrderDate)) {
@@ -56,7 +57,7 @@ export async function GET() {
           email: order.customer_email,
           phone: order.customer_phone,
           ordersCount: 1,
-          totalSpent: order.payment_status === 'paid' ? order.total_amount : 0,
+          totalSpent: isPaid ? order.total_amount : 0,
           lastOrderDate: order.created_at,
           createdAt: order.created_at,
         });
