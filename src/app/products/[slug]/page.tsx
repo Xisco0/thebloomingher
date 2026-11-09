@@ -194,7 +194,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         </div>
 
         {/* Product View Tracker for Personalization & Analytics */}
-        <ProductViewTracker productId={product.id} categoryId={product.category_id} />
+        <ProductViewTracker productId={product.id} categoryId={product.category_id} product={product} />
 
         {/* Frequently Bought Together Bundle */}
         <FrequentlyBoughtTogether currentProduct={product} />

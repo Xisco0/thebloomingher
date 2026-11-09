@@ -1,4 +1,5 @@
 import { orderRepository } from '@/repositories';
+import { sendMetaCapiEvent } from '@/lib/meta/meta-capi';
 import {
   PaystackInitializeResponse,
   PaystackVerifyResponse,
@@ -231,6 +232,47 @@ export class PaystackService {
       updated_at: new Date().toISOString(),
     };
     await orderRepository.savePayment(paymentRecord);
+
+    // Trigger Server-Side Meta Conversions API (CAPI) Purchase Event
+    try {
+      const nameParts = (updatedOrder.customer_name || '').trim().split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+
+      sendMetaCapiEvent({
+        eventName: 'Purchase',
+        eventId: `purchase_${updatedOrder.order_number}`,
+        eventSourceUrl: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://thebloomingher.com'}/order-confirmation/${updatedOrder.order_number}`,
+        actionSource: 'website',
+        customData: {
+          currency: 'NGN',
+          value: Number(updatedOrder.total_amount),
+          content_type: 'product',
+          content_ids: updatedOrder.items.map(it => it.product_id),
+          contents: updatedOrder.items.map(it => ({
+            id: it.product_id,
+            quantity: it.quantity,
+            item_price: it.unit_price,
+          })),
+          num_items: updatedOrder.items.reduce((acc, it) => acc + it.quantity, 0),
+          order_id: updatedOrder.order_number,
+        },
+        userData: {
+          email: updatedOrder.customer_email || undefined,
+          phone: updatedOrder.customer_phone || undefined,
+          firstName: firstName || undefined,
+          lastName: lastName || undefined,
+          city: updatedOrder.shipping_address?.city || undefined,
+          state: updatedOrder.shipping_address?.state || undefined,
+          country: 'ng',
+          externalId: updatedOrder.customer_id || updatedOrder.customer_email || undefined,
+        },
+      }).catch(err => {
+        console.warn('[Paystack Meta CAPI Notice]:', err);
+      });
+    } catch {
+      // Non-blocking
+    }
 
     return {
       success: true,

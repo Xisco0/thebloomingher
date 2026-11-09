@@ -3,6 +3,7 @@ import './globals.css';
 import { CartProvider } from '@/context/CartContext';
 import { AOSProvider } from '@/components/providers/AOSProvider';
 import { StorefrontShell } from '@/components/layout/StorefrontShell';
+import { MetaPixel } from '@/components/analytics/MetaPixel';
 import { generateLocalBusinessSchema, generateOrganizationSchema, generateWebSiteSchema } from '@/lib/seo/schema';
 
 import { getSiteUrl } from '@/lib/site-url';
@@ -88,6 +89,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col font-sans bg-background text-text-body antialiased overflow-x-hidden w-full max-w-[100vw] relative">
+        <MetaPixel />
         <AOSProvider>
           <CartProvider>
             <StorefrontShell>{children}</StorefrontShell>

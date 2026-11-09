@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { CartItem, Product } from '@/types';
+import { analytics } from '@/lib/analytics/events';
 
 interface CartContextType {
   items: CartItem[];
@@ -84,6 +85,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           maxStock: product.stock_quantity,
         },
       ];
+    });
+    analytics.track('add_to_cart', {
+      productId: product.id,
+      productName: product.name,
+      productPrice: product.price,
+      categoryName: product.category_name || undefined,
+      quantity,
     });
     setIsOpen(true);
   };
