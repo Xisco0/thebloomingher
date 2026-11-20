@@ -40,7 +40,7 @@ export function GoogleAuthButton({
 
       const supabase = createClient();
       const origin = typeof window !== 'undefined' && window.location.origin ? window.location.origin : getSiteUrl();
-      const callbackUrl = `${origin}/auth/callback`;
+      const callbackUrl = `${origin}/api/auth/callback`;
 
       // 2. Trigger Supabase Google OAuth with PKCE flow
       const { data, error } = await supabase.auth.signInWithOAuth({

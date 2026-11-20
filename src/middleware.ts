@@ -9,14 +9,21 @@ import {
 export async function middleware(req: NextRequest) {
   const { pathname, searchParams } = req.nextUrl;
 
-  // 0. Catch OAuth Authorization Code if landed on root or non-callback page
+  // 0a. Canonical domain enforcement: permanently redirect www.thebloomingher.com to apex https://thebloomingher.com
+  const host = req.headers.get('x-forwarded-host') || req.headers.get('host') || req.nextUrl.hostname;
+  if (host === 'www.thebloomingher.com') {
+    const canonicalUrl = new URL(req.nextUrl.pathname + req.nextUrl.search, 'https://thebloomingher.com');
+    return NextResponse.redirect(canonicalUrl, 301);
+  }
+
+  // 0b. Catch OAuth Authorization Code if landed on root or non-callback page
   if (
     searchParams.has('code') &&
     !pathname.startsWith('/auth/callback') &&
     !pathname.startsWith('/api/auth/callback') &&
     !pathname.startsWith('/auth/auth-code-error')
   ) {
-    const callbackUrl = new URL('/auth/callback', req.url);
+    const callbackUrl = new URL('/api/auth/callback', req.url);
     callbackUrl.search = req.nextUrl.search;
     return NextResponse.redirect(callbackUrl);
   }

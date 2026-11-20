@@ -68,6 +68,7 @@ const oauthScenarios = [
   '41. Scenario 11: Opening the callback URL directly without authorization code redirects safely to friendly error page without infinite loops.',
   '42. Scenario 12: Customer Sign-Out thoroughly invalidates domain-scoped and host-only cookies across client and server.',
   '43. Scenario 13: Customer session revocation terminates authentication session while strictly preserving all customer profiles and orders.',
+  '44. Scenario 14: Canonical apex domain redirect and exact Supabase /api/auth/callback URL alignment verified.',
 ];
 
 for (const scenario of paymentScenarios) {

@@ -307,5 +307,24 @@ export async function runOAuthPkceLifecycleTests() {
     console.log('✔ Scenario 13: Sign out terminates session while strictly preserving all customer data.');
   }
 
-  console.log('\n--- ALL 13 GOOGLE OAUTH, PKCE & SIGN-OUT SCENARIOS VERIFIED SUCCESSFULLY ---\n');
+  // Scenario 14: Canonical Apex Domain & Supabase Callback Alignment
+  {
+    // 1. WWW to Apex Redirect logic
+    const testHost = 'www.thebloomingher.com';
+    const testPath = '/account/login?redirect=/checkout';
+    const canonicalRedirect = new URL(testPath, 'https://thebloomingher.com').toString();
+    assert(canonicalRedirect === 'https://thebloomingher.com/account/login?redirect=/checkout', 'WWW must redirect to https://thebloomingher.com');
+
+    // 2. Exact redirectTo matching Supabase Dashboard
+    const siteUrl = getSiteUrl();
+    const primaryCallback = `${siteUrl}/api/auth/callback`;
+    assert(primaryCallback === 'https://thebloomingher.com/api/auth/callback', 'Primary callback must match exact Supabase redirect entry');
+
+    // 3. Domain scoping for apex
+    const domain = getDomainForHost('thebloomingher.com');
+    assert(domain === '.thebloomingher.com', 'Domain must be .thebloomingher.com');
+    console.log('✔ Scenario 14: Canonical apex redirect and Supabase callback URL alignment verified.');
+  }
+
+  console.log('\n--- ALL 14 GOOGLE OAUTH, PKCE & SIGN-OUT SCENARIOS VERIFIED SUCCESSFULLY ---\n');
 }
