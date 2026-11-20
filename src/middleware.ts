@@ -151,6 +151,15 @@ export async function middleware(req: NextRequest) {
   // 2. Customer Account Route Protection
   if (pathname.startsWith('/account')) {
     const isCustomerAuthPage = pathname === '/account/login' || pathname === '/account/register';
+    const isLoggedOut = req.nextUrl.searchParams.get('logged_out') === 'true';
+
+    // If customer explicitly logged out, ensure login page displays cleanly without bouncing back
+    if (isLoggedOut && isCustomerAuthPage) {
+      const res = NextResponse.next();
+      res.cookies.delete(CUSTOMER_COOKIE_NAME);
+      return res;
+    }
+
     const customerToken = req.cookies.get(CUSTOMER_COOKIE_NAME)?.value;
 
     let customerSession = null;

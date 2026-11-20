@@ -88,7 +88,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteSchema) }}
         />
       </head>
-      <body className="min-h-screen flex flex-col font-sans bg-background text-text-body antialiased overflow-x-hidden w-full max-w-[100vw] relative">
+      <body className="min-h-screen flex flex-col font-sans bg-background text-text-body antialiased overflow-x-clip w-full max-w-[100vw] relative">
         <MetaPixel />
         <AOSProvider>
           <CartProvider>

@@ -62,12 +62,13 @@ export default function CustomerAccountDashboard() {
   const fetchAccountData = async () => {
     try {
       setLoading(true);
+      setError(null);
       const res = await fetch('/api/auth/customer/me');
       const data = await res.json();
 
       if (!res.ok || !data.success) {
         if (res.status === 401 || data.error === 'Unauthorized') {
-          router.push('/account/login?redirect=/account');
+          window.location.replace('/account/login?redirect=/account');
           return;
         }
         throw new Error(data.error || 'Failed to load account information.');
@@ -80,13 +81,13 @@ export default function CustomerAccountDashboard() {
         lastName: data.customer.last_name || '',
         phone: data.customer.phone || '',
       });
+      setLoading(false);
     } catch (err: any) {
       if (err.message === 'Unauthorized') {
-        router.push('/account/login?redirect=/account');
+        window.location.replace('/account/login?redirect=/account');
         return;
       }
       setError(err.message || 'Error loading account.');
-    } finally {
       setLoading(false);
     }
   };
@@ -108,17 +109,12 @@ export default function CustomerAccountDashboard() {
         headers: { 'Content-Type': 'application/json' },
       });
 
-      // 3. Clear customer state in React
-      setCustomer(null);
-
-      // 4. Force full page navigation to /account/login?logged_out=true
-      // This wipes in-memory Next.js route caches and triggers a fresh middleware check
-      window.location.href = '/account/login?logged_out=true';
+      // 3. Immediately replace location with /account/login?logged_out=true
+      // Using replace avoids back-button returning to unauthenticated account dashboard
+      window.location.replace('/account/login?logged_out=true');
     } catch (err) {
       console.error('Logout error:', err);
-      window.location.href = '/account/login?logged_out=true';
-    } finally {
-      setLoggingOut(false);
+      window.location.replace('/account/login?logged_out=true');
     }
   };
 
@@ -213,6 +209,16 @@ export default function CustomerAccountDashboard() {
     }
   };
 
+  if (loggingOut) {
+    return (
+      <div className="min-h-[50vh] flex flex-col items-center justify-center gap-3">
+        <Loader2 className="w-8 h-8 animate-spin text-brand" />
+        <p className="text-sm font-semibold text-text-main">Signing out...</p>
+        <p className="text-xs text-text-muted">Clearing your session securely...</p>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-[50vh] flex flex-col items-center justify-center gap-3">
@@ -222,11 +228,11 @@ export default function CustomerAccountDashboard() {
     );
   }
 
-  if (error || !customer) {
+  if (error) {
     return (
       <div className="max-w-md mx-auto px-4 py-16 text-center space-y-4">
         <div className="p-4 bg-rose-50 text-rose-700 rounded-2xl border border-rose-200 text-xs">
-          {error || 'Unable to load profile.'}
+          {error}
         </div>
         <Link
           href="/account/login"
@@ -234,6 +240,15 @@ export default function CustomerAccountDashboard() {
         >
           Return to Sign In
         </Link>
+      </div>
+    );
+  }
+
+  if (!customer) {
+    return (
+      <div className="min-h-[50vh] flex flex-col items-center justify-center gap-3">
+        <Loader2 className="w-8 h-8 animate-spin text-brand" />
+        <p className="text-xs text-text-muted">Redirecting to sign in...</p>
       </div>
     );
   }
