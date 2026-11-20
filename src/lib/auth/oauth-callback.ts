@@ -7,9 +7,26 @@ import { getAuthCookieOptions, sanitizeAuthDiagnostics } from '@/lib/supabase/co
 
 export async function handleAuthCallback(request: NextRequest) {
   const requestUrl = new URL(request.url);
-  const code = requestUrl.searchParams.get('code');
-  const errorParam = requestUrl.searchParams.get('error');
-  const errorDescription = requestUrl.searchParams.get('error_description');
+  let code = requestUrl.searchParams.get('code');
+  let errorParam = requestUrl.searchParams.get('error');
+  let errorDescription = requestUrl.searchParams.get('error_description');
+
+  if (!code && request.method === 'POST') {
+    try {
+      const contentType = request.headers.get('content-type') || '';
+      if (contentType.includes('application/x-www-form-urlencoded')) {
+        const formData = await request.formData();
+        code = (formData.get('code') as string) || null;
+        if (!errorParam) errorParam = (formData.get('error') as string) || null;
+        if (!errorDescription) errorDescription = (formData.get('error_description') as string) || null;
+      } else if (contentType.includes('application/json')) {
+        const json = await request.json();
+        code = json.code || null;
+        if (!errorParam) errorParam = json.error || null;
+        if (!errorDescription) errorDescription = json.error_description || null;
+      }
+    } catch {}
+  }
 
   // Compute accurate origin based on headers or URL
   const forwardedHost = request.headers.get('x-forwarded-host');

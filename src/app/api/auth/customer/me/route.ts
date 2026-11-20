@@ -5,6 +5,7 @@ import { orderRepository } from '@/repositories';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { authService } from '@/services/auth.service';
+import { getAuthCookieOptions } from '@/lib/supabase/cookies';
 
 export const dynamic = 'force-dynamic';
 
@@ -137,13 +138,17 @@ export async function GET(req: NextRequest) {
     });
 
     if (fallbackToken) {
+      const host = req.headers.get('x-forwarded-host') || req.nextUrl.hostname;
+      const cookieOptions = getAuthCookieOptions(host);
+
       response.cookies.set({
         name: CUSTOMER_COOKIE_NAME,
         value: fallbackToken,
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
+        secure: cookieOptions.secure,
+        sameSite: cookieOptions.sameSite,
         path: '/',
+        ...(cookieOptions.domain ? { domain: cookieOptions.domain } : {}),
         maxAge: 7 * 24 * 60 * 60,
       });
     }

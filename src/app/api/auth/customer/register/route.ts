@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authService } from '@/services/auth.service';
 import { CUSTOMER_COOKIE_NAME } from '@/lib/auth/jwt';
+import { getAuthCookieOptions } from '@/lib/supabase/cookies';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,6 +39,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const host = req.headers.get('x-forwarded-host') || req.nextUrl.hostname;
+    const cookieOptions = getAuthCookieOptions(host);
+
     const response = NextResponse.json({
       success: true,
       customer: result.customer,
@@ -48,9 +52,10 @@ export async function POST(req: NextRequest) {
       name: CUSTOMER_COOKIE_NAME,
       value: result.token,
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: cookieOptions.secure,
+      sameSite: cookieOptions.sameSite,
       path: '/',
+      ...(cookieOptions.domain ? { domain: cookieOptions.domain } : {}),
       maxAge: 7 * 24 * 60 * 60, // 7 days
     });
 

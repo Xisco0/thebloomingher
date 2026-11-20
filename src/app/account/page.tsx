@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { formatNaira } from '@/lib/utils';
 import { Order } from '@/types';
+import { createClient } from '@/lib/supabase/client';
 
 interface SafeCustomer {
   id: string;
@@ -93,11 +94,29 @@ export default function CustomerAccountDashboard() {
   const handleLogout = async () => {
     setLoggingOut(true);
     try {
-      await fetch('/api/auth/customer/logout', { method: 'POST' });
-      router.push('/account/login');
-      router.refresh();
+      // 1. Client-side Supabase signOut to clear local storage and browser state
+      try {
+        const supabase = createClient();
+        await supabase.auth.signOut({ scope: 'local' });
+      } catch (clientSignOutErr) {
+        console.warn('Client Supabase signOut notice:', clientSignOutErr);
+      }
+
+      // 2. Server-side logout endpoint to terminate server session and wipe cookies
+      await fetch('/api/auth/customer/logout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      // 3. Clear customer state in React
+      setCustomer(null);
+
+      // 4. Force full page navigation to /account/login?logged_out=true
+      // This wipes in-memory Next.js route caches and triggers a fresh middleware check
+      window.location.href = '/account/login?logged_out=true';
     } catch (err) {
       console.error('Logout error:', err);
+      window.location.href = '/account/login?logged_out=true';
     } finally {
       setLoggingOut(false);
     }

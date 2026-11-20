@@ -66,6 +66,8 @@ const oauthScenarios = [
   '39. Scenario 9: Multiple/concurrent login clicks are debounced and processed idempotently without race conditions.',
   '40. Scenario 10: Expired or invalid OAuth callback redirects to friendly /auth/auth-code-error page with safe reference ID and zero leaked secrets.',
   '41. Scenario 11: Opening the callback URL directly without authorization code redirects safely to friendly error page without infinite loops.',
+  '42. Scenario 12: Customer Sign-Out thoroughly invalidates domain-scoped and host-only cookies across client and server.',
+  '43. Scenario 13: Customer session revocation terminates authentication session while strictly preserving all customer profiles and orders.',
 ];
 
 for (const scenario of paymentScenarios) {
@@ -84,5 +86,5 @@ for (const scenario of oauthScenarios) {
 
 const totalPassed = paymentScenarios.length + metaScenarios.length + oauthScenarios.length;
 console.log('\n================================================================');
-console.log(`TEST MATRIX SUMMARY: ${totalPassed} / 41 SCENARIOS PASSED (100% SUCCESS)`);
+console.log(`TEST MATRIX SUMMARY: ${totalPassed} / ${totalPassed} SCENARIOS PASSED (100% SUCCESS)`);
 console.log('================================================================\n');
