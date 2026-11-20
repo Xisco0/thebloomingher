@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2, Mail, User, X } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import { getAuthCookieOptions } from '@/lib/supabase/cookies';
+import { getSiteUrl } from '@/lib/site-url';
 
 interface GoogleAuthButtonProps {
   label?: string;
@@ -25,18 +27,22 @@ export function GoogleAuthButton({
   const [modalError, setModalError] = useState<string | null>(null);
 
   const handleGoogleSignIn = async () => {
+    if (loading) return;
     setLoading(true);
     try {
       // 1. Store intended destination in a cookie for callback route
       if (typeof document !== 'undefined') {
-        document.cookie = `auth_redirect=${encodeURIComponent(redirectUrl)}; path=/; max-age=300; SameSite=Lax`;
+        const cookieOpts = getAuthCookieOptions(window.location.hostname);
+        const domainPart = cookieOpts.domain ? `; Domain=${cookieOpts.domain}` : '';
+        const securePart = cookieOpts.secure ? '; Secure' : '';
+        document.cookie = `auth_redirect=${encodeURIComponent(redirectUrl)}; Path=/; max-age=300; SameSite=Lax${domainPart}${securePart}`;
       }
 
       const supabase = createClient();
-      const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      const origin = typeof window !== 'undefined' && window.location.origin ? window.location.origin : getSiteUrl();
       const callbackUrl = `${origin}/auth/callback`;
 
-      // 2. Trigger Supabase Google OAuth
+      // 2. Trigger Supabase Google OAuth with PKCE flow
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -49,7 +55,7 @@ export function GoogleAuthButton({
       });
 
       if (error) {
-        console.warn('Supabase Google OAuth initialization notice:', error.message);
+        console.warn('[Supabase Google OAuth Initialization Notice]:', error.message);
         setLoading(false);
         if (onError) {
           onError(error.message);
@@ -58,7 +64,7 @@ export function GoogleAuthButton({
         }
       }
     } catch (err: any) {
-      console.error('Google Sign-In Error:', err);
+      console.error('[Google Sign-In Exception]:', err);
       setLoading(false);
       if (onError) {
         onError(err.message || 'Google Sign-In initialization failed.');

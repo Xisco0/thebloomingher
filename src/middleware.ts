@@ -13,7 +13,8 @@ export async function middleware(req: NextRequest) {
   if (
     searchParams.has('code') &&
     !pathname.startsWith('/auth/callback') &&
-    !pathname.startsWith('/api/auth/callback')
+    !pathname.startsWith('/api/auth/callback') &&
+    !pathname.startsWith('/auth/auth-code-error')
   ) {
     const callbackUrl = new URL('/auth/callback', req.url);
     callbackUrl.search = req.nextUrl.search;

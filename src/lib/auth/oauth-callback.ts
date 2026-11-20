@@ -3,6 +3,7 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { authService } from '@/services/auth.service';
 import { CUSTOMER_COOKIE_NAME } from '@/lib/auth/jwt';
 import { getSiteUrl } from '@/lib/site-url';
+import { getAuthCookieOptions, sanitizeAuthDiagnostics } from '@/lib/supabase/cookies';
 
 export async function handleAuthCallback(request: NextRequest) {
   const requestUrl = new URL(request.url);
@@ -21,109 +22,194 @@ export async function handleAuthCallback(request: NextRequest) {
     targetOrigin = getSiteUrl();
   }
 
+  // Determine safe redirect destination
   const cookieRedirect = request.cookies.get('auth_redirect')?.value;
   const paramRedirect = requestUrl.searchParams.get('redirect') || requestUrl.searchParams.get('next');
   const rawRedirect = cookieRedirect ? decodeURIComponent(cookieRedirect) : (paramRedirect || '/account');
-  const safeRedirect = rawRedirect.startsWith('/') ? rawRedirect : '/account';
+  const safeRedirect = rawRedirect.startsWith('/') && !rawRedirect.startsWith('//') ? rawRedirect : '/account';
 
-  // If OAuth provider returned an explicit error parameter
+  // 1. If OAuth provider returned an explicit error parameter (e.g. user cancelled or denied access)
   if (errorParam || errorDescription) {
-    const errorMsg = errorDescription || errorParam || 'Google authentication failed';
-    const redirectErrorUrl = new URL(`/account/login?error=${encodeURIComponent(errorMsg)}`, targetOrigin);
-    const res = NextResponse.redirect(redirectErrorUrl);
+    const errorMsg = errorDescription || errorParam || 'OAuth provider authorization failed';
+    const sanitized = sanitizeAuthDiagnostics({
+      host: forwardedHost || requestUrl.hostname,
+      reason: 'provider_denied',
+      errorMessage: errorMsg,
+      userAgent: request.headers.get('user-agent'),
+    });
+    console.warn('[OAuth Provider Callback Notice]:', sanitized);
+
+    const errorRedirect = new URL('/auth/auth-code-error?reason=access_denied', targetOrigin);
+    const res = NextResponse.redirect(errorRedirect);
+    res.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
     res.cookies.delete('auth_redirect');
     return res;
   }
 
-  if (code) {
-    const supabaseUrl =
-      process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://xbhyafrdczdazuueibeu.supabase.co';
-    const supabaseKey =
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-      'sb_publishable_znrQgeyTg5CdTygxT_JPzg_i06ON-jw';
-
-    let redirectResponse = NextResponse.redirect(new URL(safeRedirect, targetOrigin));
-    redirectResponse.cookies.delete('auth_redirect');
-
-    const supabase = createServerClient(supabaseUrl, supabaseKey, {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet: Array<{ name: string; value: string; options?: CookieOptions }>) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            request.cookies.set(name, value);
-            redirectResponse.cookies.set(name, value, options);
-          });
-        },
-      },
+  // 2. If callback was opened directly without an authorization code
+  if (!code) {
+    const sanitized = sanitizeAuthDiagnostics({
+      host: forwardedHost || requestUrl.hostname,
+      reason: 'missing_code',
+      userAgent: request.headers.get('user-agent'),
     });
+    console.warn('[OAuth Callback Missing Code]:', sanitized);
 
-    try {
-      const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+    const errorRedirect = new URL('/auth/auth-code-error?reason=missing_code', targetOrigin);
+    const res = NextResponse.redirect(errorRedirect);
+    res.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    res.cookies.delete('auth_redirect');
+    return res;
+  }
 
-      if (!error && data?.session?.user) {
-        const user = data.session.user;
-        const email = user.email || '';
-        const fullName = user.user_metadata?.full_name || user.user_metadata?.name || '';
-        const firstName = user.user_metadata?.first_name || fullName.split(' ')[0] || 'Customer';
-        const lastName = user.user_metadata?.last_name || fullName.split(' ').slice(1).join(' ') || '';
-        const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || '';
+  // 3. Process authorization code with PKCE verification
+  const refId = 'tbh_' + Math.random().toString(36).substring(2, 9);
+  const cookieNames = request.cookies.getAll().map(c => c.name);
+  const hasVerifierCookie = cookieNames.some(name => name.includes('code-verifier'));
 
-        // Sync customer in database/auth service
-        const authResult = await authService.customerGoogleAuth({
-          email,
-          name: fullName,
-          firstName,
-          lastName,
-          googleId: user.id,
-          avatarUrl,
+  const initDiagnostics = sanitizeAuthDiagnostics({
+    refId,
+    hasCode: true,
+    codeLength: code.length,
+    hasVerifierCookie,
+    cookieNames: cookieNames.filter(n => n.startsWith('sb-') || n.includes('auth')),
+    host: forwardedHost || requestUrl.hostname,
+    userAgent: request.headers.get('user-agent'),
+    reason: 'exchange_initiated',
+  });
+  console.info('[OAuth Callback Processing]:', initDiagnostics);
+
+  const supabaseUrl =
+    process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://xbhyafrdczdazuueibeu.supabase.co';
+  const supabaseKey =
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    'sb_publishable_znrQgeyTg5CdTygxT_JPzg_i06ON-jw';
+
+  const cookieOptions = getAuthCookieOptions(targetOrigin);
+
+  let redirectResponse = NextResponse.redirect(new URL(safeRedirect, targetOrigin));
+  redirectResponse.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+  redirectResponse.cookies.delete('auth_redirect');
+
+  const supabase = createServerClient(supabaseUrl, supabaseKey, {
+    cookieOptions,
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
+      },
+      setAll(cookiesToSet: Array<{ name: string; value: string; options?: CookieOptions }>) {
+        cookiesToSet.forEach(({ name, value, options }) => {
+          request.cookies.set(name, value);
+          redirectResponse.cookies.set(name, value, {
+            ...options,
+            ...(cookieOptions.domain ? { domain: cookieOptions.domain } : {}),
+            secure: cookieOptions.secure,
+            sameSite: cookieOptions.sameSite,
+          });
         });
+      },
+    },
+  });
 
-        if (!authResult.success || !authResult.token) {
-          console.warn('[Customer Google Auth Notice]:', authResult.error);
-          const redirectErrorUrl = new URL(
-            `/account/login?error=${encodeURIComponent(authResult.error || 'Authentication synchronization failed')}`,
-            targetOrigin
-          );
-          const res = NextResponse.redirect(redirectErrorUrl);
-          res.cookies.delete('auth_redirect');
-          return res;
-        }
+  try {
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
-        redirectResponse.cookies.set({
-          name: CUSTOMER_COOKIE_NAME,
-          value: authResult.token,
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          path: '/',
-          maxAge: 7 * 24 * 60 * 60, // 7 days
+    if (!error && data?.session?.user) {
+      const user = data.session.user;
+      const email = user.email || '';
+      const fullName = user.user_metadata?.full_name || user.user_metadata?.name || '';
+      const firstName = user.user_metadata?.first_name || fullName.split(' ')[0] || 'Customer';
+      const lastName = user.user_metadata?.last_name || fullName.split(' ').slice(1).join(' ') || '';
+      const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || '';
+
+      // Sync customer in database/auth service safely
+      const authResult = await authService.customerGoogleAuth({
+        email,
+        name: fullName,
+        firstName,
+        lastName,
+        googleId: user.id,
+        avatarUrl,
+      });
+
+      if (!authResult.success || !authResult.token) {
+        console.warn('[Customer Google Auth Sync Notice]:', {
+          refId,
+          error: authResult.error,
         });
-
-        return redirectResponse;
-      } else if (error) {
-        console.warn('[Supabase Auth Callback Exchange Error]:', error.message);
-        const redirectErrorUrl = new URL(`/account/login?error=${encodeURIComponent(error.message)}`, targetOrigin);
-        const res = NextResponse.redirect(redirectErrorUrl);
+        const errorRedirect = new URL(
+          `/auth/auth-code-error?reason=sync_failed&ref=${encodeURIComponent(refId)}`,
+          targetOrigin
+        );
+        const res = NextResponse.redirect(errorRedirect);
+        res.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
         res.cookies.delete('auth_redirect');
         return res;
       }
-    } catch (err: any) {
-      console.error('[Auth Callback Exception]:', err);
-      const redirectErrorUrl = new URL(
-        `/account/login?error=${encodeURIComponent(err.message || 'Authentication error')}`,
+
+      // Set Customer session token with matching cookie options
+      redirectResponse.cookies.set({
+        name: CUSTOMER_COOKIE_NAME,
+        value: authResult.token,
+        httpOnly: true,
+        secure: cookieOptions.secure,
+        sameSite: cookieOptions.sameSite,
+        path: '/',
+        ...(cookieOptions.domain ? { domain: cookieOptions.domain } : {}),
+        maxAge: 7 * 24 * 60 * 60, // 7 days
+      });
+
+      return redirectResponse;
+    } else if (error) {
+      const errorDiagnostics = sanitizeAuthDiagnostics({
+        refId,
+        hasCode: true,
+        codeLength: code.length,
+        hasVerifierCookie,
+        host: forwardedHost || requestUrl.hostname,
+        userAgent: request.headers.get('user-agent'),
+        reason: 'pkce_exchange_failed',
+        errorMessage: error.message,
+        errorStatus: error.status,
+      });
+      console.warn('[Supabase Auth Callback Exchange Error]:', errorDiagnostics);
+
+      const errorRedirect = new URL(
+        `/auth/auth-code-error?reason=pkce_verification_failed&ref=${encodeURIComponent(refId)}`,
         targetOrigin
       );
-      const res = NextResponse.redirect(redirectErrorUrl);
+      const res = NextResponse.redirect(errorRedirect);
+      res.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
       res.cookies.delete('auth_redirect');
       return res;
     }
+  } catch (err: any) {
+    const excDiagnostics = sanitizeAuthDiagnostics({
+      refId,
+      hasCode: true,
+      codeLength: code ? code.length : 0,
+      hasVerifierCookie,
+      host: forwardedHost || requestUrl.hostname,
+      userAgent: request.headers.get('user-agent'),
+      reason: 'callback_exception',
+      errorMessage: err?.message || 'Unknown callback exception',
+    });
+    console.error('[Auth Callback Exception]:', excDiagnostics);
+
+    const errorRedirect = new URL(
+      `/auth/auth-code-error?reason=auth_error&ref=${encodeURIComponent(refId)}`,
+      targetOrigin
+    );
+    const res = NextResponse.redirect(errorRedirect);
+    res.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    res.cookies.delete('auth_redirect');
+    return res;
   }
 
-  // Fallback redirect
-  const response = NextResponse.redirect(new URL(safeRedirect, targetOrigin));
-  response.cookies.delete('auth_redirect');
-  return response;
+  // Fallback safe redirect to error page if no session created
+  const res = NextResponse.redirect(new URL('/auth/auth-code-error?reason=session_missing', targetOrigin));
+  res.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+  res.cookies.delete('auth_redirect');
+  return res;
 }

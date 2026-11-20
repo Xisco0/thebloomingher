@@ -16,7 +16,12 @@ function CustomerLoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const urlError = searchParams.get('error');
-  const [error, setError] = useState<string | null>(urlError || null);
+  const cleanInitialError = urlError
+    ? urlError.toLowerCase().includes('code verifier') || urlError.toLowerCase().includes('pkce')
+      ? 'Sign-in session expired. Please click Continue with Google below to sign in.'
+      : urlError
+    : null;
+  const [error, setError] = useState<string | null>(cleanInitialError);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

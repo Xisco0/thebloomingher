@@ -169,7 +169,7 @@ export function Footer() {
         <div className="pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-400 text-center sm:text-left">
           <p>© {new Date().getFullYear()} TheBloomingHer Care & Wellness. All rights reserved.</p>
           <div className="flex flex-wrap items-center justify-center sm:justify-end gap-3 sm:gap-6">
-            <span>Developed by <span className="font-medium text-white">xisco</span></span>
+            <span>Developed by <a href="https://wa.me/2348144326123" target="_blank" rel="noopener noreferrer" className="font-medium text-white hover:text-brand-accent transition-colors underline-offset-2 hover:underline">xisco</a></span>
             <span>•</span>
             <span className="flex items-center gap-1">
               Made with <Heart className="w-3 h-3 text-brand-accent fill-brand-accent" /> for Women in Nigeria

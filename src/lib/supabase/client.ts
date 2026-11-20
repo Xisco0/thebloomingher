@@ -1,4 +1,5 @@
 import { createBrowserClient } from '@supabase/ssr';
+import { getAuthCookieOptions } from './cookies';
 
 const DEFAULT_SUPABASE_URL = 'https://xbhyafrdczdazuueibeu.supabase.co';
 const DEFAULT_SUPABASE_KEY = 'sb_publishable_znrQgeyTg5CdTygxT_JPzg_i06ON-jw';
@@ -11,6 +12,9 @@ export function createClient() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
     DEFAULT_SUPABASE_KEY;
 
-  return createBrowserClient(supabaseUrl, supabaseKey);
-}
+  const currentHost = typeof window !== 'undefined' ? window.location.hostname : undefined;
 
+  return createBrowserClient(supabaseUrl, supabaseKey, {
+    cookieOptions: getAuthCookieOptions(currentHost),
+  });
+}
